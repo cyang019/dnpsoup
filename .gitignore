@@ -1,0 +1,10 @@
+build/**
+
+**/*.swp
+
+.vscode/**
+
+
+**/.DS_Store
+
+tags
