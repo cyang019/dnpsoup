@@ -1,40 +1,42 @@
 cmake_minimum_required (VERSION 3.14)
 project (dnpsoup CXX)
 
+message(STATUS "Project dnpsoup...")
+
 if(NOT DEFINED CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 17)
   message(STATUS "cpp standard - ${CMAKE_CXX_STANDARD}")
-endif(NOT DEFINED CMAKE_CXX_STANDARD)
+endif()
 
 if(NOT DEFINED CMAKE_CXX_COMPILER)
   if(APPLE)
     set(CMAKE_CXX_COMPILER /usr/bin/clang++)
     message(STATUS "compiler - ${CMAKE_CXX_COMPILER}")
-  endif(APPLE)
-endif(NOT DEFINED CMAKE_CXX_COMPILER)
+  endif()
+endif()
 
 if(NOT DEFINED CMAKE_CXX_STANDARD_REQUIRED)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
-endif(NOT DEFINED CMAKE_CXX_STANDARD_REQUIRED)
+endif()
 
 if(NOT DEFINED CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_EXTENSIONS OFF)
-endif(NOT DEFINED CMAKE_CXX_STANDARD)
+endif()
 
-option(BUILD_TESTS "build unittests as well" ON)
 
-add_subdirectory("matrix")
+add_subdirectory("matrix/matrix_impl")
 add_subdirectory("dnpsoup_impl")
+option(BUILD_TESTS "build unittests as well for dnpsoup" ON)
+if(BUILD_TESTS)
+  enable_testing()
+  message(STATUS "build unittests for dnpsoup...")
+  add_subdirectory(tests)
+endif()
 
 include(cmake/googletest.cmake)
 include(cmake/CodeCoverage.cmake)
-#fetch_googletest(
-#  ${PROJECT_SOURCE_DIR}/cmake
-#  ${PROJECT_BINARY_DIR}/googletest
-#  )
+fetch_googletest(
+  ${PROJECT_SOURCE_DIR}/cmake
+  ${PROJECT_BINARY_DIR}/googletest
+  )
 
-if(BUILD_TESTS)
-  enable_testing()
-
-  add_subdirectory(tests)
-endif()
