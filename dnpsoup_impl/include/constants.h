@@ -34,7 +34,8 @@ namespace dnpsoup {
   constexpr double gamma_N15 = -4.316e6;  // in Hz/T
   // =======================================================
 
-  //constexpr double magic_angle = std::acos(1.0/sqrt(3.0));  ///< in Rad
+  //acos(1.0/sqrt(3.0));  ///< in Rad
+  constexpr double magic_angle = 0.9553166181245092;  ///< in Radius
 } // namespace dnpsoup
 
 #endif

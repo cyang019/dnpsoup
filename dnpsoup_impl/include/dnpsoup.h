@@ -3,5 +3,6 @@
 
 #include "constants.h"
 #include "spin_physics_components/hamiltonian/spin.h"
+#include "spin_physics_components/hamiltonian/irreducible_tensor_op.h"
 
 #endif

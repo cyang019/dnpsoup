@@ -32,7 +32,7 @@ namespace dnpsoup {
       /// \f$-i/2(I_+)\f$
       double m = j - 1.0;
       for(size_t i = 0; i < n - 1; ++i){
-        mat(i, i+1) = cxdbl(0,0.5) * std::sqrt(j*(j+1) - m*(m+1));
+        mat(i, i+1) = -cxdbl(0,0.5) * std::sqrt(j*(j+1) - m*(m+1));
         m -= 1.0;
       }
 

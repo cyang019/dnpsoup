@@ -1,15 +1,11 @@
 #ifndef DNPSOUP_SPIN_H
 #define DNPSOUP_SPIN_H
 
-#include "Matrix.h"
+#include "common.h"
 #include "constants.h"
 #include "errors.h"
 
 namespace dnpsoup {
-  using MatrixCxDbl = matrix::Matrix<cxdbl>;
-  using MatrixDbl = matrix::Matrix<double>;
-  using matrix::allclose;
-
   enum class SpinType : int {
     Identity =  0,
     X =         1,
