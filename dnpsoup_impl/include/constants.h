@@ -9,6 +9,7 @@ namespace dnpsoup {
   constexpr cxdbl img = cxdbl(0,1);
   /// pi from std::M_PI
   constexpr double pi = 3.14159265358979323846264338327950288;
+  constexpr double mu0 = 4 * pi * 1.0e-7;
 
   /// From NIST
   constexpr double kb = 1.38064852e-23;   ///< \f$m^2 kg s^{-2} K^{-1} \f$
@@ -24,15 +25,25 @@ namespace dnpsoup {
   // =======================================================
   // gyromagnetic ratios
   /// From Nist
-  constexpr double beta_e = -mu_b/h; ///< in Hz/T 
-  constexpr double gamma_H1 = 42.57747892e6;  // in Hz/T
-  constexpr double gamma_N14 = 3.077e6; // in Hz/T
+  constexpr double beta_e = -mu_b/h; ///< in Hz/T
+  constexpr double gamma_H1 = 42.57747892e6;  // in Hz/T, actually gamma_H1/2pi
+  constexpr double gamma_N14 = 3.077e6; // in Hz/T, actually gamma_N14/2pi
   /// From wikipedia
-  constexpr double gamma_D2 = 6.536e6;    // wiki
-  constexpr double gamma_O17 = -5.772e6;  // wiki
-  constexpr double gamma_C13 = 10.705e6;  // in Hz/T
-  constexpr double gamma_N15 = -4.316e6;  // in Hz/T
+  constexpr double gamma_D2 = 6.536e6;    // wiki, actually gamma_D2/2pi
+  constexpr double gamma_O17 = -5.772e6;  // wiki, actually gamma_O17/2pi
+  constexpr double gamma_C13 = 10.705e6;  // in Hz/T, actually gamma_C13/2pi
+  constexpr double gamma_N15 = -4.316e6;  // in Hz/T, actually gamma_N15/2pi
   // =======================================================
+  
+  enum class SpinIdentity : int {
+    e =     0,
+    H =     1,
+    D =     2,
+    C13 =   13,
+    N14 =   14,
+    N15 =   15,
+    O17 =   17
+  };
 
   //acos(1.0/sqrt(3.0));  ///< in Rad
   constexpr double magic_angle = 0.9553166181245092;  ///< in Radius
