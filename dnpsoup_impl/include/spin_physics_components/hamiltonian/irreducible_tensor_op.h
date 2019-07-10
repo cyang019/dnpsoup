@@ -2,7 +2,7 @@
 #define DNPSOUP_IRREDUCIBLE_TENSOR_OP_H
 
 #include "common.h"
-#include "spin_physics_components/hamiltonian/spin.h"
+#include "spin_physics_components/spin.h"
 
 namespace dnpsoup {
   /// single spin tensors

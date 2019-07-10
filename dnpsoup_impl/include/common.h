@@ -3,9 +3,10 @@
 
 #include "Matrix.h"
 #include <cmath>
+#include <complex>
 
 namespace dnpsoup {
-  using MatrixCxDbl = matrix::Matrix<cxdbl>;
+  using MatrixCxDbl = matrix::Matrix<std::complex<double>>;
   using MatrixDbl = matrix::Matrix<double>;
 
   using matrix::allclose;

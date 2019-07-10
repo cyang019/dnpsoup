@@ -35,16 +35,6 @@ namespace dnpsoup {
   constexpr double gamma_N15 = -4.316e6;  // in Hz/T, actually gamma_N15/2pi
   // =======================================================
   
-  enum class SpinIdentity : int {
-    e =     0,
-    H =     1,
-    D =     2,
-    C13 =   13,
-    N14 =   14,
-    N15 =   15,
-    O17 =   17
-  };
-
   //acos(1.0/sqrt(3.0));  ///< in Rad
   constexpr double magic_angle = 0.9553166181245092;  ///< in Radius
 } // namespace dnpsoup

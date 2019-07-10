@@ -3,33 +3,46 @@
 
 #include "constants.h"
 #include "common.h"
-#include "spin_physics_components/hamiltonian/irreducible_tensor_op.h"
-#include "spin_physics_components/hamiltonian/spin.h"
+#include "spin_physics_components/spin.h"
+#include <cmath>
+
 
 namespace dnpsoup {
-  template<int l, int m>
-  constexpr double calcDipoleF();
-
+  // Abstract base class
   class DipolarInteraction {
   public:
-    DipolarInteraction();
+    DipolarInteraction(size_t n1, size_t n2);
+    DipolarInteraction(size_t n1, size_t n2, 
+        size_t nbefore, size_t nbetween, size_t nafter);
+    DipolarInteraction(const DipolarInteraction &) = default;
+    DipolarInteraction(DipolarInteraction &&) noexcept = default;
+    DipolarInteraction& operator=(const DipolarInteraction &) = default;
+    DipolarInteraction& operator=(DipolarInteraction &&) noexcept = default;
     ~DipolarInteraction();
 
     /// first calculate m_b * g1 * g2/r^3, then use theta to calculate F<l, m>'s., then combine
     /// @param g1: gamma1/2pi
     /// @param g2: gamma2/2pi
     /// @param r: distance in Anstrom (1e-10)
-    MatrixCxDbl genOperator(double g1, double g2, double r, double theta, double phi) const;
+    MatrixCxDbl genMatrix(double g1, double g2, double r, double theta, double phi) const = 0;
+
+    double calcCoeff(int j, int m) const;
   private:
-    MatrixCxDbl m_A2n2;
-    MatrixCxDbl m_A2n1;
-    MatrixCxDbl m_A20;
-    MatrixCxDbl m_A21;
-    MatrixCxDbl m_A22;
+    /// A, B, C, D, E, F alphabets
+    MatrixCxDbl m_a2n2;
+    MatrixCxDbl m_a2n1;
+    MatrixCxDbl m_a20;
+    MatrixCxDbl m_a21;
+    MatrixCxDbl m_a22;
+
     double m_b;   // mu_0 * hbar / 4 * 1e30
+
+    size_t m_n1;
+    size_t m_n2;
+    size_t m_nbefore;
+    size_t m_nbetween;
+    size_t m_nafter;
   };
 } // namespace dnpsoup
-
-#include "spin_physics_components/hamiltonian/DipolarInteraction.hpp"
 
 #endif

@@ -1,6 +1,3 @@
-#ifndef DNPSOUP_IRREDUCIBLE_TENSOR_OP_IMPL_HPP
-#define DNPSOUP_IRREDUCIBLE_TENSOR_OP_IMPL_HPP
-
 namespace dnpsoup {
   //Ernst, Richard R., Geoffrey Bodenhausen, and Alexander Wokaun. 
   //Principles of nuclear magnetic resonance in one and two dimensions. 1987.
@@ -92,5 +89,3 @@ namespace dnpsoup {
     }
   }
 } // namespace dnpsoup
-
-#endif
