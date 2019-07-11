@@ -1,11 +1,10 @@
 #ifndef DNPSOUP_SHIFT_H
 #define DNPSOUP_SHIFT_H
 
-#include "Matrix.h"
-#include "constants.h"
-#include "common.h"
-#include "errors.h"
-#include "spin_physics_components/spin.h"
+#include "dnpsoup_core/constants.h"
+#include "dnpsoup_core/common.h"
+#include "dnpsoup_core/errors.h"
+#include "dnpsoup_core/spin_physics_components/spin.h"
 
 
 namespace dnpsoup {

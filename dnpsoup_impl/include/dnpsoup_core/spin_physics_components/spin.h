@@ -1,9 +1,9 @@
 #ifndef DNPSOUP_SPIN_H
 #define DNPSOUP_SPIN_H
 
-#include "constants.h"
-#include "common.h"
-#include "errors.h"
+#include "dnpsoup_core/constants.h"
+#include "dnpsoup_core/common.h"
+#include "dnpsoup_core/errors.h"
 
 namespace dnpsoup {
   enum class SpinType : int {
@@ -37,6 +37,6 @@ namespace dnpsoup {
   matrix::Matrix<cxdbl> spin(size_t n); 
 } // namespace dnpsoup
 
-#include "spin_physics_components/spin_impl.hpp"
+#include "dnpsoup_core/spin_physics_components/spin_impl.hpp"
 
 #endif

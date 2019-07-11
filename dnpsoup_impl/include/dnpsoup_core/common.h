@@ -1,7 +1,7 @@
 #ifndef DNPSOUP_COMMON_H
 #define DNPSOUP_COMMON_H
 
-#include "Matrix.h"
+#include "matrix.h"
 #include <cmath>
 #include <complex>
 
@@ -45,6 +45,15 @@ namespace dnpsoup {
   constexpr bool approxEqual(const T &v1, const T&v2, double eps)
   {
     return matrix::approxEqual<T>(v1, v2, eps);
+  }
+
+  template<typename T>
+  inline
+  matrix::Matrix<T> commute(const matrix::Matrix<T> &m1, const matrix::Matrix<T> &m2)
+  {
+    matrix::Matrix<T> res = m1 * m2;
+    res -= m2 * m1;
+    return res;
   }
 
   using std::sqrt;

@@ -1,12 +1,11 @@
 target_sources(dnpsoup_core
   #INTERFACE
   PRIVATE
-  "${CMAKE_CURRENT_LIST_DIR}/constants.h"
-  "${CMAKE_CURRENT_LIST_DIR}/common.h"
-  "${CMAKE_CURRENT_LIST_DIR}/errors.h"
-  "${CMAKE_CURRENT_LIST_DIR}/spin_physics_components/spin.h"
-  "${CMAKE_CURRENT_LIST_DIR}/spin_physics_components/hamiltonian/Shift.h"
-  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup.h"
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/constants.h"
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/common.h"
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/errors.h"
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/spin.h"
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/interactions/Shift.h"
   PUBLIC
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup.h"
 )

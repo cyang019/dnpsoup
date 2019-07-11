@@ -1,6 +1,6 @@
-#include "spin_physics_components/hamiltonian/Shift.h"
-#include "common.h"
-#include "errors.h"
+#include "dnpsoup_core/spin_physics_components/hamiltonian/interactions/Shift.h"
+#include "dnpsoup_core/common.h"
+#include "dnpsoup_core/errors.h"
 #include <cmath>
 #include <complex>
 
@@ -20,11 +20,11 @@ namespace dnpsoup {
   Shift::Shift(size_t n, size_t nbefore, size_t nafter)
     : m_n(n), m_nbefore(nbefore), m_nafter(nafter)
   {
-    m_ix = kroneckerProduct(kroneckerProduct(matrix::identity<cxdbl>(nbefore), spin<X>(n)),
+    m_ix = kron(kron(matrix::identity<cxdbl>(nbefore), spin<X>(n)),
                        matrix::identity<cxdbl>(nafter));
-    m_iy = kroneckerProduct(kroneckerProduct(matrix::identity<cxdbl>(nbefore), spin<Y>(n)),
+    m_iy = kron(kron(matrix::identity<cxdbl>(nbefore), spin<Y>(n)),
                        matrix::identity<cxdbl>(nafter));
-    m_iz = kroneckerProduct(kroneckerProduct(matrix::identity<cxdbl>(nbefore), spin<Z>(n)),
+    m_iz = kron(kron(matrix::identity<cxdbl>(nbefore), spin<Z>(n)),
                        matrix::identity<cxdbl>(nafter));
   }
 

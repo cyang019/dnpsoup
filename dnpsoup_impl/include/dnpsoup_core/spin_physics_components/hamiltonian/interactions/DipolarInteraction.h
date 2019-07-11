@@ -1,9 +1,9 @@
 #ifndef DNPSOUP_DIPOLARINTERACTION_H
 #define DNPSOUP_DIPOLARINTERACTION_H
 
-#include "constants.h"
-#include "common.h"
-#include "spin_physics_components/spin.h"
+#include "dnpsoup_core/constants.h"
+#include "dnpsoup_core/common.h"
+#include "dnpsoup_core/spin_physics_components/spin.h"
 #include <cmath>
 
 

@@ -1,8 +1,8 @@
 #ifndef DNPSOUP_IRREDUCIBLE_TENSOR_OP_H
 #define DNPSOUP_IRREDUCIBLE_TENSOR_OP_H
 
-#include "common.h"
-#include "spin_physics_components/spin.h"
+#include "dnpsoup_core/common.h"
+#include "dnpsoup_core/spin_physics_components/spin.h"
 
 namespace dnpsoup {
   /// single spin tensors
@@ -14,6 +14,6 @@ namespace dnpsoup {
   MatrixCxDbl tensor(size_t n1, size_t n2);
 } // namespace dnpsoup
 
-#include "spin_physics_components/hamiltonian/irreducible_tensor_op_impl.hpp"
+#include "dnpsoup_core/spin_physics_components/hamiltonian/irreducible_tensor_op_impl.hpp"
 
 #endif

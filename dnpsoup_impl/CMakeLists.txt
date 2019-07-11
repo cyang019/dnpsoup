@@ -25,9 +25,7 @@ message(STATUS "dnpsoup_core linked to matrix...")
 target_include_directories(dnpsoup_core
   PRIVATE
   "${PROJECT_SOURCE_DIR}/matrix/matrix_impl/include"
-  "${PROJECT_SOURCE_DIR}/dnpsoup_impl/include"
   PUBLIC
-  "${PROJECT_SOURCE_DIR}/matrix/matrix_impl/include"
   "${PROJECT_SOURCE_DIR}/dnpsoup_impl/include"
   )
 #target_include_directories(dnpsoup_core
