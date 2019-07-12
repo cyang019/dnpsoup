@@ -1,23 +1,24 @@
-#ifndef DNPSOUP_SHIFTZ_H
-#define DNPSOUP_SHIFTZ_H
+#ifndef DNPSOUP_CHEMICALSHIFTINTERACTION_H
+#define DNPSOUP_CHEMICALSHIFTINTERACTION_H
 
 #include "dnpsoup_core/constants.h"
 #include "dnpsoup_core/common.h"
 #include "dnpsoup_core/errors.h"
 #include "dnpsoup_core/spin_physics_components/spin.h"
+#include "dnpsoup_core/spin_physics_components/InteractionInterface.h"
 
 
 namespace dnpsoup {
   // abstract base class
-  class ShiftZ {
+  class ChemicalShiftInteraction : public InteractionInterface {
   public:
-    ShiftZ(size_t n);
-    ShiftZ(size_t n, size_t nbefore, size_t nafter);
+    ChemicalShiftInteraction(size_t n);
+    ChemicalShiftInteraction(size_t n, size_t nbefore, size_t nafter);
 
     // active rotation
-    virtual matrix::Matrix<cxdbl> genMatrix(double gyro, double bz, 
-        double sxx, double syy, double szz,
-        double beta, double gamma) const;
+    virtual matrix::Matrix<cxdbl> genMatrix(
+        const PropertyValueInterface *,
+        const Euler &) const override;
 
     /// @param sxx: in Hz
     /// @param syy: in Hz
