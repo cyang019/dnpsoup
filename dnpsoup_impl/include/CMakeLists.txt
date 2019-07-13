@@ -6,6 +6,8 @@ target_sources(dnpsoup_core
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/errors.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/spin.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/interactions/Shift.h"
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/interactions/ChemicalShiftInteraction.h"
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/properties/ChemicalShiftAnisotropyValue.h"
   PUBLIC
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup.h"
 )

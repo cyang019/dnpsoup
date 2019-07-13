@@ -9,8 +9,8 @@ namespace dnpsoup {
     PropertyValueInterface() {}
     virtual ~PropertyValueInterface() {}
 
-    std::vector<double> get() const = 0;
-    PropertyValueInterface& set(const std::vector<double> &) = 0;
+    virtual std::vector<double> get() const = 0;
+    virtual PropertyValueInterface& set(const std::vector<double> &) = 0;
   }; // class PropertyValueInterface
 } // namespace dnpsoup
 

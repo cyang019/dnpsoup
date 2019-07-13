@@ -5,7 +5,7 @@
 #include "dnpsoup_core/common.h"
 #include "dnpsoup_core/errors.h"
 #include "dnpsoup_core/spin_physics_components/spin.h"
-#include "dnpsoup_core/spin_physics_components/InteractionInterface.h"
+#include "dnpsoup_core/spin_physics_components/hamiltonian/InteractionInterface.h"
 
 
 namespace dnpsoup {
@@ -14,19 +14,12 @@ namespace dnpsoup {
   public:
     ChemicalShiftInteraction(size_t n);
     ChemicalShiftInteraction(size_t n, size_t nbefore, size_t nafter);
+    ~ChemicalShiftInteraction() {}
 
     // active rotation
     virtual matrix::Matrix<cxdbl> genMatrix(
         const PropertyValueInterface *,
         const Euler &) const override;
-
-    /// @param sxx: in Hz
-    /// @param syy: in Hz
-    /// @param szz: in Hz
-    /// @param beta: angle in rads
-    /// @param gamma: angle in rads
-    double calcCoeffZ(double sxx, double syy, double szz,
-        double beta, double gamma) const; 
 
     size_t dimension() const;
   private:

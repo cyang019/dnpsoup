@@ -5,13 +5,18 @@
 
 namespace dnpsoup {
   class NotImplementedError : public std::logic_error {
-    public:
-      using std::logic_error::logic_error;
+  public:
+    using std::logic_error::logic_error;
   };
 
   class IndexError : public std::logic_error {
-    public:
-      using std::logic_error::logic_error;
+  public:
+    using std::logic_error::logic_error;
+  };
+
+  class SizeMismatchError : public std::logic_error {
+  public:
+    using std::logic_error::logic_error;
   };
 } // namespace dnpsoup
 
