@@ -16,6 +16,8 @@ namespace dnpsoup {
     O17 =   17
   };
 
+  double getGyromagneticRatio(const SpinType &);
+
   enum class OperatorType : int {
     Identity =  0,
     X =         1,

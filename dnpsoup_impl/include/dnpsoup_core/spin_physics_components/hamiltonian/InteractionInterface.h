@@ -3,7 +3,7 @@
 
 #include "dnpsoup_core/common.h"
 #include "dnpsoup_core/spin_physics_components/rotation/Euler.h"
-#include "dnpsoup_core/spin_physics_components/hamiltonian/PropertyValueInterface.h"
+#include "dnpsoup_core/spin_physics_components/hamiltonian/PropertyValue.h"
 
 namespace dnpsoup {
   class InteractionInterface {
@@ -12,7 +12,7 @@ namespace dnpsoup {
     virtual ~InteractionInterface() {}
 
     virtual MatrixCxDbl genMatrix(
-        const PropertyValueInterface *, 
+        const PropertyValue *, 
         const Euler &) const = 0;
   };
 } // namespace dnpsoup

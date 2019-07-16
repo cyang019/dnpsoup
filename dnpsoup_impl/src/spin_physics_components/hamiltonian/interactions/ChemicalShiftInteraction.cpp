@@ -18,20 +18,14 @@ namespace dnpsoup {
   { m_iz = kron(kron(identity<cxdbl>(nbefore), spin<X>(n)), identity<cxdbl>(nafter)); }
 
   MatrixCxDbl ChemicalShiftInteraction::genMatrix(
-      const PropertyValueInterface *ptr_csa,
+      const PropertyValue *ptr_csa,
       const Euler &e) const
   {
-    std::vector<double> vals = ptr_csa->get();
-#ifndef NDEBUG
-    if(vals.size() != 5) {
-      throw SizeMismatchError("Need exactly 5 arguments for xx, yy, zz, gyro, bz.");
-    }
-#endif
-    double &sxx = vals[0];
-    double &syy = vals[1];
-    double &szz = vals[2];
-    double &gyro = vals[3];
-    double &bz = vals[4];
+    const double &sxx = ptr_csa->get("sxx");
+    const double &syy = ptr_csa->get("syy");
+    const double &szz = ptr_csa->get("szz");
+    const double &gyro = ptr_csa->get("gyromagnetic ratio");
+    const double &bz = ptr_csa->get("Bz");
 
     const double sb = sin(e.beta());
     const double cb = cos(e.beta());

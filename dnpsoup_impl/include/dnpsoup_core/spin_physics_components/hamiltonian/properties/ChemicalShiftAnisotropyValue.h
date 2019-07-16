@@ -1,7 +1,7 @@
 #ifndef DNPSOUP_CHEMICALSHIFTANISOTROPYVALUE_H
 #define DNPSOUP_CHEMICALSHIFTANISOTROPYVALUE_H
 
-#include "dnpsoup_core/spin_physics_components/hamiltonian/PropertyValueInterface.h"
+#include "dnpsoup_core/spin_physics_components/hamiltonian/PropertyValue.h"
 
 namespace dnpsoup {
   class ChemicalShiftAnisotropyValue : public PropertyValueInterface {

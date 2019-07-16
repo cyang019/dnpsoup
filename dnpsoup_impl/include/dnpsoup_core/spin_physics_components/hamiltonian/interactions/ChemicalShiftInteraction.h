@@ -18,7 +18,7 @@ namespace dnpsoup {
 
     // active rotation
     virtual matrix::Matrix<cxdbl> genMatrix(
-        const PropertyValueInterface *,
+        const PropertyValue *,
         const Euler &) const override;
 
     size_t dimension() const;
