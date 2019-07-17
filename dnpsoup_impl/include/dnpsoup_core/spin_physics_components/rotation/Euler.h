@@ -26,6 +26,7 @@ namespace dnpsoup {
       double m_beta;
       double m_gamma;
   };  // class Euler
+
 } // namespace dnpsoup
 
 #endif

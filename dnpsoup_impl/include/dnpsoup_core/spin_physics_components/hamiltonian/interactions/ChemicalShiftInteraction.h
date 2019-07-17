@@ -6,10 +6,12 @@
 #include "dnpsoup_core/errors.h"
 #include "dnpsoup_core/spin_physics_components/spin.h"
 #include "dnpsoup_core/spin_physics_components/hamiltonian/InteractionInterface.h"
+#include "dnpsoup_core/spin_physics_components/rotation/Euler.h"
+#include "dnpsoup_core/spin_physics_components/rotation/FrameType.h"
 
 
 namespace dnpsoup {
-  // abstract base class
+  template<FrameType T>
   class ChemicalShiftInteraction : public InteractionInterface {
   public:
     ChemicalShiftInteraction(size_t n);
@@ -30,6 +32,8 @@ namespace dnpsoup {
     size_t m_nafter;
   };  // class Shift
 }   // namespace dnpsoup
+
+#include "dnpsoup_core/spin_physics_components/hamiltonian/interactions/ChemicalShiftInteractionImpl.hpp"
 
 #endif
 

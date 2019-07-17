@@ -6,19 +6,12 @@
 #include "dnpsoup_core/errors.h"
 #include "dnpsoup_core/spin_physics_components/spin.h"
 #include "dnpsoup_core/spin_physics_components/hamiltonian/InteractionInterface.h"
+#include "dnpsoup_core/spin_physics_components/rotation/FrameType.h"
+#include <type_traits>
 
 
 namespace dnpsoup {
-  // R: rotating frame
-  // L: lab frame
-  enum class DipoleType : int {
-    RR = 0,
-    RL = 1,
-    LR = 2,
-    LL = 3,
-  };
-
-  template<DipoleType T>
+  template<FrameType T1, FrameType T2>
   class DipolarInteraction : public InteractionInterface {
   public:
     DipolarInteraction(size_t n1, size_t n2);
@@ -32,7 +25,7 @@ namespace dnpsoup {
 
     size_t dimension() const;
   private:
-    /// A, B, C, D, E, F alphabets
+    /// A, B, C, D, E, F alphabets tensor correspondence
     MatrixCxDbl m_a2n2;
     MatrixCxDbl m_a2n1;
     MatrixCxDbl m_a20;
@@ -46,6 +39,8 @@ namespace dnpsoup {
     size_t m_nafter;
   };  // class Shift
 }   // namespace dnpsoup
+
+#include "dnpsoup_core/spin_physics_components/hamiltonian/DipolarInteractionImpl.hpp"
 
 #endif
 

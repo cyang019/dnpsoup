@@ -1,4 +1,5 @@
 #include "dnpsoup_core/spin_physics_components/hamiltonian/PropertyValue.h"
+#include "dnpsoup_core/constants.h"
 #include <sstream>
 
 using namespace std;
@@ -7,32 +8,20 @@ namespace dnpsoup {
   std::ostream& operator<<(std::ostream &os, const ValueName &vname);
   {
     switch(vname){
-      case ValueName::gyro:
-        os << "gyro";
+      case ValueName::iso:
+        os << "iso";
         break;
-      case ValueName::bz:
-        os << "bz";
+      case ValueName::xx:
+        os << "xx";
         break;
-      case ValueName::sxx:
-        os << "sxx";
+      case ValueName::yy:
+        os << "yy";
         break;
-      case ValueName::syy:
-        os << "syy";
+      case ValueName::zz:
+        os << "zz";
         break;
-      case ValueName::szz:
-        os << "szz";
-        break;
-      case ValueName::dipole:
-        os << "dipole";
-        break;
-      case ValueName::scalar:
-        os << "scalar";
-        break;
-      case ValueName::hyperfine:
-        os << "hyperfine";
-        break;
-      case ValueName::pseudohyperfine:
-        os << "pseudohyperfine";
+      case ValueName::offset:
+        os << "offset";
         break;
       default:
         break;
@@ -42,17 +31,6 @@ namespace dnpsoup {
 
   PropertyValue::PropertyValue(const PropertyType &pt)
   {
-    switch(pt) {
-      case PropertyType::Csa:
-        m_values[ValueName::sxx] = 0;
-        m_values[ValueName::syy] = 0;
-        m_values[ValueName::szz] = 0;
-        m_values[ValueName::gyro] = 0;
-        m_values[ValueName::bz] = 0;
-        break;
-      default:
-        break;
-    }
   }
   
   double PropertyValue::get(const ValueName &name) const
@@ -62,17 +40,33 @@ namespace dnpsoup {
   
   PropertyValue& PropertyValue::set(const ValueName &name, double value)
   {
-    if(m_values.find(name) == m_values.end()){
-      std::ostringstream ss_names;
-
-      for(auto kv : m_values){
-        ss_names << kv.first << " ";
-      }
-      string err_str = name + " not found in keys: " + ss_names.str();
-      throw PropertyNameNotFound(err_str);
-    } else {
-      m_values[name] = value;
-    }
+    m_values[name] = value;
     return *this;
+  }
+
+  PropertyValue genCsaValue(double gyro, double bz, double sxx, double syy, double szz)
+  {
+    double freq = gyro * bz;
+    PropertyValue p;
+    p.set(ValueName::xx, freq * sxx);
+    p.set(ValueName::yy, freq * syy);
+    p.set(ValueName::zz, freq * szz);
+    return p;
+  }
+
+  // distances are in Anstrom
+  PropertyValue genDipoleValue(double gyro1, double gyro2, double distance)
+  {
+    double val = 1.0e-7 * gyro1 * gyro2 * dnpsoup::h / (distance * distance * distance) * 1.0e30;
+    PropertyValue p;
+    p.set(ValueName::iso, val);
+    return p;
+  }
+
+  PropertyValue genScalarValue(double val)
+  {
+    PropertyValue p;
+    p.set(ValueName::iso, val);
+    return p;
   }
 } // namespace dnpsoup
