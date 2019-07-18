@@ -5,7 +5,7 @@
 using namespace std;
 
 namespace dnpsoup {
-  std::ostream& operator<<(std::ostream &os, const ValueName &vname);
+  std::ostream& operator<<(std::ostream &os, const ValueName &vname)
   {
     switch(vname){
       case ValueName::iso:
@@ -25,11 +25,11 @@ namespace dnpsoup {
         break;
       default:
         break;
-      return os;
     }
+    return os;
   }
 
-  PropertyValue::PropertyValue(const PropertyType &pt)
+  PropertyValue::PropertyValue()
   {
   }
   

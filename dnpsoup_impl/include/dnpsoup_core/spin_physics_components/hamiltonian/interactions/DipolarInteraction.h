@@ -11,11 +11,16 @@
 
 
 namespace dnpsoup {
-  template<FrameType T1, FrameType T2>
+  // enable only if T1, T2 are frame types
+  template<typename T1, typename T2>
+  template<typename U1=T1, typename U2=T2,
+           std::enable_if_t<is_frame_type<U1>::value, int> = 0,
+           std::enable_if_t<is_frame_type<U2>::value, int> = 0>
   class DipolarInteraction : public InteractionInterface {
   public:
-    DipolarInteraction(size_t n1, size_t n2);
-    DipolarInteraction(size_t n1, size_t n2, size_t nbefore, size_t nbetween, size_t nafter);
+    DipolarInteraction(double g1, double g2, size_t n1, size_t n2);
+    DipolarInteraction(double g1, double g2, size_t n1, size_t n2, 
+        size_t nbefore, size_t nbetween, size_t nafter);
     ~DipolarInteraction() {}
 
     // active rotation
@@ -37,6 +42,9 @@ namespace dnpsoup {
     size_t m_nbefore;
     size_t m_nbetween;
     size_t m_nafter;
+
+    double m_gamma1;
+    double m_gamma2;
   };  // class Shift
 }   // namespace dnpsoup
 

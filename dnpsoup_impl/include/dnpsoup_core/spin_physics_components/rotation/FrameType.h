@@ -1,12 +1,15 @@
 #ifndef DNPSOUP_FRAMETYPE_H
 #define DNPSOUP_FRAMETYPE_H
 
+#include <type_traits>
+
 namespace dnpsoup {
-  /// rotated frame or lab frame
-  enum class FrameType : int {
-    Lab = 0,
-    Rotate = 1
-  };
+  class RotatingFrame : public FrameType {};
+  class LabFrame : public FrameType {};
+
+  template<typename T> struct is_frame_type : std::false_type {};
+  template<typename T> struct is_frame_type<RotatingFrame> : std::true_type {};
+  template<typename T> struct is_frame_type<LabFrame> : std::true_type {};
 } // namespace dnpsoup
 
 #endif

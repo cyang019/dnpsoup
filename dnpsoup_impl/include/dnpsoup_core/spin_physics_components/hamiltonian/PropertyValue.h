@@ -30,7 +30,7 @@ namespace dnpsoup {
   // values are in Hz
   class PropertyValue {
   public:
-    PropertyValue(const PropertyType &); 
+    PropertyValue();
     ~PropertyValue() {}
 
     double get(const ValueName &name) const;

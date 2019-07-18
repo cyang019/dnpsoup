@@ -11,11 +11,13 @@
 
 
 namespace dnpsoup {
-  template<FrameType T>
+  template<typename T>
+  template<typename U=T,
+           std::enable_if_t<is_frame_type<U>::value, int> = 0>
   class ChemicalShiftInteraction : public InteractionInterface {
   public:
-    ChemicalShiftInteraction(size_t n);
-    ChemicalShiftInteraction(size_t n, size_t nbefore, size_t nafter);
+    ChemicalShiftInteraction(double gamma, size_t n);
+    ChemicalShiftInteraction(double gamma, size_t n, size_t nbefore, size_t nafter);
     ~ChemicalShiftInteraction() {}
 
     // active rotation
@@ -30,6 +32,8 @@ namespace dnpsoup {
     size_t m_n;
     size_t m_nbefore;
     size_t m_nafter;
+
+    double m_gamma;
   };  // class Shift
 }   // namespace dnpsoup
 
