@@ -5,7 +5,7 @@ target_sources(dnpsoup_core
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/common.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/errors.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/spin.h"
-  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/PropertyValue.h"
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/Property.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/interactions/ChemicalShiftInteraction.h"
   PUBLIC
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup.h"

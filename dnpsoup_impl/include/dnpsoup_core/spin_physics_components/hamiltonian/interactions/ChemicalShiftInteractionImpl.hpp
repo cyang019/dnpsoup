@@ -34,7 +34,7 @@ namespace dnpsoup {
   template<typename U,
            std::enable_if_t<is_frame_type<U>::value, int>>
   MatrixCxDbl ChemicalShiftInteraction<T>::genMatrix(
-      const PropertyValue *ptr_csa,
+      const Property *ptr_csa,
       const Euler &e) const
   {
     const double szz = ptr_csa->get(ValueName::zz);
