@@ -11,12 +11,15 @@
 
 
 namespace dnpsoup {
-  // enable only if T1, T2 are frame types
+  template<typename T1, typename T2, typename Enable1 = void, typename Enable2 = void>
+  class DipolarInteraction {};
+
+  /// enable only if T1, T2 are frame types (i.e. RotatingFrame or LabFrame)
   template<typename T1, typename T2>
-  template<typename U1=T1, typename U2=T2,
-           std::enable_if_t<is_frame_type<U1>::value, int> = 0,
-           std::enable_if_t<is_frame_type<U2>::value, int> = 0>
-  class DipolarInteraction : public InteractionInterface {
+  class DipolarInteraction<T1, T2, 
+        typename std::enable_if<is_frame_type<T1>::value>::type, 
+        typename std::enable_if<is_frame_type<T2>::value>::type>
+  : public InteractionInterface {
   public:
     DipolarInteraction(double g1, double g2, size_t n1, size_t n2);
     DipolarInteraction(double g1, double g2, size_t n1, size_t n2, 
@@ -24,7 +27,7 @@ namespace dnpsoup {
     ~DipolarInteraction() {}
 
     // active rotation
-    virtual matrix::Matrix<cxdbl> genMatrix(
+    MatrixCxDbl genMatrix(
         const Property *,
         const Euler &) const override;
 
@@ -48,7 +51,7 @@ namespace dnpsoup {
   };  // class Shift
 }   // namespace dnpsoup
 
-#include "dnpsoup_core/spin_physics_components/hamiltonian/DipolarInteractionImpl.hpp"
+#include "dnpsoup_core/spin_physics_components/hamiltonian/interactions/DipolarInteractionImpl.hpp"
 
 #endif
 

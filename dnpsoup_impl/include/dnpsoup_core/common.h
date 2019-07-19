@@ -10,6 +10,7 @@ namespace dnpsoup {
   using MatrixDbl = matrix::Matrix<double>;
 
   using matrix::allclose;
+  using matrix::eps;
 
   template<typename T>
   constexpr matrix::Matrix<T> exp(const matrix::Matrix<T> &mat)

@@ -4,12 +4,12 @@
 #include <type_traits>
 
 namespace dnpsoup {
-  class RotatingFrame : public FrameType {};
-  class LabFrame : public FrameType {};
+  class RotatingFrame {};
+  class LabFrame {};
 
   template<typename T> struct is_frame_type : std::false_type {};
-  template<typename T> struct is_frame_type<RotatingFrame> : std::true_type {};
-  template<typename T> struct is_frame_type<LabFrame> : std::true_type {};
+  template<> struct is_frame_type<RotatingFrame> : std::true_type {};
+  template<> struct is_frame_type<LabFrame> : std::true_type {};
 } // namespace dnpsoup
 
 #endif

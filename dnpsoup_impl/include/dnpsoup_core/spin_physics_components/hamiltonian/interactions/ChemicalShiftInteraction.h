@@ -11,23 +11,28 @@
 
 
 namespace dnpsoup {
+  template<typename T, typename Enable = void>
+  class ChemicalShiftInteraction {};
+
+  /// enable only if T is a frame type (i.e. RotatingFrame or LabFrame)
   template<typename T>
-  template<typename U=T,
-           std::enable_if_t<is_frame_type<U>::value, int> = 0>
-  class ChemicalShiftInteraction : public InteractionInterface {
+  class ChemicalShiftInteraction<T, typename std::enable_if<is_frame_type<T>::value>::type>
+  : public InteractionInterface {
   public:
     ChemicalShiftInteraction(double gamma, size_t n);
     ChemicalShiftInteraction(double gamma, size_t n, size_t nbefore, size_t nafter);
     ~ChemicalShiftInteraction() {}
 
     // active rotation
-    virtual matrix::Matrix<cxdbl> genMatrix(
+    matrix::Matrix<cxdbl> genMatrix(
         const Property *,
         const Euler &) const override;
 
     size_t dimension() const;
   private:
-    matrix::Matrix<cxdbl> m_iz;
+    matrix::Matrix<cxdbl> m_x;
+    matrix::Matrix<cxdbl> m_y;
+    matrix::Matrix<cxdbl> m_z;
 
     size_t m_n;
     size_t m_nbefore;
