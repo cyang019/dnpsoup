@@ -1,9 +1,10 @@
 namespace dnpsoup {
 
   template<typename T>
-  ChemicalShiftInteraction<T, typename std::enable_if<is_frame_type<T>::value>::type>::ChemicalShiftInteraction(double gamma, size_t n)
+  ChemicalShiftInteraction<T>::ChemicalShiftInteraction(double gamma, size_t n)
     : InteractionInterface(), m_gamma(gamma), m_n(n), m_nbefore(0), m_nafter(0)
   { 
+    static_assert(is_frame_type<T>::value, "T needs to be either LabFrame or RotatingFrame");
     if constexpr(std::is_same<T, LabFrame>::value){
       m_x = spin<X>(m_n);
       m_y = spin<Y>(m_n);
@@ -14,9 +15,10 @@ namespace dnpsoup {
   }
 
   template<typename T>
-  ChemicalShiftInteraction<T, typename std::enable_if<is_frame_type<T>::value>::type>::ChemicalShiftInteraction(double gamma, size_t n, size_t nbefore, size_t nafter)
+  ChemicalShiftInteraction<T>::ChemicalShiftInteraction(double gamma, size_t n, size_t nbefore, size_t nafter)
     : InteractionInterface(), m_gamma(gamma), m_n(n), m_nbefore(nbefore), m_nafter(nafter)
   { 
+    static_assert(is_frame_type<T>::value, "T needs to be either LabFrame or RotatingFrame");
     if constexpr(std::is_same<T, LabFrame>::value){
       m_x = kron(kron(identity<cxdbl>(nbefore), spin<X>(n)), identity<cxdbl>(nafter));
       m_y = kron(kron(identity<cxdbl>(nbefore), spin<Y>(n)), identity<cxdbl>(nafter));
@@ -27,7 +29,7 @@ namespace dnpsoup {
   }
 
   template<typename T>
-  MatrixCxDbl ChemicalShiftInteraction<T, typename std::enable_if<is_frame_type<T>::value>::type>::genMatrix(
+  MatrixCxDbl ChemicalShiftInteraction<T>::genMatrix(
       const Property *ptr_csa,
       const Euler &e) const
   {
@@ -59,7 +61,7 @@ namespace dnpsoup {
   }
 
   template<typename T>
-  size_t ChemicalShiftInteraction<T, typename std::enable_if<is_frame_type<T>::value>::type>::dimension() const
+  size_t ChemicalShiftInteraction<T>::dimension() const
   { if (m_n == 0 && m_nbefore == 0 && m_nafter == 0) 
       return 0;
     size_t dim_before = m_nbefore > 0 ? m_nbefore : 1;

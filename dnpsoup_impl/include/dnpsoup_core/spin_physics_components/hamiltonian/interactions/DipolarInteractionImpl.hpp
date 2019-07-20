@@ -1,11 +1,12 @@
 namespace dnpsoup {
   template<typename T1, typename T2>
-  DipolarInteraction<T1, T2, 
-    typename std::enable_if<is_frame_type<T1>::value>::type,
-    typename std::enable_if<is_frame_type<T2>::value>::type>::DipolarInteraction(double g1, double g2, size_t n1, size_t n2)
-    : m_gamma1(g1), m_gamma2(g2), m_n1(n1), m_n2(n2),
-    m_nbefore(0), m_nbetween(0), m_nafter(0)
+  DipolarInteraction<T1, T2>::DipolarInteraction(double g1, double g2, size_t n1, size_t n2)
+    : m_n1(n1), m_n2(n2),  
+    m_nbefore(0), m_nbetween(0), m_nafter(0),
+    m_gamma1(g1), m_gamma2(g2)
   {
+    static_assert(is_frame_type<T1>::value && is_frame_type<T2>::value,
+        "T1 and T2 need to be either LabFrame or RotatingFrame respectively.");
     if constexpr(std::is_same<T1, LabFrame>::value
         && std::is_same<T2, LabFrame>::value) {
       m_a20 = kron(spin<Z>(n1), spin<Z>(n2))
@@ -45,13 +46,14 @@ namespace dnpsoup {
   }
 
   template<typename T1, typename T2>
-  DipolarInteraction<T1, T2,
-    typename std::enable_if<is_frame_type<T1>::value>::type,
-    typename std::enable_if<is_frame_type<T2>::value>::type>::DipolarInteraction(double g1, double g2, 
+  DipolarInteraction<T1, T2>::DipolarInteraction(double g1, double g2, 
       size_t n1, size_t n2, size_t nbefore, size_t nbetween, size_t nafter)
-    : m_gamma1(g1), m_gamma2(g2), m_n1(n1), m_n2(n2),
-    m_nbefore(nbefore), m_nbetween(nbetween), m_nafter(nafter)
+    : m_n1(n1), m_n2(n2),  
+    m_nbefore(nbefore), m_nbetween(nbetween), m_nafter(nafter),
+    m_gamma1(g1), m_gamma2(g2)
   {
+    static_assert(is_frame_type<T1>::value && is_frame_type<T2>::value,
+        "T1 and T2 need to be either LabFrame or RotatingFrame respectively.");
     // 1. disregard nbefore & nafter to do arithmetics
     // 2. expand the matrix
     const MatrixCxDbl eye_1 = identity<cxdbl>(nbefore);
@@ -116,23 +118,33 @@ namespace dnpsoup {
         m_a2n2 = MatrixCxDbl();
       }
     }
+  }
 
-    template<typename T1, typename T2>
-    MatrixCxDbl DipolarInteraction<T1, T2,
-                typename std::enable_if<is_frame_type<T1>::value>::type,
-                typename std::enable_if<is_frame_type<T2>::value>::type>::genMatrix(
-        const Property *ptr_p, const Euler &e) const
-    {
-      MatrixCxDbl res;
-      if constexpr(std::is_same<T1, LabFrame>::value
-          && std::is_same<T2, LabFrame>::value){
-      } else if constexpr(std::is_same<T1, LabFrame>::value
-          && std::is_same<T2, RotatingFrame>::value){
-      } else if constexpr(std::is_same<T1, RotatingFrame>::value
-          && std::is_same<T2, LabFrame>::value) {
-      } else {  // Rotating Frame for Both
-      }
-      return res;
+  template<typename T1, typename T2>
+  MatrixCxDbl DipolarInteraction<T1, T2>::genMatrix(
+      const Property *ptr_p, const Euler &e) const
+  {
+    const double d = ptr_p->get(ValueName::d);
+    if constexpr(std::is_same<T1, LabFrame>::value
+        && std::is_same<T2, LabFrame>::value){
+      return d * (m_a20 * calcF20(e.beta()) 
+          + m_a21 * calcF21(e.alpha(), e.beta())
+          + m_a2n1 * calcF2n1(e.alpha(), e.beta())
+          + m_a22 * calcF22(e.alpha(), e.beta())
+          + m_a2n2 * calcF2n2(e.alpha(), e.beta()));
+    } else if constexpr(std::is_same<T1, LabFrame>::value
+        && std::is_same<T2, RotatingFrame>::value){
+      return d * (m_a20 * calcF20(e.beta()) 
+          + m_a21 * calcF21(e.alpha(), e.beta())
+          + m_a2n1 * calcF2n1(e.alpha(), e.beta()));
+    } else if constexpr(std::is_same<T1, RotatingFrame>::value
+        && std::is_same<T2, LabFrame>::value) {
+      return d * (m_a20 * calcF20(e.beta()) 
+          + m_a21 * calcF21(e.alpha(), e.beta())
+          + m_a2n1 * calcF2n1(e.alpha(), e.beta()));
+    } else {  // Rotating Frame for Both
+      return d * (m_a20 * calcF20(e.beta()));
     }
+  }
 } // namespace dnpsoup
 

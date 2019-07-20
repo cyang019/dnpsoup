@@ -11,14 +11,9 @@
 
 
 namespace dnpsoup {
-  template<typename T1, typename T2, typename Enable1 = void, typename Enable2 = void>
-  class DipolarInteraction {};
-
   /// enable only if T1, T2 are frame types (i.e. RotatingFrame or LabFrame)
   template<typename T1, typename T2>
-  class DipolarInteraction<T1, T2, 
-        typename std::enable_if<is_frame_type<T1>::value>::type, 
-        typename std::enable_if<is_frame_type<T2>::value>::type>
+  class DipolarInteraction
   : public InteractionInterface {
   public:
     DipolarInteraction(double g1, double g2, size_t n1, size_t n2);
@@ -48,7 +43,52 @@ namespace dnpsoup {
 
     double m_gamma1;
     double m_gamma2;
-  };  // class Shift
+  };  // class DipolarInteraction
+
+  // Principles of Nuclear Magnetic Resonance in One and Two Dimensions Page 47
+  double calcF20(double theta);
+  cxdbl calcF21(double phi, double theta);
+  cxdbl calcF2n1(double phi, double theta);
+  cxdbl calcF22(double phi, double theta);
+  cxdbl calcF2n2(double phi, double theta);
+
+  inline double calcF20(double theta)
+  {
+    const double ct = cos(theta);
+    return 1.0 - 3.0 * ct * ct;
+  }
+
+  inline cxdbl calcF21(double phi, double theta)
+  {
+    const double s2t = sin(2.0 * theta);
+    const double sp = sin(phi);
+    const double cp = cos(phi);
+    return 0.5 * s2t * (cp - cxdbl(0,1) * sp);
+  }
+
+  inline cxdbl calcF2n1(double phi, double theta)
+  {
+    const double s2t = sin(2.0 * theta);
+    const double sp = sin(phi);
+    const double cp = cos(phi);
+    return 0.5 * s2t * (cp + cxdbl(0,1) * sp);
+  }
+
+  inline cxdbl calcF22(double phi, double theta)
+  {
+    const double st = sin(theta);
+    const double s2p = sin(2.0*phi);
+    const double c2p = cos(2.0*phi);
+    return st * st * (c2p - cxdbl(0,1) * s2p);
+  }
+
+  inline cxdbl calcF2n2(double phi, double theta)
+  {
+    const double st = sin(theta);
+    const double s2p = sin(2.0*phi);
+    const double c2p = cos(2.0*phi);
+    return st * st * (c2p + cxdbl(0,1) * s2p);
+  }
 }   // namespace dnpsoup
 
 #include "dnpsoup_core/spin_physics_components/hamiltonian/interactions/DipolarInteractionImpl.hpp"

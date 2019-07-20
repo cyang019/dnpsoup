@@ -11,12 +11,9 @@
 
 
 namespace dnpsoup {
-  template<typename T, typename Enable = void>
-  class ChemicalShiftInteraction {};
-
   /// enable only if T is a frame type (i.e. RotatingFrame or LabFrame)
   template<typename T>
-  class ChemicalShiftInteraction<T, typename std::enable_if<is_frame_type<T>::value>::type>
+  class ChemicalShiftInteraction
   : public InteractionInterface {
   public:
     ChemicalShiftInteraction(double gamma, size_t n);
@@ -39,7 +36,7 @@ namespace dnpsoup {
     size_t m_nafter;
 
     double m_gamma;
-  };  // class Shift
+  };  // class ChemicalShiftInteraction
 }   // namespace dnpsoup
 
 #include "dnpsoup_core/spin_physics_components/hamiltonian/interactions/ChemicalShiftInteractionImpl.hpp"

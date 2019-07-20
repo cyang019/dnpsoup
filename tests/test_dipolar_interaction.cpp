@@ -10,8 +10,8 @@ namespace {
     using cxdbl = dnpsoup::cxdbl;
 
     TEST(TestDnpsoup, DipolarInteraction){
-      auto dipoleRR = DipolarInteraction<RotatingFrame, RotatingFrame>(1.0, 1,0, 2, 2);
-      auto dipoleRL = DipolarInteraction<RotatingFrame, LabFrame>(1.0, 1,0, 2, 2);
+      auto dipoleRR = dnpsoup::DipolarInteraction<dnpsoup::RotatingFrame, dnpsoup::RotatingFrame>(1.0, 1.0, 2, 2);
+      auto dipoleRL = dnpsoup::DipolarInteraction<dnpsoup::RotatingFrame, dnpsoup::LabFrame>(1.0, 1.0, 2, 2);
     }
 } // namespace
 
