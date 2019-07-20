@@ -11,7 +11,7 @@
 namespace dnpsoup {
   enum class ValueName : int {
     scalar = 0,  // for scalar
-    d  = 1,
+    distance  = 1,
     xx = 10,  // for anisotropy
     yy = 11,
     zz = 12,
@@ -39,7 +39,7 @@ namespace dnpsoup {
 
   /// @param gyro1, gyro2: gyromagnetic ratio of the two interacting spins.
   /// @param distance: in Anstrom
-  Property genDipoleProperty(double gyro1, double gyro2, double distance);
+  Property genDipoleProperty(double distance);
 
   /// @param val: value of the interaction in Hz.
   Property genScalarProperty(double val);

@@ -20,8 +20,11 @@ namespace dnpsoup {
       case ValueName::zz:
         os << "zz";
         break;
-      case ValueName::d:
-        os << "d";
+      case ValueName::distance:
+        os << "distance";
+        break;
+      case ValueName::bz:
+        os << "bz";
         break;
       default:
         break;
@@ -55,11 +58,10 @@ namespace dnpsoup {
   }
 
   // distances are in Anstrom
-  Property genDipoleProperty(double gyro1, double gyro2, double distance)
+  Property genDipoleProperty(double distance)
   {
-    double val = 1.0e-7 * gyro1 * gyro2 * dnpsoup::h / (distance * distance * distance) * 1.0e30;
     Property p;
-    p.set(ValueName::d, val);
+    p.set(ValueName::distance, distance);
     return p;
   }
 

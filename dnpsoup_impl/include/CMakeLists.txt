@@ -7,6 +7,8 @@ target_sources(dnpsoup_core
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/spin.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/Property.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/interactions/ChemicalShiftInteraction.h"
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/interactions/DipolarInteraction.h"
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/interactions/ScalarInteraction.h"
   PUBLIC
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup.h"
 )

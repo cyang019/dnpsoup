@@ -12,7 +12,7 @@ namespace dnpsoup {
     virtual ~InteractionInterface() {}
 
     virtual MatrixCxDbl genMatrix(
-        const Property *, 
+        const Property &, 
         const Euler &) const = 0;
   };
 } // namespace dnpsoup

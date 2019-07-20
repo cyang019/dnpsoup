@@ -122,9 +122,10 @@ namespace dnpsoup {
 
   template<typename T1, typename T2>
   MatrixCxDbl DipolarInteraction<T1, T2>::genMatrix(
-      const Property *ptr_p, const Euler &e) const
+      const Property &p, const Euler &e) const
   {
-    const double d = ptr_p->get(ValueName::d);
+    const double distance = p.get(ValueName::distance);
+    const double d = 1.0e-7 * m_gamma1 * m_gamma2 * dnpsoup::h / (distance * distance * distance) * 1.0e30;
     if constexpr(std::is_same<T1, LabFrame>::value
         && std::is_same<T2, LabFrame>::value){
       return d * (m_a20 * calcF20(e.beta()) 

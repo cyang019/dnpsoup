@@ -30,12 +30,12 @@ namespace dnpsoup {
 
   template<typename T>
   MatrixCxDbl ChemicalShiftInteraction<T>::genMatrix(
-      const Property *ptr_csa,
+      const Property &csa,
       const Euler &e) const
   {
-    const double szz = ptr_csa->get(ValueName::zz);
-    const double sxx = ptr_csa->get(ValueName::xx);
-    const double syy = ptr_csa->get(ValueName::yy);
+    const double szz = csa.get(ValueName::zz);
+    const double sxx = csa.get(ValueName::xx);
+    const double syy = csa.get(ValueName::yy);
 
     const double sb = sin(e.beta());
     const double cb = cos(e.beta());
@@ -49,7 +49,7 @@ namespace dnpsoup {
       const double s2b = sin(2.0*e.beta());
       const double s2g = sin(2.0*e.gamma());
 
-      const double bz = ptr_csa->get(ValueName::bz);
+      const double bz = csa.get(ValueName::bz);
       double coeff1 = (sxx - syy) * 0.5 * sa * sb * s2g + ca * s2b * (szz - sxx * (cg * cg) -syy * sg * sg);
       double coeff2 = (syy - sxx) * 0.5 * ca * sb * s2g + sa * s2b * (szz - sxx * (cg * cg) -syy * sg * sg);
       MatrixCxDbl res = m_gamma * bz * m_z + coeff1 * m_x + coeff2 * m_y + coeff3 * m_z;

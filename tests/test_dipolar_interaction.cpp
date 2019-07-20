@@ -10,8 +10,17 @@ namespace {
     using cxdbl = dnpsoup::cxdbl;
 
     TEST(TestDnpsoup, DipolarInteraction){
-      auto dipoleRR = dnpsoup::DipolarInteraction<dnpsoup::RotatingFrame, dnpsoup::RotatingFrame>(1.0, 1.0, 2, 2);
-      auto dipoleRL = dnpsoup::DipolarInteraction<dnpsoup::RotatingFrame, dnpsoup::LabFrame>(1.0, 1.0, 2, 2);
+      auto dipoleRR = dnpsoup::DipolarInteraction<dnpsoup::RotatingFrame, dnpsoup::RotatingFrame>(
+          dnpsoup::gamma_H1, dnpsoup::gamma_H1, 2, 2);
+      auto dipoleRL = dnpsoup::DipolarInteraction<dnpsoup::RotatingFrame, dnpsoup::LabFrame>(
+          dnpsoup::gamma_H1, dnpsoup::gamma_H1, 2, 2);
+
+      auto p = dnpsoup::genDipoleProperty(1.0);
+      auto e = dnpsoup::Euler(0,0,0);
+      auto matRR = dipoleRR.genMatrix(p, e);
+      std::cout << "matRR:\n" << matRR << std::endl;
+      auto matRL = dipoleRL.genMatrix(p, e);
+      std::cout << "matRL:\n" << matRL << std::endl;
     }
 } // namespace
 
