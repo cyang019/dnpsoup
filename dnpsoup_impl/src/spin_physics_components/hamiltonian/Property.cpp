@@ -11,6 +11,12 @@ namespace dnpsoup {
       case ValueName::scalar:
         os << "scalar";
         break;
+      case ValueName::distance:
+        os << "distance";
+        break;
+      case ValueName::offset:
+        os << "offset";
+        break;
       case ValueName::xx:
         os << "xx";
         break;
@@ -20,11 +26,14 @@ namespace dnpsoup {
       case ValueName::zz:
         os << "zz";
         break;
-      case ValueName::distance:
-        os << "distance";
-        break;
       case ValueName::bz:
         os << "bz";
+        break;
+      case ValueName::freq:
+        os << "freq";
+        break;
+      case ValueName::phase:
+        os << "phase";
         break;
       default:
         break;

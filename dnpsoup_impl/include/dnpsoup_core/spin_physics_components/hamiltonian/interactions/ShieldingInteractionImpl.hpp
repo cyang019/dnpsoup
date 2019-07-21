@@ -1,8 +1,8 @@
 namespace dnpsoup {
 
   template<typename T>
-  ChemicalShiftInteraction<T>::ChemicalShiftInteraction(double gamma, size_t n)
-    : InteractionInterface(), m_gamma(gamma), m_n(n), m_nbefore(0), m_nafter(0)
+  ShieldingInteraction<T>::ShieldingInteraction(double beta, size_t n)
+    : InteractionInterface(), m_beta(beta), m_n(n), m_nbefore(0), m_nafter(0)
   { 
     static_assert(is_frame_type<T>::value, "T needs to be either LabFrame or RotatingFrame");
     if constexpr(std::is_same<T, LabFrame>::value){
@@ -15,8 +15,8 @@ namespace dnpsoup {
   }
 
   template<typename T>
-  ChemicalShiftInteraction<T>::ChemicalShiftInteraction(double gamma, size_t n, size_t nbefore, size_t nafter)
-    : InteractionInterface(), m_gamma(gamma), m_n(n), m_nbefore(nbefore), m_nafter(nafter)
+  ShieldingInteraction<T>::ShieldingInteraction(double beta, size_t n, size_t nbefore, size_t nafter)
+    : InteractionInterface(), m_beta(beta), m_n(n), m_nbefore(nbefore), m_nafter(nafter)
   { 
     static_assert(is_frame_type<T>::value, "T needs to be either LabFrame or RotatingFrame");
     if constexpr(std::is_same<T, LabFrame>::value){
@@ -29,19 +29,20 @@ namespace dnpsoup {
   }
 
   template<typename T>
-  MatrixCxDbl ChemicalShiftInteraction<T>::genMatrix(
-      const Property &csa,
+  MatrixCxDbl ShieldingInteraction<T>::genMatrix(
+      const Property &g,
       const Euler &e) const
   {
-    const double szz = csa.get(ValueName::zz);
-    const double sxx = csa.get(ValueName::xx);
-    const double syy = csa.get(ValueName::yy);
+    const double gzz = csa.get(ValueName::zz);
+    const double gxx = csa.get(ValueName::xx);
+    const double gyy = csa.get(ValueName::yy);
+    const double bz = csa.get(ValueName::bz);
 
     const double sb = sin(e.beta());
     const double cb = cos(e.beta());
     const double sg = sin(e.gamma());
     const double cg = cos(e.gamma());
-    double coeff3 = szz * cb * cb + sb * sb * (sxx * cg * cg + syy * sg * sg);
+    double coeff3 = gzz * cb * cb + sb * sb * (gxx * cg * cg + gyy * sg * sg);
 
     if constexpr(std::is_same<T, LabFrame>::value){
       const double sa = sin(e.alpha());
@@ -49,19 +50,18 @@ namespace dnpsoup {
       const double s2b = sin(2.0*e.beta());
       const double s2g = sin(2.0*e.gamma());
 
-      const double bz = csa.get(ValueName::bz);
-      double coeff1 = (sxx - syy) * 0.5 * sa * sb * s2g + ca * s2b * (szz - sxx * (cg * cg) -syy * sg * sg);
-      double coeff2 = (syy - sxx) * 0.5 * ca * sb * s2g + sa * s2b * (szz - sxx * (cg * cg) -syy * sg * sg);
-      MatrixCxDbl res = - m_gamma * bz * m_z + coeff1 * m_x + coeff2 * m_y + coeff3 * m_z;
-      return 2 * pi * res;
+      double coeff1 = (gxx - gyy) * 0.5 * sa * sb * s2g + ca * s2b * (gzz - gxx * (cg * cg) - gyy * sg * sg);
+      double coeff2 = (gyy - gxx) * 0.5 * ca * sb * s2g + sa * s2b * (gzz - gxx * (cg * cg) - gyy * sg * sg);
+      MatrixCxDbl res = -m_beta * bz * (coeff1 * m_x + coeff2 * m_y + coeff3 * m_z);
+      return res;
     } else {  // Rotating Frame
-      MatrixCxDbl res = coeff3 * m_z;
-      return 2 * pi * res;
+      MatrixCxDbl res = (-m_beta * bz * coeff3 - offset) * m_z;
+      return res;
     }
   }
 
   template<typename T>
-  size_t ChemicalShiftInteraction<T>::dimension() const
+  size_t ShieldingInteraction<T>::dimension() const
   { if (m_n == 0 && m_nbefore == 0 && m_nafter == 0) 
       return 0;
     size_t dim_before = m_nbefore > 0 ? m_nbefore : 1;
@@ -71,3 +71,4 @@ namespace dnpsoup {
   }
 
 } // namespace dnpsoup
+

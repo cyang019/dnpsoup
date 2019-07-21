@@ -12,10 +12,13 @@ namespace dnpsoup {
   enum class ValueName : int {
     scalar = 0,  // for scalar
     distance  = 1,
+    offset = 2,   // for microwave frequency 
     xx = 10,  // for anisotropy
     yy = 11,
     zz = 12,
-    bz = 100
+    bz = 100,
+    freq = 200,
+    phase = 201,
   };
 
   std::ostream& operator<<(std::ostream &, const ValueName &);

@@ -1,24 +1,26 @@
-#ifndef DNPSOUP_SHIELDINGINTERACTION_H
-#define DNPSOUP_SHIELDINGINTERACTION_H
+#ifndef DNPSOUP_WAVEINTERACTION_H
+#define DNPSOUP_WAVEINTERACTION_H
 
 #include "dnpsoup_core/constants.h"
 #include "dnpsoup_core/common.h"
 #include "dnpsoup_core/errors.h"
 #include "dnpsoup_core/spin_physics_components/spin.h"
+#include "dnpsoup_core/spin_physics_components/spinsys/SpinSys.h"
 #include "dnpsoup_core/spin_physics_components/hamiltonian/InteractionInterface.h"
 #include "dnpsoup_core/spin_physics_components/rotation/Euler.h"
 #include "dnpsoup_core/spin_physics_components/rotation/FrameType.h"
+#include <vector>
 
 
 namespace dnpsoup {
+  /// Microwave or Radio Frequency Interaction
   /// enable only if T is a frame type (i.e. RotatingFrame or LabFrame)
   template<typename T>
-  class ShieldingInteraction
+  class WaveInteraction
   : public InteractionInterface {
   public:
-    ShieldingInteraction(double beta, size_t n);
-    ShieldingInteraction(double beta, size_t n, size_t nbefore, size_t nafter);
-    ~ShieldingInteraction() {}
+    WaveInteraction(std::vector<SpinType> &spins, const SpinType &irradiated);
+    ~WaveInteraction() {}
 
     // active rotation
     matrix::Matrix<cxdbl> genMatrix(
@@ -30,16 +32,10 @@ namespace dnpsoup {
     matrix::Matrix<cxdbl> m_x;
     matrix::Matrix<cxdbl> m_y;
     matrix::Matrix<cxdbl> m_z;
-
-    size_t m_n;
-    size_t m_nbefore;
-    size_t m_nafter;
-
-    double m_beta;
-  };  // class ShieldingInteraction
+  };  // class ChemicalShiftInteraction
 }   // namespace dnpsoup
 
-#include "dnpsoup_core/spin_physics_components/hamiltonian/interactions/ShieldingInteractionImpl.hpp"
+#include "dnpsoup_core/spin_physics_components/hamiltonian/interactions/WaveInteractionImpl.hpp"
 
 #endif
 
