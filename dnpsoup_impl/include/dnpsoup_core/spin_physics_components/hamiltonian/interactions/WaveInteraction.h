@@ -19,7 +19,7 @@ namespace dnpsoup {
   class WaveInteraction
   : public InteractionInterface {
   public:
-    WaveInteraction(std::vector<SpinType> &spins, const SpinType &irradiated);
+    WaveInteraction(const std::vector<SpinType> &spins, const SpinType &irradiated);
     ~WaveInteraction() {}
 
     // active rotation
@@ -29,6 +29,8 @@ namespace dnpsoup {
 
     size_t dimension() const;
   private:
+    size_t m_ntotal;
+
     matrix::Matrix<cxdbl> m_x;
     matrix::Matrix<cxdbl> m_y;
     matrix::Matrix<cxdbl> m_z;

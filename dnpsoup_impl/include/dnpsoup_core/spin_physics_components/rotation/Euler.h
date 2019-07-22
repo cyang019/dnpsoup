@@ -2,12 +2,15 @@
 #define DNPSOUP_EULER_H
 
 namespace dnpsoup {
+  class Quaternion;
+
   // ZYZ rotations
   // Active rotations
   class Euler {
   public:
       Euler() : m_alpha(0.0), m_beta(0.0), m_gamma(0.0) {}
       Euler(double a, double b, double g) : m_alpha(a), m_beta(b), m_gamma(g) {}
+      Euler(const Quaternion &);
       Euler(const Euler &) = default;
       Euler(Euler &&) noexcept = default;
       Euler& operator=(const Euler &) = default;
@@ -27,6 +30,8 @@ namespace dnpsoup {
       double m_gamma;
   };  // class Euler
 
+  // using quaternion to calculate
+  Euler operator*(const Euler &e1, const Euler &e2);
 } // namespace dnpsoup
 
 #endif

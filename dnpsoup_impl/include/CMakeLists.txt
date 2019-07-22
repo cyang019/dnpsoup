@@ -5,6 +5,8 @@ target_sources(dnpsoup_core
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/common.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/errors.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/spin.h"
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/rotation/Euler.h"
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/rotation/Quaternion.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/Property.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/interactions/ChemicalShiftInteraction.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/interactions/DipolarInteraction.h"
