@@ -12,7 +12,6 @@
 
 namespace dnpsoup {
   /// enable only if T is a frame type (i.e. RotatingFrame or LabFrame)
-  template<typename T>
   class ScalarInteraction
   : public InteractionInterface {
   public:
@@ -24,7 +23,7 @@ namespace dnpsoup {
     // active rotation
     matrix::Matrix<cxdbl> genMatrix(
         const Property &,
-        const Euler &) const override;
+        [[maybe_unused]] const Euler &) const override;
 
     size_t dimension() const;
   private:
@@ -41,7 +40,6 @@ namespace dnpsoup {
   };  // class ChemicalShiftInteraction
 }   // namespace dnpsoup
 
-#include "dnpsoup_core/spin_physics_components/hamiltonian/interactions/ScalarInteractionImpl.hpp"
 
 #endif
 

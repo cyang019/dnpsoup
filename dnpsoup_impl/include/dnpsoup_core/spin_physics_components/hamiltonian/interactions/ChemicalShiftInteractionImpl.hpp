@@ -37,26 +37,26 @@ namespace dnpsoup {
     const double sxx = csa.get(ValueName::xx);
     const double syy = csa.get(ValueName::yy);
 
-    const double sb = sin(e.beta());
-    const double cb = cos(e.beta());
-    const double sg = sin(e.gamma());
-    const double cg = cos(e.gamma());
+    const double sb = std::sin(e.beta());
+    const double cb = std::cos(e.beta());
+    const double sg = std::sin(e.gamma());
+    const double cg = std::cos(e.gamma());
     double coeff3 = szz * cb * cb + sb * sb * (sxx * cg * cg + syy * sg * sg);
 
     if constexpr(std::is_same<T, LabFrame>::value){
-      const double sa = sin(e.alpha());
-      const double ca = cos(e.alpha());
-      const double s2b = sin(2.0*e.beta());
-      const double s2g = sin(2.0*e.gamma());
+      const double sa = std::sin(e.alpha());
+      const double ca = std::cos(e.alpha());
+      const double s2b = std::sin(2.0*e.beta());
+      const double s2g = std::sin(2.0*e.gamma());
 
       const double bz = csa.get(ValueName::bz);
       double coeff1 = (sxx - syy) * 0.5 * sa * sb * s2g + ca * s2b * (szz - sxx * (cg * cg) -syy * sg * sg);
       double coeff2 = (syy - sxx) * 0.5 * ca * sb * s2g + sa * s2b * (szz - sxx * (cg * cg) -syy * sg * sg);
       MatrixCxDbl res = - m_gamma * bz * m_z + coeff1 * m_x + coeff2 * m_y + coeff3 * m_z;
-      return 2 * pi * res;
+      return res;
     } else {  // Rotating Frame
       MatrixCxDbl res = coeff3 * m_z;
-      return 2 * pi * res;
+      return res;
     }
   }
 

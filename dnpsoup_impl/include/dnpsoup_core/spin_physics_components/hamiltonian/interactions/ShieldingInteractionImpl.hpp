@@ -33,10 +33,11 @@ namespace dnpsoup {
       const Property &g,
       const Euler &e) const
   {
-    const double gzz = csa.get(ValueName::zz);
-    const double gxx = csa.get(ValueName::xx);
-    const double gyy = csa.get(ValueName::yy);
-    const double bz = csa.get(ValueName::bz);
+    const double gzz = g.get(ValueName::zz);
+    const double gxx = g.get(ValueName::xx);
+    const double gyy = g.get(ValueName::yy);
+    const double bz = g.get(ValueName::bz);
+    const double offset = g.get(ValueName::offset);
 
     const double sb = sin(e.beta());
     const double cb = cos(e.beta());

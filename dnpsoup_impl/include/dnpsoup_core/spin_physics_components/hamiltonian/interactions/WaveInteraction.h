@@ -5,7 +5,6 @@
 #include "dnpsoup_core/common.h"
 #include "dnpsoup_core/errors.h"
 #include "dnpsoup_core/spin_physics_components/spin.h"
-#include "dnpsoup_core/spin_physics_components/spinsys/SpinSys.h"
 #include "dnpsoup_core/spin_physics_components/hamiltonian/InteractionInterface.h"
 #include "dnpsoup_core/spin_physics_components/rotation/Euler.h"
 #include "dnpsoup_core/spin_physics_components/rotation/FrameType.h"
@@ -24,8 +23,8 @@ namespace dnpsoup {
 
     // active rotation
     matrix::Matrix<cxdbl> genMatrix(
-        const Property &,
-        const Euler &) const override;
+        const Property &,   // freq = 0.5 * gamma * B1 in Hz; phase in rad. phase0 in rad
+        [[maybe_unused]] const Euler &) const override;
 
     size_t dimension() const;
   private:
@@ -33,7 +32,6 @@ namespace dnpsoup {
 
     matrix::Matrix<cxdbl> m_x;
     matrix::Matrix<cxdbl> m_y;
-    matrix::Matrix<cxdbl> m_z;
   };  // class ChemicalShiftInteraction
 }   // namespace dnpsoup
 

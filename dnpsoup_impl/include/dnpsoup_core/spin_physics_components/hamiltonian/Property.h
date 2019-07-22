@@ -19,6 +19,7 @@ namespace dnpsoup {
     bz = 100,
     freq = 200,
     phase = 201,
+    phase0 = 202,   /// lab frame rotatin: cos(w t + phi(t)): phase0 = w * t, phase = phi(t)
   };
 
   std::ostream& operator<<(std::ostream &, const ValueName &);
@@ -46,6 +47,11 @@ namespace dnpsoup {
 
   /// @param val: value of the interaction in Hz.
   Property genScalarProperty(double val);
+
+  /// @param freq: 0.5 * gamma * B1 in Hz
+  /// @param phase: phase in rad
+  /// @param offset: offset from detection frequency in Hz
+  Property genWaveProperty(double freq, double phase, double offset);
 } // namespace dnpsoup
 
 #endif

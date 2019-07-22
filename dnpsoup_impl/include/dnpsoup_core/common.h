@@ -40,6 +40,10 @@ namespace dnpsoup {
   { return matrix::kroneckerProduct<T>(m1, m2); }
 
   template<typename T>
+  constexpr matrix::Matrix<T> kron(const std::vector<matrix::Matrix<T>> &ms)
+  { return matrix::kroneckerProduct<T>(ms); }
+
+  template<typename T>
   constexpr T projection(const matrix::Matrix<T> &m1, const matrix::Matrix<T> &m2)
   { return matrix::projection<T>(m1, m2); }
 

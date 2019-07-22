@@ -80,4 +80,13 @@ namespace dnpsoup {
     p.set(ValueName::scalar, val);
     return p;
   }
+
+  Property genWaveProperty(double freq, double phase, double offset)
+  {
+    Property p;
+    p.set(ValueName::freq, freq);
+    p.set(ValueName::phase, phase);
+    p.set(ValueName::offset, offset);
+    return p;
+  }
 } // namespace dnpsoup

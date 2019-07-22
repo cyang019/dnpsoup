@@ -54,39 +54,39 @@ namespace dnpsoup {
 
   inline double calcF20(double theta)
   {
-    const double ct = cos(theta);
+    const double ct = std::cos(theta);
     return 1.0 - 3.0 * ct * ct;
   }
 
   inline cxdbl calcF21(double phi, double theta)
   {
-    const double s2t = sin(2.0 * theta);
-    const double sp = sin(phi);
-    const double cp = cos(phi);
+    const double s2t = std::sin(2.0 * theta);
+    const double sp = std::sin(phi);
+    const double cp = std::cos(phi);
     return 0.5 * s2t * (cp - cxdbl(0,1) * sp);
   }
 
   inline cxdbl calcF2n1(double phi, double theta)
   {
-    const double s2t = sin(2.0 * theta);
-    const double sp = sin(phi);
-    const double cp = cos(phi);
+    const double s2t = std::sin(2.0 * theta);
+    const double sp = std::sin(phi);
+    const double cp = std::cos(phi);
     return 0.5 * s2t * (cp + cxdbl(0,1) * sp);
   }
 
   inline cxdbl calcF22(double phi, double theta)
   {
-    const double st = sin(theta);
-    const double s2p = sin(2.0*phi);
-    const double c2p = cos(2.0*phi);
+    const double st = std::sin(theta);
+    const double s2p = std::sin(2.0*phi);
+    const double c2p = std::cos(2.0*phi);
     return st * st * (c2p - cxdbl(0,1) * s2p);
   }
 
   inline cxdbl calcF2n2(double phi, double theta)
   {
-    const double st = sin(theta);
-    const double s2p = sin(2.0*phi);
-    const double c2p = cos(2.0*phi);
+    const double st = std::sin(theta);
+    const double s2p = std::sin(2.0*phi);
+    const double c2p = std::cos(2.0*phi);
     return st * st * (c2p + cxdbl(0,1) * s2p);
   }
 }   // namespace dnpsoup
