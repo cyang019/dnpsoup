@@ -22,6 +22,10 @@ namespace dnpsoup {
     phase0 = 202,   /// lab frame rotatin: cos(w t + phi(t)): phase0 = w * t, phase = phi(t)
   };
 
+  class ValueNameHash {
+    std::size_t operator()(const ValueName &) const;
+  };
+
   std::ostream& operator<<(std::ostream &, const ValueName &);
 
   // values are in Hz

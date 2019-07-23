@@ -12,6 +12,8 @@ target_sources(dnpsoup_core
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/interactions/DipolarInteraction.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/interactions/ScalarInteraction.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/interactions/ShieldingInteraction.h"
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spinsys/SpinId.h"
+
   PUBLIC
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup.h"
 )

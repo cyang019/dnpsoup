@@ -16,6 +16,10 @@ namespace dnpsoup {
     O17 =   17
   };
 
+  class SpinTypeHash {
+    std::size_t operator()(const SpinType &) const;
+  };
+
   double getGyromagneticRatio(const SpinType &);
   size_t getMatrixDimension(const SpinType &);
 
