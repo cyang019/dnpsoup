@@ -5,8 +5,25 @@
 #include "dnpsoup_core/constants.h"
 #include <cmath>
 #include <complex>
+#include <functional>     // hash
+#include <type_traits>    // conditional
+
 
 namespace dnpsoup {
+  // https://stackoverflow.com/questions/18837857/cant-use-enum-class-as-unordered-map-key
+  struct EnumClassHash
+  {
+      template <typename T>
+      std::size_t operator()(const T &t) const
+      {
+          return std::hash<int>{}(static_cast<int>(t));
+      }
+  };
+
+  template <typename Key>
+  using HashType = typename std::conditional<std::is_enum<Key>::value, 
+        EnumClassHash, std::hash<Key>>::type;
+
   using MatrixCxDbl = matrix::Matrix<std::complex<double>>;
   using MatrixDbl = matrix::Matrix<double>;
 

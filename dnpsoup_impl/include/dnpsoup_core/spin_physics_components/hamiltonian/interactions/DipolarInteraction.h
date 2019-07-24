@@ -21,10 +21,10 @@ namespace dnpsoup {
         size_t nbefore, size_t nbetween, size_t nafter);
     ~DipolarInteraction() {}
 
-    // active rotation
+    template<typename R>
     MatrixCxDbl genMatrix(
         const Property &,
-        const Euler &) const override;
+        const Euler<R> &) const override;
 
     size_t dimension() const;
   private:

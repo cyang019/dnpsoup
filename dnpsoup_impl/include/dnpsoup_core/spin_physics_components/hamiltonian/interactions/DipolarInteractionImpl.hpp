@@ -121,30 +121,55 @@ namespace dnpsoup {
   }
 
   template<typename T1, typename T2>
+  template<typename R>
   MatrixCxDbl DipolarInteraction<T1, T2>::genMatrix(
-      const Property &p, const Euler &e) const
+      const Property &p, const Euler<R> &e) const
   {
     const double distance = p.get(ValueName::distance);
     const double d = 1.0e-7 * m_gamma1 * m_gamma2 * dnpsoup::h / (distance * distance * distance) * 1.0e30;
     if constexpr(std::is_same<T1, LabFrame>::value
         && std::is_same<T2, LabFrame>::value){
-      return d * (m_a20 * calcF20(e.beta()) 
-          + m_a21 * calcF21(e.alpha(), e.beta())
-          + m_a2n1 * calcF2n1(e.alpha(), e.beta())
-          + m_a22 * calcF22(e.alpha(), e.beta())
-          + m_a2n2 * calcF2n2(e.alpha(), e.beta()));
+      if constexpr(std::is_same<R, ActiveRotation>::value){
+        return d * (m_a20 * calcF20(e.beta()) 
+            + m_a21 * calcF21(e.alpha(), e.beta())
+            + m_a2n1 * calcF2n1(e.alpha(), e.beta())
+            + m_a22 * calcF22(e.alpha(), e.beta())
+            + m_a2n2 * calcF2n2(e.alpha(), e.beta()));
+      } else {
+        return d * (m_a20 * calcF20(-e.beta()) 
+            + m_a21 * calcF21(-e.gamma(), -e.beta())
+            + m_a2n1 * calcF2n1(-e.gamma(), -e.beta())
+            + m_a22 * calcF22(-e.gamma(), -e.beta())
+            + m_a2n2 * calcF2n2(-e.gamma(), -e.beta()));
+      }
     } else if constexpr(std::is_same<T1, LabFrame>::value
         && std::is_same<T2, RotatingFrame>::value){
-      return d * (m_a20 * calcF20(e.beta()) 
-          + m_a21 * calcF21(e.alpha(), e.beta())
-          + m_a2n1 * calcF2n1(e.alpha(), e.beta()));
+      if constexpr(std::is_same<R, ActiveRotation>::value){
+        return d * (m_a20 * calcF20(e.beta()) 
+            + m_a21 * calcF21(e.alpha(), e.beta())
+            + m_a2n1 * calcF2n1(e.alpha(), e.beta()));
+      } else {
+        return d * (m_a20 * calcF20(-e.beta()) 
+            + m_a21 * calcF21(-e.gamma(), -e.beta())
+            + m_a2n1 * calcF2n1(-e.gamma(), -e.beta()));
+      }
     } else if constexpr(std::is_same<T1, RotatingFrame>::value
         && std::is_same<T2, LabFrame>::value) {
-      return d * (m_a20 * calcF20(e.beta()) 
-          + m_a21 * calcF21(e.alpha(), e.beta())
-          + m_a2n1 * calcF2n1(e.alpha(), e.beta()));
+      if constexpr(std::is_same<R, ActiveRotation>::value){
+        return d * (m_a20 * calcF20(e.beta()) 
+            + m_a21 * calcF21(e.alpha(), e.beta())
+            + m_a2n1 * calcF2n1(e.alpha(), e.beta()));
+      } else {
+        return d * (m_a20 * calcF20(-e.beta()) 
+            + m_a21 * calcF21(-e.gamma(), -e.beta())
+            + m_a2n1 * calcF2n1(-e.gamma(), -e.beta()));
+      }
     } else {  // Rotating Frame for Both
-      return d * (m_a20 * calcF20(e.beta()));
+      if constexpr(std::is_same<R, ActiveRotation>::value){
+        return d * (m_a20 * calcF20(e.beta()));
+      } else {
+      }
+        return d * (m_a20 * calcF20(-e.beta()));
     }
   }
 } // namespace dnpsoup

@@ -20,10 +20,10 @@ namespace dnpsoup {
     ShieldingInteraction(double beta, size_t n, size_t nbefore, size_t nafter);
     ~ShieldingInteraction() {}
 
-    // active rotation
+    template<typename R>
     matrix::Matrix<cxdbl> genMatrix(
         const Property &,
-        const Euler &) const override;
+        const Euler<R> &) const override;
 
     size_t dimension() const;
   private:

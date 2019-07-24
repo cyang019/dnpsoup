@@ -2,6 +2,7 @@
 #define DNPSOUP_PROPERTY_H
 
 #include "dnpsoup_core/spin_physics_components/spin.h"
+#include "dnpsoup_core/common.h"
 #include <string>
 #include <vector>
 #include <utility>  // pair
@@ -22,10 +23,6 @@ namespace dnpsoup {
     phase0 = 202,   /// lab frame rotatin: cos(w t + phi(t)): phase0 = w * t, phase = phi(t)
   };
 
-  class ValueNameHash {
-    std::size_t operator()(const ValueName &) const;
-  };
-
   std::ostream& operator<<(std::ostream &, const ValueName &);
 
   // values are in Hz
@@ -37,7 +34,7 @@ namespace dnpsoup {
     double get(const ValueName &name) const;
     Property& set(const ValueName &name, double value);
   private:
-    std::unordered_map<ValueName, double> m_values;
+    std::unordered_map<ValueName, double, HashType<ValueName>> m_values;
   }; // class PropertyValue
 
   /// @param gyro: gyromagnetic ratio in Hz/T

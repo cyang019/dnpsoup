@@ -16,7 +16,8 @@ namespace dnpsoup {
     friend Quaternion operator*(const Quaternion &, const Quaternion &);
     Quaternion();
     Quaternion(double, double, double, double);
-    Quaternion(const Euler &e);
+    template<typename T>
+    Quaternion(const Euler<T> &e);
     Quaternion(const Quaternion &) = default;
     Quaternion(Quaternion &&) noexcept = default;
     Quaternion& operator=(const Quaternion &) = default;
@@ -39,5 +40,6 @@ namespace dnpsoup {
   };  // class Quaternion
 } // namespace dnpsoup
 
+#include "dnpsoup_core/spin_physics_components/rotation/QuaternionImpl.hpp"
 
 #endif

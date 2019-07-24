@@ -6,11 +6,6 @@
 using namespace std;
 
 namespace dnpsoup {
-  std::size_t ValueNameHash::operator()(const ValueName &vname) const
-  {
-    return std::hash<int>()(static_cast<int>(vname));
-  }
-
   std::ostream& operator<<(std::ostream &os, const ValueName &vname)
   {
     switch(vname){

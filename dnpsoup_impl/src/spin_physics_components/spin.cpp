@@ -4,11 +4,6 @@
 
 
 namespace dnpsoup {
-  std::size_t SpinTypeHash::operator()(const SpinType &spin_t) const
-  {
-    return std::hash<int>()(static_cast<int>(spin_t));
-  }
-
   double getGyromagneticRatio(const SpinType &t)
   {
     switch(t){

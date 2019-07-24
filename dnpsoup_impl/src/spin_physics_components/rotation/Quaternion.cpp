@@ -13,14 +13,6 @@ namespace dnpsoup {
     : m_r(r), m_i(i), m_j(j), m_k(k)
   {}
 
-  Quaternion::Quaternion(const Euler &e)
-  {
-    m_r = cos(0.5 * e.beta()) * cos(0.5 * (e.alpha() + e.gamma()));
-    m_i = -sin(0.5 * e.beta()) * sin(0.5 * (e.alpha() - e.gamma()));
-    m_j = sin(0.5 * e.beta()) * cos(0.5 * (e.alpha() - e.gamma()));
-    m_k = cos(0.5 * e.beta()) * sin(0.5 * (e.alpha() + e.gamma()));
-  }
-
   Quaternion::~Quaternion() {}
 
   Quaternion& Quaternion::inv()

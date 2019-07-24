@@ -21,10 +21,10 @@ namespace dnpsoup {
     WaveInteraction(const std::vector<SpinType> &spins, const SpinType &irradiated);
     ~WaveInteraction() {}
 
-    // active rotation
+    template<typename R>
     matrix::Matrix<cxdbl> genMatrix(
         const Property &,   // freq = 0.5 * gamma * B1 in Hz; phase in rad. phase0 in rad
-        [[maybe_unused]] const Euler &) const override;
+        [[maybe_unused]] const Euler<R> &) const override;
 
     size_t dimension() const;
   private:
