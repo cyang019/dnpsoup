@@ -30,46 +30,59 @@ namespace dnpsoup {
 
   // internally convert angles to active form for calculation
   template<typename T>
-  template<typename R>
   MatrixCxDbl ChemicalShiftInteraction<T>::genMatrix(
       const Property &csa,
-      const Euler<R> &e) const
+      const Euler<ActiveRotation> &e) const
   {
-    static_assert(is_rotation_type<R>::value, 
-        "Euler can either be ActiveRotation or PassiveRotation");
-    
     const double szz = csa.get(ValueName::zz);
     const double sxx = csa.get(ValueName::xx);
     const double syy = csa.get(ValueName::yy);
 
-    double sb, cb, sg, cg;
-    if constexpr(std::is_same<R, ActiveRotation>::value){
-      sb = std::sin(e.beta());
-      cb = std::cos(e.beta());
-      sg = std::sin(e.gamma());
-      cg = std::cos(e.gamma());
-    } else {
-      // internally convert angles to active form for calculation
-      sb = -std::sin(e.beta());
-      cb = std::cos(e.beta());
-      sg = -std::sin(e.alpha());
-      cg = std::cos(e.alpha());
-    }
+    const double sb = std::sin(e.beta());
+    const double cb = std::cos(e.beta());
+    const double sg = std::sin(e.gamma());
+    const double cg = std::cos(e.gamma());
     double coeff3 = szz * cb * cb + sb * sb * (sxx * cg * cg + syy * sg * sg);
 
     if constexpr(std::is_same<T, LabFrame>::value){
-      double sa, ca, s2b, s2g;
-      if constexpr(std::is_same<R, ActiveRotation>::value) {
-        sa = std::sin(e.alpha());
-        ca = std::cos(e.alpha());
-        s2b = std::sin(2.0*e.beta());
-        s2g = std::sin(2.0*e.gamma());
-      } else {
-        sa = -std::sin(e.gamma());
-        ca = std::cos(e.gamma());
-        s2b = -std::sin(2.0*e.beta());
-        s2g = -std::sin(2.0*e.alpha());
-      }
+      const double sa = std::sin(e.alpha());
+      const double ca = std::cos(e.alpha());
+      const double s2b = std::sin(2.0*e.beta());
+      const double s2g = std::sin(2.0*e.gamma());
+
+      const double bz = csa.get(ValueName::bz);
+      double coeff1 = (sxx - syy) * 0.5 * sa * sb * s2g + ca * s2b * (szz - sxx * (cg * cg) -syy * sg * sg);
+      double coeff2 = (syy - sxx) * 0.5 * ca * sb * s2g + sa * s2b * (szz - sxx * (cg * cg) -syy * sg * sg);
+      MatrixCxDbl res = - m_gamma * bz * m_z + coeff1 * m_x + coeff2 * m_y + coeff3 * m_z;
+      return res;
+    } else {  // Rotating Frame
+      MatrixCxDbl res = coeff3 * m_z;
+      return res;
+    }
+  }
+
+  template<typename T>
+  MatrixCxDbl ChemicalShiftInteraction<T>::genMatrix(
+      const Property &csa,
+      const Euler<PassiveRotation> &e) const
+  {
+    const double szz = csa.get(ValueName::zz);
+    const double sxx = csa.get(ValueName::xx);
+    const double syy = csa.get(ValueName::yy);
+
+      // internally convert angles to active form for calculation
+    const double sb = -std::sin(e.beta());
+    const double cb = std::cos(e.beta());
+    const double sg = -std::sin(e.alpha());
+    const double cg = std::cos(e.alpha());
+
+    double coeff3 = szz * cb * cb + sb * sb * (sxx * cg * cg + syy * sg * sg);
+
+    if constexpr(std::is_same<T, LabFrame>::value){
+      const double sa = -std::sin(e.gamma());
+      const double ca = std::cos(e.gamma());
+      const double s2b = -std::sin(2.0*e.beta());
+      const double s2g = -std::sin(2.0*e.alpha());
 
       const double bz = csa.get(ValueName::bz);
       double coeff1 = (sxx - syy) * 0.5 * sa * sb * s2g + ca * s2b * (szz - sxx * (cg * cg) -syy * sg * sg);

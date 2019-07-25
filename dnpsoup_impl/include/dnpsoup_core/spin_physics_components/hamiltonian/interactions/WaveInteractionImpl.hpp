@@ -9,38 +9,48 @@ namespace dnpsoup {
     std::vector<MatrixCxDbl> operators_y;
 
     for(const auto &t : spin_types){
-      size_t n = getMatrixDimension(t);
+      std::size_t n = getMatrixDimension(t);
       if(n > 0){
         m_ntotal = (m_ntotal == 0) ? n : m_ntotal * n;
       }
+    }
+
+    std::size_t nbefore = 0;
+    std::size_t nafter = 0;
+    for(const auto &t : spin_types){
+      std::size_t n = getMatrixDimension(t);
       if (t == irradiated_type){
         auto temp_x = spin<X>(n);
-        operators_x.emplace_back(std::move(temp_x));
+        nafter = nbefore > 0 ? m_ntotal / (n * nbefore) : m_ntotal / n;
+        MatrixCxDbl x_op = kron(std::vector<MatrixCxDbl>{identity<cxdbl>(nbefore), temp_x, identity<cxdbl>(nafter)});
+        operators_x.emplace_back(std::move(x_op));
         if constexpr(std::is_same<T, RotatingFrame>::value){
           auto temp_y = spin<Y>(n);
-          operators_y.emplace_back(std::move(temp_y));
+          MatrixCxDbl y_op = kron(std::vector<MatrixCxDbl>{identity<cxdbl>(nbefore), temp_y, identity<cxdbl>(nafter)});
+          operators_y.emplace_back(std::move(y_op));
         }
-      } else {
-        operators_x.emplace_back(identity<cxdbl>(n));
-        if constexpr(std::is_same<T, RotatingFrame>::value){
-          operators_y.emplace_back(identity<cxdbl>(n));
-        }
+      }
+      if(n > 0){
+        nbefore = (nbefore == 0) ? n : nbefore * n;
       }
     }
 
+    m_x = zeros<cxdbl>(m_ntotal, m_ntotal);
+    for(const auto &m : operators_x){
+      m_x += m;
+    }
     if constexpr(std::is_same<T, RotatingFrame>::value){
-      m_x = kron(operators_x);
-      m_y = kron(operators_y);
-    } else {  // Lab Frame
-      m_x = kron(operators_x);
+      m_y = zeros<cxdbl>(m_ntotal, m_ntotal);
+      for(const auto &m : operators_y){
+        m_y += m;
+      }
+    } else {  // Lab Frame, just a placeholder
       m_y = MatrixCxDbl();
     }
   }
 
   template<typename T>
-  MatrixCxDbl WaveInteraction<T>::genMatrix(
-      const Property &p,
-      [[maybe_unused]] const Euler &e) const
+  MatrixCxDbl WaveInteraction<T>::genMatrixInternal(const Property &p) const
   {
     const double freq = p.get(ValueName::freq);
     const double phase = p.get(ValueName::phase);
@@ -54,9 +64,25 @@ namespace dnpsoup {
       return res;
     }
   }
+  
+  template<typename T>
+  MatrixCxDbl WaveInteraction<T>::genMatrix(
+      const Property &p,
+      [[maybe_unused]] const Euler<ActiveRotation> &e) const
+  {
+    return genMatrixInternal(p);
+  }
 
   template<typename T>
-  size_t WaveInteraction<T>::dimension() const
+  MatrixCxDbl WaveInteraction<T>::genMatrix(
+      const Property &p,
+      [[maybe_unused]] const Euler<PassiveRotation> &e) const
+  {
+    return genMatrixInternal(p);
+  }
+
+  template<typename T>
+  std::size_t WaveInteraction<T>::dimension() const
   { 
     return m_ntotal;
   }

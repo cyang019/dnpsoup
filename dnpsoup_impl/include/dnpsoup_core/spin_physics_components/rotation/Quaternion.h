@@ -1,10 +1,13 @@
 #ifndef DNPSOUP_QUATERNION_H
 #define DNPSOUP_QUATERNION_H
 
-#include "dnpsoup_core/spin_physics_components/rotation/Euler.h"
+//#include "dnpsoup_core/spin_physics_components/rotation/Euler.h"
+#include "dnpsoup_core/spin_physics_components/rotation/RotationType.h"
 #include "dnpsoup_core/common.h"
 
 namespace dnpsoup {
+  class Quaternion;
+
   Quaternion operator+(const Quaternion &, const Quaternion &);
   Quaternion operator-(const Quaternion &, const Quaternion &);
   Quaternion operator*(const Quaternion &, const Quaternion &);
@@ -16,8 +19,7 @@ namespace dnpsoup {
     friend Quaternion operator*(const Quaternion &, const Quaternion &);
     Quaternion();
     Quaternion(double, double, double, double);
-    template<typename T>
-    Quaternion(const Euler<T> &e);
+
     Quaternion(const Quaternion &) = default;
     Quaternion(Quaternion &&) noexcept = default;
     Quaternion& operator=(const Quaternion &) = default;
@@ -32,6 +34,7 @@ namespace dnpsoup {
     Quaternion& inv();
 
     MatrixDbl toRotationMatrix() const;
+
   private:
     double m_r;
     double m_i;
@@ -40,6 +43,5 @@ namespace dnpsoup {
   };  // class Quaternion
 } // namespace dnpsoup
 
-#include "dnpsoup_core/spin_physics_components/rotation/QuaternionImpl.hpp"
 
 #endif

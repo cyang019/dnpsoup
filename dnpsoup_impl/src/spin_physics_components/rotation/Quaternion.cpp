@@ -1,3 +1,4 @@
+#include "dnpsoup_core/spin_physics_components/rotation/Euler.h"
 #include "dnpsoup_core/spin_physics_components/rotation/Quaternion.h"
 #include <cmath>
 

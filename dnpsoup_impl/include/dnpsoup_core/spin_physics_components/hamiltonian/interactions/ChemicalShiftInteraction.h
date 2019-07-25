@@ -20,10 +20,13 @@ namespace dnpsoup {
     ChemicalShiftInteraction(double gamma, size_t n, size_t nbefore, size_t nafter);
     ~ChemicalShiftInteraction() {}
 
-    template<typename R>
     matrix::Matrix<cxdbl> genMatrix(
         const Property &,
-        const Euler<R> &) const override;
+        const Euler<ActiveRotation> &) const override;
+
+    matrix::Matrix<cxdbl> genMatrix(
+        const Property &,
+        const Euler<PassiveRotation> &) const override;
 
     size_t dimension() const;
   private:

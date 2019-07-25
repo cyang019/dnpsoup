@@ -31,7 +31,7 @@ namespace dnpsoup {
   template<typename T>
   MatrixCxDbl ShieldingInteraction<T>::genMatrix(
       const Property &g,
-      const Euler &e) const
+      const Euler<ActiveRotation> &e) const
   {
     const double gzz = g.get(ValueName::zz);
     const double gxx = g.get(ValueName::xx);
@@ -50,6 +50,39 @@ namespace dnpsoup {
       const double ca = cos(e.alpha());
       const double s2b = sin(2.0*e.beta());
       const double s2g = sin(2.0*e.gamma());
+
+      double coeff1 = (gxx - gyy) * 0.5 * sa * sb * s2g + ca * s2b * (gzz - gxx * (cg * cg) - gyy * sg * sg);
+      double coeff2 = (gyy - gxx) * 0.5 * ca * sb * s2g + sa * s2b * (gzz - gxx * (cg * cg) - gyy * sg * sg);
+      MatrixCxDbl res = -m_beta * bz * (coeff1 * m_x + coeff2 * m_y + coeff3 * m_z);
+      return res;
+    } else {  // Rotating Frame
+      MatrixCxDbl res = (-m_beta * bz * coeff3 - offset) * m_z;
+      return res;
+    }
+  }
+
+  template<typename T>
+  MatrixCxDbl ShieldingInteraction<T>::genMatrix(
+      const Property &g,
+      const Euler<PassiveRotation> &e) const
+  {
+    const double gzz = g.get(ValueName::zz);
+    const double gxx = g.get(ValueName::xx);
+    const double gyy = g.get(ValueName::yy);
+    const double bz = g.get(ValueName::bz);
+    const double offset = g.get(ValueName::offset);
+
+    const double sb = -sin(e.beta());
+    const double cb = cos(e.beta());
+    const double sg = -sin(e.alpha());
+    const double cg = cos(e.alpha());
+    double coeff3 = gzz * cb * cb + sb * sb * (gxx * cg * cg + gyy * sg * sg);
+
+    if constexpr(std::is_same<T, LabFrame>::value){
+      const double sa = -sin(e.gamma());
+      const double ca = cos(e.gamma());
+      const double s2b = -sin(2.0*e.beta());
+      const double s2g = -sin(2.0*e.alpha());
 
       double coeff1 = (gxx - gyy) * 0.5 * sa * sb * s2g + ca * s2b * (gzz - gxx * (cg * cg) - gyy * sg * sg);
       double coeff2 = (gyy - gxx) * 0.5 * ca * sb * s2g + sa * s2b * (gzz - gxx * (cg * cg) - gyy * sg * sg);

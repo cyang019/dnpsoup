@@ -11,10 +11,13 @@ namespace dnpsoup {
     InteractionInterface() {}
     virtual ~InteractionInterface() {}
 
-    template<typename R>
     virtual MatrixCxDbl genMatrix(
         const Property &, 
-        const Euler<R> &) const = 0;
+        [[maybe_unused]] const Euler<ActiveRotation> &) const = 0;
+
+    virtual MatrixCxDbl genMatrix(
+        const Property &, 
+        [[maybe_unused]] const Euler<PassiveRotation> &) const = 0;
   };
 } // namespace dnpsoup
 

@@ -21,17 +21,21 @@ namespace dnpsoup {
     WaveInteraction(const std::vector<SpinType> &spins, const SpinType &irradiated);
     ~WaveInteraction() {}
 
-    template<typename R>
     matrix::Matrix<cxdbl> genMatrix(
         const Property &,   // freq = 0.5 * gamma * B1 in Hz; phase in rad. phase0 in rad
-        [[maybe_unused]] const Euler<R> &) const override;
+        [[maybe_unused]] const Euler<ActiveRotation> &) const override;
+    matrix::Matrix<cxdbl> genMatrix(
+        const Property &,   // freq = 0.5 * gamma * B1 in Hz; phase in rad. phase0 in rad
+        [[maybe_unused]] const Euler<PassiveRotation> &) const override;
 
-    size_t dimension() const;
+    std::size_t dimension() const;
   private:
-    size_t m_ntotal;
+    std::size_t m_ntotal;
 
     matrix::Matrix<cxdbl> m_x;
     matrix::Matrix<cxdbl> m_y;
+
+    matrix::Matrix<cxdbl> genMatrixInternal(const Property &) const;
   };  // class ChemicalShiftInteraction
 }   // namespace dnpsoup
 
