@@ -22,6 +22,9 @@ namespace dnpsoup {
     int m_id;
   };
 
+  class SpinIdHash {
+    std::size_t operator()(const SpinId &) const;
+  };
 } // namespace dnpsoup
 
 #endif

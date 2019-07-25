@@ -22,4 +22,9 @@ namespace dnpsoup {
 
   SpinId& SpinId::set(int value)
   { m_id = value; return *this; }
+
+  std::size_t SpinIdHash::operator()(const SpinId &s) const
+  {
+    return std::hash<int>{}(s.get());
+  }
 } // namespace dnpsoup

@@ -82,16 +82,18 @@ namespace dnpsoup {
   using std::sqrt;
 
   /// arctan val1/val2
+  /// range between 0 and pi
   inline double atan(double val1, double val2)
   {
     if(std::abs(val2) < eps){
       if((val1 > eps && val2 < 0) || (val1 < -eps && val2 > 0)){
-        return -0.5 * pi;
+        return pi;
       } else {
         return 0.5 * pi;
       }
     } else {
-      return std::atan(val1/val2);
+      double res = std::atan(val1/val2);
+      return res > -eps ? res : res + pi;
     }
   }
 } // namespace dnpsoup
