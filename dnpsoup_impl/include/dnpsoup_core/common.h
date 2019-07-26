@@ -7,6 +7,7 @@
 #include <complex>
 #include <functional>     // hash
 #include <type_traits>    // conditional
+#include <cstdint>
 
 
 namespace dnpsoup {
@@ -96,6 +97,8 @@ namespace dnpsoup {
       return res > -eps ? res : res + pi;
     }
   }
+
+  std::int64_t genUniqueInt(std::int64_t val1, std::int64_t val2);
 } // namespace dnpsoup
 
 #endif
