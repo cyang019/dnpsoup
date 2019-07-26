@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <tuple>
 #include <unique_ptr>
+#include <string>
 
 
 namespace dnpsoup {
@@ -18,10 +19,22 @@ namespace dnpsoup {
   public:
     SpinSys();
 
-    std::tuple<std::unique_ptr<InteractionInterface>, Property, Euler<>> Summarize() const;
+    SpinSys& addSpin(const SpinId &, const SpinEntity &); 
+    SpinSys& addObservable(const InteractionType &, const SpinId &);
+    SpinSys& addObservable(const InteractionType &, const SpinId &, const SpinId &);
+
+    std::vector<std::tuple<std::unique_ptr<InteractionInterface>, Property, Euler<>>> Summarize() const;
+
+    SpinSys& setEuler(const Euler<> &e) { m_e = e; return *this; }
+    Euler<> getEuler() const { return m_e; }
+
+    SpinSys& clearObservables();
+    SpinSys& clear();
+
+    SpinSys& rotate(const Euler<> &);
   private:
     std::unordered_map<SpinId, SpinEntity, SpinIdHash> m_spins;
-    std::unordered_map<ObservableId, Observable> m_observables;
+    std::unordered_map<ObservableId, Observable, ObservableIdHash> m_observables;
     Euler<> m_e;
   };  // class SpinSys
 } // namespace dnpsoup
