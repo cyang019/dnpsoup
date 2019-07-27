@@ -7,6 +7,7 @@
 #include "dnpsoup_core/spinsys/SpinId.h"
 #include "dnpsoup_core/spinsys/SpinEntity.h"
 #include "dnpsoup_core/spinsys/Observable.h"
+#include "dnpsoup_core/spinsys/SpinPacket.h"
 #include <vector>
 #include <unordered_map>
 #include <tuple>
@@ -23,15 +24,14 @@ namespace dnpsoup {
     SpinSys& addObservable(const InteractionType &, const SpinId &);
     SpinSys& addObservable(const InteractionType &, const SpinId &, const SpinId &);
 
-    std::vector<std::tuple<std::unique_ptr<InteractionInterface>, Property, Euler<>>> Summarize() const;
+    SpinPacketCollection Summarize() const;
 
     SpinSys& setEuler(const Euler<> &e) { m_e = e; return *this; }
     Euler<> getEuler() const { return m_e; }
+    SpinSys& rotate(const Euler<> &);
 
     SpinSys& clearObservables();
     SpinSys& clear();
-
-    SpinSys& rotate(const Euler<> &);
   private:
     std::unordered_map<SpinId, SpinEntity, SpinIdHash> m_spins;
     std::unordered_map<ObservableId, Observable, ObservableIdHash> m_observables;
