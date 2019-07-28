@@ -1,9 +1,11 @@
 #ifndef DNPSOUP_SPINSYS_H
 #define DNPSOUP_SPINSYS_H
 
+#include "dnpsoup_core/errors.h"
 #include "dnpsoup_core/spin_physics_components/spin.h"
 #include "dnpsoup_core/spin_physics_components/hamiltonian/Property.h"
 #include "dnpsoup_core/spin_physics_components/hamiltonian/interactions/interactions.h"
+#include "dnpsoup_core/experiment/experiment_types.h"
 #include "dnpsoup_core/spinsys/SpinId.h"
 #include "dnpsoup_core/spinsys/SpinEntity.h"
 #include "dnpsoup_core/spinsys/Observable.h"
@@ -14,6 +16,7 @@
 #include <tuple>
 #include <unique_ptr>
 #include <string>
+#include <type_traits>
 
 
 namespace dnpsoup {
@@ -40,6 +43,10 @@ namespace dnpsoup {
         double xx, double yy, double zz, double offset, double t1, double t2,
         const Euler<> &e);
 
+    /// @param T: either DnpExperiment or Nmrexperiment
+    /// If DnpExperiment only e in rotating frame, everything else in the lab frame.
+    /// If nmr experiment, everything in the rotating frame
+    template<typename T>
     SpinPacketCollection Summarize() const;
 
     SpinSys& setEuler(const Euler<> &e) { m_e = e; return *this; }
@@ -54,5 +61,7 @@ namespace dnpsoup {
     Euler<> m_e;
   };  // class SpinSys
 } // namespace dnpsoup
+
+#include "dnpsoup_core/spinsys/SpinSysImpl.hpp"
 
 #endif

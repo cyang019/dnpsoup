@@ -36,7 +36,7 @@ namespace dnpsoup {
     const double gzz = g.get(ValueName::zz);
     const double gxx = g.get(ValueName::xx);
     const double gyy = g.get(ValueName::yy);
-    const double bz = g.get(ValueName::bz);
+    const double b0 = g.get(ValueName::b0);
     const double offset = g.get(ValueName::offset);
 
     const double sb = sin(e.beta());
@@ -53,10 +53,10 @@ namespace dnpsoup {
 
       double coeff1 = (gxx - gyy) * 0.5 * sa * sb * s2g + ca * s2b * (gzz - gxx * (cg * cg) - gyy * sg * sg);
       double coeff2 = (gyy - gxx) * 0.5 * ca * sb * s2g + sa * s2b * (gzz - gxx * (cg * cg) - gyy * sg * sg);
-      MatrixCxDbl res = -m_beta * bz * (coeff1 * m_x + coeff2 * m_y + coeff3 * m_z);
+      MatrixCxDbl res = -m_beta * b0 * (coeff1 * m_x + coeff2 * m_y + coeff3 * m_z);
       return res;
     } else {  // Rotating Frame
-      MatrixCxDbl res = (-m_beta * bz * coeff3 - offset) * m_z;
+      MatrixCxDbl res = (-m_beta * b0 * coeff3 - offset) * m_z;
       return res;
     }
   }
@@ -69,7 +69,7 @@ namespace dnpsoup {
     const double gzz = g.get(ValueName::zz);
     const double gxx = g.get(ValueName::xx);
     const double gyy = g.get(ValueName::yy);
-    const double bz = g.get(ValueName::bz);
+    const double b0 = g.get(ValueName::b0);
     const double offset = g.get(ValueName::offset);
 
     const double sb = -sin(e.beta());
@@ -86,10 +86,10 @@ namespace dnpsoup {
 
       double coeff1 = (gxx - gyy) * 0.5 * sa * sb * s2g + ca * s2b * (gzz - gxx * (cg * cg) - gyy * sg * sg);
       double coeff2 = (gyy - gxx) * 0.5 * ca * sb * s2g + sa * s2b * (gzz - gxx * (cg * cg) - gyy * sg * sg);
-      MatrixCxDbl res = -m_beta * bz * (coeff1 * m_x + coeff2 * m_y + coeff3 * m_z);
+      MatrixCxDbl res = -m_beta * b0 * (coeff1 * m_x + coeff2 * m_y + coeff3 * m_z);
       return res;
     } else {  // Rotating Frame
-      MatrixCxDbl res = (-m_beta * bz * coeff3 - offset) * m_z;
+      MatrixCxDbl res = (-m_beta * b0 * coeff3 - offset) * m_z;
       return res;
     }
   }

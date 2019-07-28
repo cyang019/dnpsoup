@@ -17,7 +17,7 @@ namespace dnpsoup {
     xx = 10,  // for anisotropy
     yy = 11,
     zz = 12,
-    bz = 100,
+    b0 = 100,
     freq = 200,
     phase = 201,
     phase0 = 202,   /// lab frame rotatin: cos(w t + phi(t)): phase0 = w * t, phase = phi(t)
@@ -38,9 +38,9 @@ namespace dnpsoup {
   }; // class PropertyValue
 
   /// @param gyro: gyromagnetic ratio in Hz/T
-  /// @param bz: magnetic field (e.g. 9.4 T)
+  /// @param b0: magnetic field (e.g. 9.4 T)
   /// @param sxx, syy, szz: chemical shift anisotropy tensor
-  Property genCsaProperty(double bz, double sxx, double syy, double szz)
+  Property genCsaProperty(double b0, double sxx, double syy, double szz)
 
   /// @param gyro1, gyro2: gyromagnetic ratio of the two interacting spins.
   /// @param distance: in Anstrom
