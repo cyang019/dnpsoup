@@ -5,8 +5,14 @@
 namespace dnpsoup {
   class SpinEntity {
   public:
-    SpinEntity(const SpinType &, const Coordinate &);
-    SpinEntity(const SpinType &, double x, double y, double z);
+    SpinEntity(const SpinType &t, const Coordinate &c)
+      : m_type(t), m_position(c)
+    {}
+
+    SpinEntity(const SpinType &t, double x, double y, double z)
+      : m_type(t), m_posotion(Coordinate(x,y,z))
+    {}
+
     SpinEntity(const SpinEntity &) = default;
     SpinEntity(SpinEntity &&) noexcept = default;
     SpinEntity& operator=(const SpinEntity &) = default;
@@ -21,7 +27,7 @@ namespace dnpsoup {
     SpinEntity& setSpinType(const SpinType &t)
     { m_type = t; return *this; }
   private:
-    Coordinate m_position;
     SpinType m_type;
+    Coordinate m_position;
   }
 } // namespace dnpsoup

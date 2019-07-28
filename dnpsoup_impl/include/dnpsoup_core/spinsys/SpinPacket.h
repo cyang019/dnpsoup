@@ -8,6 +8,7 @@
 #include <vector>
 #include <tuple>
 #include <unique_ptr>
+#include <utility>
 
 
 namespace dnpsoup {
@@ -47,12 +48,15 @@ namespace dnpsoup {
     SpinPacketCollection& add(SpinPacket &&);
     SpinPacketCollection& rotate(const Euler<> &e);
     SpinPacketCollection& setPropertyValue(const ValueName &, double val);
-    MatrixCxDbl genMatrix() const;
-  private:
-    std::vector<SpinPacket> m_spins;
-  };
 
-  MatrixCxDbl genHamiltonian(const std::vector<SpinPacket> &);
+    MatrixCxDbl genMatrix() const;
+
+    std::vector<SpinType> getSpinTypes() const;
+    std::vector<SpinId> getSpinIds() const;
+  private:
+    std::vector<SpinPacket> m_packets;
+    std::vector<std::pair<SpinId, SpinType>> m_ordered;
+  };
 } // namespace dnpsoup
 
 #endif

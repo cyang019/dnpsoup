@@ -1,5 +1,7 @@
 #include "dnpsoup_core/spinsys/SpinSys.h"
 #include "dnpsoup_core/errors.h"
+#include <string>
+#include <sstream>
 
 
 namespace dnpsoup {
@@ -17,13 +19,59 @@ namespace dnpsoup {
     return *this;
   }
 
-  SpinSys& SpinSys::addObservable(const InteractionType &t, const SpinId &s_id)
+  SpinSys& SpinSys::addCsa(const SpinId &sid, 
+      double xx, double yy, double zz, const Euler<> &e)
+  {
+    if(m_spins.find(id_name) == m_spins.end()){
+      const string id_str = std::to_string(sid.get());
+      std::ostringstream oss;
+      oss << "SpinId " << id_str << " not found in the SpinSys.";
+      throw IndexError(oss.str());
+    }
+    auto csa = Observable(InteractionType::Csa, sid);
+    auto p = Property();
+    p.set(ValueName::xx, xx);
+    p.set(ValueName::yy, yy);
+    p.set(ValueName::zz, zz);
+
+    return *this;
+  }
+  SpinSys& SpinSys::addCsa(const SpinId &, 
+      double xx, double yy, double zz, double t1, double t2,
+      const Euler<> &e)
   {
     return *this;
   }
 
-  SpinSys& SpinSys::addObservable(const InteractionType &t, 
-      const SpinId &s_id1, const SpinId &s_id2)
+  SpinSys& SpinSys::addDipole(const SpinId&, const SpinId&, double dist)
+  {
+    return *this;
+  }
+
+  SpinSys& SpinSys::addDipole(const SpinId&, const SpinId&, double dist, double t1, double t2)
+  {
+    return *this;
+  }
+
+  SpinSys& SpinSys::addScalar(const SpinId&, cosnt SpinId&, double val)
+  {
+    return *this;
+  }
+
+  SpinSys& SpinSys::addScalar(const SpinId&, cosnt SpinId&, double val, double t1, double t2)
+  {
+    return *this;
+  }
+
+  SpinSys& SpinSys::addShielding(const SpinId&, 
+      double xx, double yy, double zz, double offset, const Euler<> &e)
+  {
+    return *this;
+  }
+
+  SpinSys& SpinSys::addShielding(const SpinId&, 
+      double xx, double yy, double zz, double offset, double t1, double t2,
+      const Euler<> &e)
   {
     return *this;
   }
@@ -33,7 +81,6 @@ namespace dnpsoup {
     m_e = m_e * e;    ///< first rotate e, then m_e
     return *this;
   }
-
 
   SpinSys& SpinSys::clearObservables()
   { m_observables.clear(); return *this; }

@@ -32,13 +32,13 @@ namespace dnpsoup {
 
   SpinPacketCollection& SpinPacketCollection::add(SpinPacket &&sp)
   {
-    m_spins.push_back(std::move(sp));
+    m_packets.push_back(std::move(sp));
     return *this;
   }
 
   SpinPacketCollection& SpinPacketCollection::rotate(const Euler<> &e)
   {
-    for(auto &sp : m_spins){
+    for(auto &sp : m_packets){
       sp.rotate(e);
     }
     return *this;
@@ -46,7 +46,7 @@ namespace dnpsoup {
 
   SpinPacketCollection& SpinPacketCollection::setPropertyValue(const ValueName &vname, double val)
   {;;
-    for(auto &sp : m_spins){
+    for(auto &sp : m_packets){
       sp.setPropertyValue(vname, val);
     }
     return *this;
@@ -54,10 +54,10 @@ namespace dnpsoup {
 
   MatrixCxDbl SpinPacketCollection::genMatrix() const
   {
-    if(m_spins.size() == 0) return MatrixCxDbl();
-    MatrixCxDbl res = m_spins[0].genMatrix();
-    for(size_t i = 1; i < m_spins.size(); ++i){
-      res += m_spins[i].genMatrix();
+    if(m_packets.size() == 0) return MatrixCxDbl();
+    MatrixCxDbl res = m_packets[0].genMatrix();
+    for(size_t i = 1; i < m_packets.size(); ++i){
+      res += m_packets[i].genMatrix();
     }
     return res;
   }

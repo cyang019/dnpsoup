@@ -16,4 +16,13 @@ namespace dnpsoup {
         + "_" + std::to_string(id1.get());
     }
   }
+
+  // class Observable
+  Observable::Observable(const InteractionType &t, const SpinId &id)
+    : m_type(t), m_spin_ids({id})
+  {}
+
+  Observable(const InteractionType &t, const SpinId &id1, const SpinId &id2)
+    : m_type(t), m_spin_ids({id1, id2})
+  {}
 } // namespace dnpsoup

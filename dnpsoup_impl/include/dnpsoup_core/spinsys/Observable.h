@@ -26,6 +26,9 @@ namespace dnpsoup {
     std::string m_id; 
   };
 
+  bool operator==(const ObservableId &oid1, const ObservableId &oid2)
+  { return oid1.get() == oid2.get(); }
+
   class Observable {
   public:
     Observable(const InteractionType &, const SpinId &);

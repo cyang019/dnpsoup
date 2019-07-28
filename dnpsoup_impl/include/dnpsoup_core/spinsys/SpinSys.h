@@ -10,6 +10,7 @@
 #include "dnpsoup_core/spinsys/SpinPacket.h"
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 #include <tuple>
 #include <unique_ptr>
 #include <string>
@@ -21,8 +22,23 @@ namespace dnpsoup {
     SpinSys();
 
     SpinSys& addSpin(const SpinId &, const SpinEntity &); 
-    SpinSys& addObservable(const InteractionType &, const SpinId &);
-    SpinSys& addObservable(const InteractionType &, const SpinId &, const SpinId &);
+    SpinSys& addCsa(const SpinId &, 
+        double xx, double yy, double zz, const Euler<> &e);
+    SpinSys& addCsa(const SpinId &, 
+        double xx, double yy, double zz, double t1, double t2,
+        const Euler<> &e);
+
+    SpinSys& addDipole(const SpinId&, const SpinId&, double dist);
+    SpinSys& addDipole(const SpinId&, const SpinId&, double dist, double t1, double t2);
+
+    SpinSys& addScalar(const SpinId&, cosnt SpinId&, double val);
+    SpinSys& addScalar(const SpinId&, cosnt SpinId&, double val, double t1, double t2);
+
+    SpinSys& addShielding(const SpinId&, 
+        double xx, double yy, double zz, double offset, const Euler<> &e);
+    SpinSys& addShielding(const SpinId&, 
+        double xx, double yy, double zz, double offset, double t1, double t2,
+        const Euler<> &e);
 
     SpinPacketCollection Summarize() const;
 
