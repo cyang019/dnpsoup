@@ -17,7 +17,7 @@ namespace dnpsoup {
   };
 
   double getGyromagneticRatio(const SpinType &);
-  size_t getMatrixDimension(const SpinType &);
+  std::size_t getMatrixDimension(const SpinType &);
 
   enum class OperatorType : int {
     Identity =  0,

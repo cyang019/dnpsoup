@@ -20,6 +20,8 @@ namespace dnpsoup {
   /// e in rotating frame. Nuclei's all in lab frame
   class DnpExperiment : public Experiment
   {
+    double getRfOffset() const { return m_rf_offset; }
+    DnpExperiment& setRfOffset(double val) { m_rf_offset = val; return *this; }
   private:
     double m_rf_offset;   ///< in Hz
   };

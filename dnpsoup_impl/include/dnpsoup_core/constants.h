@@ -2,6 +2,7 @@
 #define DNPSOUP_CONSTANTS_H
 
 #include <complex>
+#include <limits>
 #include <cmath>
 
 namespace dnpsoup {
@@ -10,6 +11,8 @@ namespace dnpsoup {
   /// pi from std::M_PI
   constexpr double pi = 3.14159265358979323846264338327950288;
   constexpr double mu0 = 4 * pi * 1.0e-7;
+
+  constexpr inf = std::numeric_limits<double>::infinity();
 
   /// From NIST
   constexpr double kb = 1.38064852e-23;   ///< \f$m^2 kg s^{-2} K^{-1} \f$

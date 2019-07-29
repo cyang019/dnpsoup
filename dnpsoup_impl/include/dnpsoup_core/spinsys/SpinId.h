@@ -22,6 +22,16 @@ namespace dnpsoup {
     int m_id;
   };
 
+  inline bool operator<(const SpinId &id1, const SpinId &id2)
+  {
+    return id1.get() < id2.get();
+  }
+
+  inline bool operator>(const SpinId &id1, const SpinId &id2)
+  {
+    return id1.get() > id2.get();
+  }
+
   class SpinIdHash {
     std::size_t operator()(const SpinId &) const;
   };

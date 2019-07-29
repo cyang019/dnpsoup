@@ -55,10 +55,11 @@ namespace dnpsoup {
   private:
     InteractionType m_type;
     std::vector<SpinId> m_spin_ids;
-    double m_t1;    // T1 relaxation, default infinity
-    double m_t2;    // T2 relaxation, default infinity
+
     Euler<> m_e;
     Property m_p;
+    double m_t1;    // T1 relaxation, default infinity
+    double m_t2;    // T2 relaxation, default infinity
   };
 
   class ObservableIdHash {

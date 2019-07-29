@@ -20,9 +20,10 @@ namespace dnpsoup {
   }
 
   SpinSys& SpinSys::addCsa(const SpinId &sid, 
-      double xx, double yy, double zz, const Euler<> &e)
+      double xx, double yy, double zz, const Euler<> &e,
+      double t1, double t2)
   {
-    if(m_spins.find(id_name) == m_spins.end()){
+    if(m_spins.find(sid) == m_spins.end()){
       const string id_str = std::to_string(sid.get());
       std::ostringstream oss;
       oss << "SpinId " << id_str << " not found in the SpinSys.";
@@ -34,45 +35,96 @@ namespace dnpsoup {
     p.set(ValueName::yy, yy);
     p.set(ValueName::zz, zz);
 
-    return *this;
-  }
-  SpinSys& SpinSys::addCsa(const SpinId &, 
-      double xx, double yy, double zz, double t1, double t2,
-      const Euler<> &e)
-  {
+    csa.setProperty(p);
+    csa.setEuler(e);
+    csa.setT1(t1);
+    csa.setT2(t2);
+
+    const auto oid_name = ObservableId(InteractionType::Csa, sid);
+    m_observables[oid_name] = csa;
+
     return *this;
   }
 
-  SpinSys& SpinSys::addDipole(const SpinId&, const SpinId&, double dist)
+  SpinSys& SpinSys::addDipole(const SpinId &s1, const SpinId &s2, 
+      double dist, double t1, double t2)
   {
+    if(m_spins.find(id1) == m_spins.end()){
+      const string id_str = std::to_string(s1.get());
+      std::ostringstream oss;
+      oss << "SpinId " << id_str << " not found in the SpinSys.";
+      throw IndexError(oss.str());
+    } else if(m_spins.find(id2) == m_spins.end()) {
+      const string id_str = std::to_string(s2.get());
+      std::ostringstream oss;
+      oss << "SpinId " << id_str << " not found in the SpinSys.";
+      throw IndexError(oss.str());
+    }
+
+    auto dipole = Observable(InteractionType::Dipole, s1, s2);
+    auto p = Property();
+    p.set(ValueName::distance, dist);
+
+    dipole.setProperty(p);
+    dipole.setT1(t1);
+    dipole.setT2(t2);
+
+    const auto oid_name = ObservableId(InteractionType::Dipole, s1, s2);
+    m_observables[oid_name] = dipole;
     return *this;
   }
 
-  SpinSys& SpinSys::addDipole(const SpinId&, const SpinId&, double dist, double t1, double t2)
+  SpinSys& SpinSys::addScalar(const SpinId &s1, const SpinId &s2,
+      double val, double t1, double t2)
   {
+    if(m_spins.find(id1) == m_spins.end()){
+      const string id_str = std::to_string(s1.get());
+      std::ostringstream oss;
+      oss << "SpinId " << id_str << " not found in the SpinSys.";
+      throw IndexError(oss.str());
+    } else if(m_spins.find(id2) == m_spins.end()) {
+      const string id_str = std::to_string(s2.get());
+      std::ostringstream oss;
+      oss << "SpinId " << id_str << " not found in the SpinSys.";
+      throw IndexError(oss.str());
+    }
+
+    auto scalar = Observable(InteractionType::Scalar, s1, s2);
+    auto p = Property();
+    p.set(ValueName::scalar, val);
+    
+    scalar.setProperty(scalar);
+    scalar.setT1(t1);
+    scalar.setT2(t2);
+
+    const auto oid_name = ObservableId(InteractionType::Scalar, s1, s2);
+    m_observables[oid_name] = scalar;
     return *this;
   }
 
-  SpinSys& SpinSys::addScalar(const SpinId&, cosnt SpinId&, double val)
+  SpinSys& SpinSys::addShielding(const SpinId &sid, 
+      double gxx, double gyy, double gzz, const Euler<> &e,
+      double t1, double t2)
   {
-    return *this;
-  }
+    if(m_spins.find(sid) == m_spins.end()){
+      const string id_str = std::to_string(sid.get());
+      std::ostringstream oss;
+      oss << "SpinId " << id_str << " not found in the SpinSys.";
+      throw IndexError(oss.str());
+    }
+    auto shielding = Observable(InteractionType::Shielding, sid);
+    auto p = Property();
+    p.set(ValueName::xx, gxx);
+    p.set(ValueName::yy, gyy);
+    p.set(ValueName::zz, gzz);
 
-  SpinSys& SpinSys::addScalar(const SpinId&, cosnt SpinId&, double val, double t1, double t2)
-  {
-    return *this;
-  }
+    shielding.setProperty(p);
+    shielding.setEuler(e);
+    shielding.setT1(t1);
+    shielding.setT2(t2);
 
-  SpinSys& SpinSys::addShielding(const SpinId&, 
-      double xx, double yy, double zz, double offset, const Euler<> &e)
-  {
-    return *this;
-  }
-
-  SpinSys& SpinSys::addShielding(const SpinId&, 
-      double xx, double yy, double zz, double offset, double t1, double t2,
-      const Euler<> &e)
-  {
+    const auto oid_name = ObservableId(InteractionType::Shielding, sid);
+    m_observables[oid_name] = shielding;
     return *this;
   }
 
@@ -91,4 +143,28 @@ namespace dnpsoup {
     m_spins.clear();
     return *this;
   }
+
+  std::size_t SpinSys::calcTotalDimension() const 
+  {
+    std::size_t total_dim = 0;
+    for(const auto &spin : m_spins){
+      auto t = spin.second.getSpinType();
+      std::size_t dim = getMatrixDimension(t);
+      if(dim > 0){
+        total_dim = (total_dim > 0) ? total_dim * dim : dim;
+      }
+    }
+    return total_dim;
+  }
+
+  std::vector<std::size_t> SpinSys::calcDimensions() const
+  {
+    std::vector<std::size_t> dims;
+    for(const auto &s : m_spins){
+      const std::size_t d = getMatrixDimension(s.second.getSpinType());
+      dims.push_back((d);
+    }
+    return dims;
+  }
+
 } // namespace dnpsoup

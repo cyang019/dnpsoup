@@ -2,6 +2,9 @@
 #define DNPSOUP_SPINSYS_H
 
 #include "dnpsoup_core/errors.h"
+#include "dnpsoup_core/constants.h"
+#include "dnpsoup_core/spin_physics_components/rotation/FrameType.h"
+#include "dnpsoup_core/spin_physics_components/rotation/Euler.h"
 #include "dnpsoup_core/spin_physics_components/spin.h"
 #include "dnpsoup_core/spin_physics_components/hamiltonian/Property.h"
 #include "dnpsoup_core/spin_physics_components/hamiltonian/interactions/interactions.h"
@@ -12,6 +15,7 @@
 #include "dnpsoup_core/spinsys/SpinPacket.h"
 #include <vector>
 #include <unordered_map>
+#include <map>
 #include <unordered_set>
 #include <tuple>
 #include <unique_ptr>
@@ -25,23 +29,20 @@ namespace dnpsoup {
     SpinSys();
 
     SpinSys& addSpin(const SpinId &, const SpinEntity &); 
-    SpinSys& addCsa(const SpinId &, 
-        double xx, double yy, double zz, const Euler<> &e);
-    SpinSys& addCsa(const SpinId &, 
-        double xx, double yy, double zz, double t1, double t2,
-        const Euler<> &e);
 
-    SpinSys& addDipole(const SpinId&, const SpinId&, double dist);
-    SpinSys& addDipole(const SpinId&, const SpinId&, double dist, double t1, double t2);
+    SpinSys& addCsa(const SpinId &, 
+        double xx, double yy, double zz, const Euler<> &e,
+        double t1 = inf, double t2 = inf);
 
-    SpinSys& addScalar(const SpinId&, cosnt SpinId&, double val);
-    SpinSys& addScalar(const SpinId&, cosnt SpinId&, double val, double t1, double t2);
+    SpinSys& addDipole(const SpinId&, const SpinId&, double dist,
+        double t1 = inf, double t2 = inf);
+
+    SpinSys& addScalar(const SpinId&, cosnt SpinId&, double val,
+        double t1 = inf, double t2 = inf);
 
     SpinSys& addShielding(const SpinId&, 
-        double xx, double yy, double zz, double offset, const Euler<> &e);
-    SpinSys& addShielding(const SpinId&, 
-        double xx, double yy, double zz, double offset, double t1, double t2,
-        const Euler<> &e);
+        double gxx, double gyy, double gzz, const Euler<> &e,
+        double t1 = inf, double t2 = inf);
 
     /// @param T: either DnpExperiment or Nmrexperiment
     /// If DnpExperiment only e in rotating frame, everything else in the lab frame.
@@ -55,10 +56,17 @@ namespace dnpsoup {
 
     SpinSys& clearObservables();
     SpinSys& clear();
+
+    std::size_t calcTotalDimension() const;
+    std::vector<std::size_t> calcDimensions() const;
   private:
-    std::unordered_map<SpinId, SpinEntity, SpinIdHash> m_spins;
+    std::map<SpinId, SpinEntity> m_spins;
     std::unordered_map<ObservableId, Observable, ObservableIdHash> m_observables;
     Euler<> m_e;
+
+    /// need to use position info from SpinSys
+    template<typename T>
+    std::unique_ptr<InteractionInterface> genInteractionFromObservable(const Observable&) const;
   };  // class SpinSys
 } // namespace dnpsoup
 
