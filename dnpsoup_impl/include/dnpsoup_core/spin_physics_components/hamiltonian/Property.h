@@ -40,7 +40,7 @@ namespace dnpsoup {
   /// @param gyro: gyromagnetic ratio in Hz/T
   /// @param b0: magnetic field (e.g. 9.4 T)
   /// @param sxx, syy, szz: chemical shift anisotropy tensor
-  Property genCsaProperty(double b0, double sxx, double syy, double szz)
+  Property genCsaProperty(double b0, double sxx, double syy, double szz);
 
   /// @param gyro1, gyro2: gyromagnetic ratio of the two interacting spins.
   /// @param distance: in Anstrom

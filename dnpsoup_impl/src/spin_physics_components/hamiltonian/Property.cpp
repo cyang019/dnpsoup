@@ -27,7 +27,7 @@ namespace dnpsoup {
       case ValueName::zz:
         os << "zz";
         break;
-      case ValueName::bz:
+      case ValueName::b0:
         os << "bz";
         break;
       case ValueName::freq:
@@ -57,13 +57,13 @@ namespace dnpsoup {
     return *this;
   }
 
-  Property genCsaProperty(double bz, double sxx, double syy, double szz)
+  Property genCsaProperty(double b0, double sxx, double syy, double szz)
   {
     Property p;
     p.set(ValueName::xx, sxx);
     p.set(ValueName::yy, syy);
     p.set(ValueName::zz, szz);
-    p.set(ValueName::bz, bz);
+    p.set(ValueName::b0, b0);
     return p;
   }
 

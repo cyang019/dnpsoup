@@ -2,12 +2,13 @@
 #define DNPSOUP_OBSERVABLE_H
 
 #include "dnpsoup_core/spinsys/SpinId.h"
-#include "dnpsoup_core/spin_physics_components/Rotation/Euler.h"
+#include "dnpsoup_core/spin_physics_components/rotation/Euler.h"
 #include "dnpsoup_core/spin_physics_components/hamiltonian/Property.h"
+#include "dnpsoup_core/spin_physics_components/hamiltonian/interactions/interaction_types.h"
 #include <vector>
 #include <cstdint>
 #include <string>
-#include <hash>
+#include <functional>     // hash
 
 
 namespace dnpsoup {
@@ -34,9 +35,9 @@ namespace dnpsoup {
     Observable(const InteractionType &, const SpinId &);
     Observable(const InteractionType &, const SpinId &, const SpinId &);
     Observable(const Observable &) = default;
-    Observable(Observable &&) noexcept = default;
+    Observable(Observable &&) noexcept;
     Observable& operator=(const Observable&) = default;
-    Observable& operator=(Observable &&) noexcept = default;
+    Observable& operator=(Observable &&) noexcept;
     ~Observable() {}
 
     std::vector<SpinId> getSpinIds() const { return m_spin_ids; }

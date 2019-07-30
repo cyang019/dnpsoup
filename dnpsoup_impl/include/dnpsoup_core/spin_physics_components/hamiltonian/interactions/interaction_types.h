@@ -16,18 +16,28 @@ namespace dnpsoup {
     Wave        = 10     ///< RF or Microwave Irradiation
   };
 
-  constexpr unordered_set<InteractionType, EnumClassType<InteractionType> OneSpinInteractions({
+  inline bool operator>(const InteractionType &t1, const InteractionType &t2)
+  {
+    return (static_cast<int>(t1) > static_cast<int>(t2));
+  }
+
+  inline bool operator<(const InteractionType &t1, const InteractionType &t2)
+  {
+    return (static_cast<int>(t1) < static_cast<int>(t2));
+  }
+
+  const std::unordered_set<InteractionType, EnumClassHash> OneSpinInteractions({
       InteractionType::Csa,
       InteractionType::Shielding
       });
-  constexpr unordered_set<InteractionType, EnumClassType<InteractionType> TwoSpinInteractions({
+  const std::unordered_set<InteractionType, EnumClassHash> TwoSpinInteractions({
       InteractionType::Scalar,
       InteractionType::Dipole
       });
 
   inline std::string interactionName(const InteractionType &t)
   {
-    string name;
+    std::string name;
     switch(t){
       case InteractionType::Scalar:
         name = "Scalar";
