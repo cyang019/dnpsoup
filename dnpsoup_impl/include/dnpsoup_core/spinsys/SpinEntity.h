@@ -10,7 +10,7 @@ namespace dnpsoup {
     {}
 
     SpinEntity(const SpinType &t, double x, double y, double z)
-      : m_type(t), m_posotion(Coordinate(x,y,z))
+      : m_type(t), m_position(Coordinate(x,y,z))
     {}
 
     SpinEntity(const SpinEntity &) = default;

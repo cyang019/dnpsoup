@@ -1,42 +1,42 @@
-#include "dnpsoup_core/spinsys/SpinPacket.h"
+#include "dnpsoup_core/spinsys/SimulationPacket.h"
 
 
 namespace dnpsoup {
-  SpinPacket::SpinPacket(
+  SimulationPacket::SimulationPacket(
       std::unique_ptr<InteractionInterface> ptr_interface, 
       const Property &p, const Euler<> &e)
     : m_ptr_interface(std::move(ptr_interface)), m_property(p), m_e(e)
   {}
 
-  SpinPacket& SpinPacket::rotate(const Euler<> &e)
+  SimulationPacket& SimulationPacket::rotate(const Euler<> &e)
   {
     m_e = m_e * e;
     return *this;
   }
 
-  SpinPacket& SpinPacket::setPropertyValue(const ValueName &vname, double val)
+  SimulationPacket& SimulationPacket::setPropertyValue(const ValueName &vname, double val)
   {
     m_property.set(vname, val);
     return *this;
   }
 
-  double SpinPacket::getPropertyValue(const ValueName &vname) const
+  double SimulationPacket::getPropertyValue(const ValueName &vname) const
   {
     return m_property.get(vname);
   }
 
-  MatrixCxDbl SpinPacket::genMatrix() const
+  MatrixCxDbl SimulationPacket::genMatrix() const
   {
     return m_ptr_interface->genMatrix(m_property, m_e);
   }
 
-  SpinPacketCollection& SpinPacketCollection::add(SpinPacket &&sp)
+  PacketCollection& PacketCollection::add(SimulationPacket &&sp)
   {
     m_packets.push_back(std::move(sp));
     return *this;
   }
 
-  SpinPacketCollection& SpinPacketCollection::rotate(const Euler<> &e)
+  PacketCollection& PacketCollection::rotate(const Euler<> &e)
   {
     for(auto &sp : m_packets){
       sp.rotate(e);
@@ -44,7 +44,7 @@ namespace dnpsoup {
     return *this;
   }
 
-  SpinPacketCollection& SpinPacketCollection::setPropertyValue(const ValueName &vname, double val)
+  PacketCollection& PacketCollection::setPropertyValue(const ValueName &vname, double val)
   {;;
     for(auto &sp : m_packets){
       sp.setPropertyValue(vname, val);
@@ -52,7 +52,7 @@ namespace dnpsoup {
     return *this;
   }
 
-  MatrixCxDbl SpinPacketCollection::genMatrix() const
+  MatrixCxDbl PacketCollection::genMatrix() const
   {
     if(m_packets.size() == 0) return MatrixCxDbl();
     MatrixCxDbl res = m_packets[0].genMatrix();

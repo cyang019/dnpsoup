@@ -8,6 +8,6 @@ target_sources(dnpsoup_core
   "${CMAKE_CURRENT_LIST_DIR}/spin_physics_components/rotation/Coordinate.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/spinsys/SpinId.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/spinsys/Observable.cpp"
-  "${CMAKE_CURRENT_LIST_DIR}/spinsys/SpinPacket.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/spinsys/SimulationPacket.cpp"
   )
 

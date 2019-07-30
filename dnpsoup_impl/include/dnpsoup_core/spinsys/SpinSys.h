@@ -12,7 +12,7 @@
 #include "dnpsoup_core/spinsys/SpinId.h"
 #include "dnpsoup_core/spinsys/SpinEntity.h"
 #include "dnpsoup_core/spinsys/Observable.h"
-#include "dnpsoup_core/spinsys/SpinPacket.h"
+#include "dnpsoup_core/spinsys/SimulationPacket.h"
 #include <vector>
 #include <unordered_map>
 #include <map>
@@ -21,9 +21,18 @@
 #include <unique_ptr>
 #include <string>
 #include <type_traits>
+#include <iterator>
 
 
 namespace dnpsoup {
+  std::size_t calcDimBeforeId(
+      const std::map<SpinId, SpinEntity> &spins, const SpinId &sid);
+  std::size_t calcDimAfterId(
+      const std::map<SpinId, SpinEntity> &spins, const SpinId &sid);
+  std::size_t calcDimBetweenIds(
+      const std::map<SpinId, SpinEntity> &spins, 
+      const SpinId &sid1, const SpinId &sid2);
+
   class SpinSys {
   public:
     SpinSys();
@@ -48,7 +57,7 @@ namespace dnpsoup {
     /// If DnpExperiment only e in rotating frame, everything else in the lab frame.
     /// If nmr experiment, everything in the rotating frame
     template<typename T>
-    SpinPacketCollection Summarize() const;
+    PacketCollection Summarize() const;
 
     SpinSys& setEuler(const Euler<> &e) { m_e = e; return *this; }
     Euler<> getEuler() const { return m_e; }
@@ -67,6 +76,9 @@ namespace dnpsoup {
     /// need to use position info from SpinSys
     template<typename T>
     std::unique_ptr<InteractionInterface> genInteractionFromObservable(const Observable&) const;
+
+    std::vector<std::size_t> m_dimensions;
+    std::size_t m_ntotal;
   };  // class SpinSys
 } // namespace dnpsoup
 

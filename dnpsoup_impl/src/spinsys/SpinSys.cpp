@@ -2,9 +2,64 @@
 #include "dnpsoup_core/errors.h"
 #include <string>
 #include <sstream>
+#include <iterator>
 
 
 namespace dnpsoup {
+  std::size_t calcDimBeforeId(
+      const std::map<SpinId, SpinEntity> &spins, const SpinId &sid)
+  {
+    auto sid_iter = spins.find(sid);
+    std::size_t res = 0;
+    for(auto iter = spins.begin(); iter != sid_iter; ++iter){
+      const auto t = (iter->second).getSpinType();
+      std::size_t dim = getMatrixDimension(t);
+      if(dim > 0){
+        res = (res > 0) res * dim : dim;
+      }
+    }
+    return res;
+  }
+
+  std::size_t calcDimAfterId(
+      const std::map<SpinId, SpinEntity> &spins, const SpinId &sid)
+  {
+    std::size_t res = 0;
+    auto sid_iter = spins.find(sid);
+    std::advance(sid_iter, 1);
+    for(auto iter = sid_iter; iter != spins.end(); ++iter){
+      const auto t = (iter->second).getSpinType();
+      std::size_t dim = getMatrixDimension(t);
+      if(dim > 0){
+        res = (res > 0) res * dim : dim;
+      }
+    }
+    return res;
+  }
+
+  std::size_t calcDimBetweenIds(
+      const std::map<SpinId, SpinEntity> &spins, 
+      const SpinId &sid1, const SpinId &sid2)
+  {
+    std::size_t res = 0;
+    auto iter1 = spins.find(sid1);
+    auto iter2 = spins.find(sid2);
+    if(sid1.get() > sid2.get()){
+      auto iter_temp = iter1;
+      iter1 = iter2;
+      iter2 = iter_temp;
+    }
+    std::advance(iter1, 1);
+    for(auto iter = iter1; iter != iter2; ++iter){
+      const auto t = (iter->second).getSpinType();
+      std::size_t dim = getMatrixDimension(t);
+      if(dim > 0){
+        res = (res > 0) res * dim : dim;
+      }
+    }
+    return res;
+  }
+
   SpinSys::SpinSys()
     : m_e(Euler<>(0.0,0.0,0.0))
   {}
@@ -15,6 +70,11 @@ namespace dnpsoup {
       m_spins[id_name] = s;
     } else {
       throw DuplicationError("SpinId already in the SpinSys.");
+    }
+    m_dimensions.clear();
+    std::size_t dim = getMatrixDimension(s.getSpinType()); 
+    if(dim > 0){
+      m_ntotal = (m_ntotal > 0) ? m_ntotal * dim : dim;
     }
     return *this;
   }
@@ -141,6 +201,8 @@ namespace dnpsoup {
   {
     m_observables.clear();
     m_spins.clear();
+    m_dimensions.clear();
+    m_ntotal = 0;
     return *this;
   }
 

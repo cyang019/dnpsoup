@@ -16,6 +16,7 @@ target_sources(dnpsoup_core
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spinsys/SpinId.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spinsys/Observable.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spinsys/SpinSys.h"
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spinsys/SimulationPacket.h"
 
   PUBLIC
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup.h"
