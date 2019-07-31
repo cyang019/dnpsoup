@@ -14,10 +14,10 @@ namespace dnpsoup {
   public:
       Euler() : m_alpha(0.0), m_beta(0.0), m_gamma(0.0) {}
       Euler(double a, double b, double g) : m_alpha(a), m_beta(b), m_gamma(g) {}
-      Euler(const Euler<T> &) = default;
-      Euler(Euler<T> &&) noexcept = default;
-      Euler<T>& operator=(const Euler<T> &) = default;
-      Euler<T>& operator=(Euler<T> &&) noexcept = default;
+      Euler(const Euler<T> &);
+      Euler(Euler<T> &&) noexcept;
+      Euler<T>& operator=(const Euler<T> &);
+      Euler<T>& operator=(Euler<T> &&) noexcept;
       ~Euler() {}
 
       double alpha() const { return m_alpha; }

@@ -18,7 +18,7 @@
 #include <map>
 #include <unordered_set>
 #include <tuple>
-#include <unique_ptr>
+#include <memory>   // unique_ptr
 #include <string>
 #include <type_traits>
 #include <iterator>
@@ -43,10 +43,10 @@ namespace dnpsoup {
         double xx, double yy, double zz, const Euler<> &e,
         double t1 = inf, double t2 = inf);
 
-    SpinSys& addDipole(const SpinId&, const SpinId&, double dist,
+    SpinSys& addDipole(const SpinId&, const SpinId&,
         double t1 = inf, double t2 = inf);
 
-    SpinSys& addScalar(const SpinId&, cosnt SpinId&, double val,
+    SpinSys& addScalar(const SpinId&, const SpinId&, double val,
         double t1 = inf, double t2 = inf);
 
     SpinSys& addShielding(const SpinId&, 

@@ -5,9 +5,10 @@
 #include "dnpsoup_core/spin_physics_components/rotation/Euler.h"
 #include "dnpsoup_core/spin_physics_components/hamiltonian/InteractionInterface.h"
 #include "dnpsoup_core/spin_physics_components/hamiltonian/Property.h"
+#include "dnpsoup_core/spinsys/SpinId.h"
 #include <vector>
 #include <tuple>
-#include <unique_ptr>
+#include <memory>   // unique_ptr
 #include <utility>
 
 
@@ -17,9 +18,9 @@ namespace dnpsoup {
     SimulationPacket(std::unique_ptr<InteractionInterface>, 
         const Property &, const Euler<> &);
     SimulationPacket(const SimulationPacket &) = delete;
-    SimulationPacket(SimulationPacket &&) noexcept = default;
+    SimulationPacket(SimulationPacket &&) noexcept;
     SimulationPacket& operator=(const SimulationPacket &) = delete;
-    SimulationPacket& operator=(SimulationPacket &&) noexcept = default;
+    SimulationPacket& operator=(SimulationPacket &&) noexcept;
     ~SimulationPacket() {}
 
     // rotate e, then m_e

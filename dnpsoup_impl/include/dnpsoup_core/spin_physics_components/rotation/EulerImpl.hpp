@@ -1,4 +1,34 @@
 namespace dnpsoup {
+  template<typename T>
+  Euler<T>::Euler(const Euler<T> &e)
+    : m_alpha(e.m_alpha), m_beta(e.m_beta), m_gamma(e.m_gamma)
+  {}
+
+  template<typename T>
+  Euler<T>::Euler(Euler<T> &&e) noexcept
+    : m_alpha(std::move(e.m_alpha)), 
+    m_beta(std::move(e.m_beta)), 
+    m_gamma(std::move(e.m_gamma))
+  {}
+
+  template<typename T>
+  Euler<T>& Euler<T>::operator=(const Euler<T> &rhs)
+  {
+    m_alpha = rhs.m_alpha;
+    m_beta = rhs.m_beta;
+    m_gamma = rhs.m_gamma;
+    return *this;
+  }
+
+  template<typename T>
+  Euler<T>& Euler<T>::operator=(Euler<T> &&rhs) noexcept
+  {
+    m_alpha = std::move(rhs.m_alpha);
+    m_beta = std::move(rhs.m_beta);
+    m_gamma = std::move(rhs.m_gamma);
+    return *this;
+  }
+
   template<typename R>
   inline
   Euler<R> toEuler(const Quaternion &q)
@@ -55,8 +85,8 @@ namespace dnpsoup {
   inline
   Euler<T> operator*(const Euler<T> &e1, const Euler<T> &e2)
   {
-    Quaternion q1(e1);
-    Quaternion q2(e2);
+    Quaternion q1 = toQuaternion(e1);
+    Quaternion q2 = toQuaternion(e2);
     Quaternion res = q1 * q2;
     return toEuler<T>(res);
   }

@@ -45,14 +45,19 @@ namespace dnpsoup {
 
     double T1() const { return m_t1; }
     double T2() const { return m_t2; }
-    Observable& setT1(double t1) { m_t1 = t1; return *this; }
-    Observable& setT2(double t2) { m_t2 = t2; return *this; }
+    Observable& setT1(double t1) 
+    { m_t1 = t1; return *this; }
+
+    Observable& setT2(double t2) 
+    { m_t2 = t2; return *this; }
 
     Euler<> getEuler() const { return m_e; }
-    Observable& setEuler(const Euler<> &e) const { m_e = e; return *this; }
+    Observable& setEuler(const Euler<> &e) 
+    { m_e = e; return *this; }
 
     Property getProperty() const { return m_p; }
-    Observable& setProperty(const Property &p) const { m_p = p; return *this; }
+    Observable& setProperty(const Property &p) 
+    { m_p = p; return *this; }
   private:
     InteractionType m_type;
     std::vector<SpinId> m_spin_ids;
@@ -64,7 +69,7 @@ namespace dnpsoup {
   };
 
   class ObservableIdHash {
-    std::size_t operator(const ObservableId &o_id) const
+    std::size_t operator()(const ObservableId &o_id) const
     {
       return std::hash<std::string>{}(o_id.get());
     }

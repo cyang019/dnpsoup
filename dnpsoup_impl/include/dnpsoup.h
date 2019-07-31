@@ -10,5 +10,6 @@
 #include "dnpsoup_core/spin_physics_components/spin.h"
 #include "dnpsoup_core/spin_physics_components/hamiltonian/irreducible_tensor_op.h"
 #include "dnpsoup_core/spin_physics_components/hamiltonian/interactions/interactions.h"
+#include "dnpsoup_core/spinsys/SpinSys.h"
 
 #endif

@@ -4,7 +4,7 @@ namespace dnpsoup {
     {
       PacketCollection result;
       for(const auto &obs : m_observables){
-        auto ptr_interaction = self.genInteractionFromObservable<T>(ob);
+        auto ptr_interaction = genInteractionFromObservable<T>(obs);
         auto packet = SimulationPacket(
             std::move(ptr_interaction), obs.getProperty(), obs.getEuler());
         result.add(std::move(packet));

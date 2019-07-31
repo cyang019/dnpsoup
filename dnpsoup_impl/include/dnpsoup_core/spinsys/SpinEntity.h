@@ -1,5 +1,5 @@
 #include "dnpsoup_core/spin_physics_components/rotation/Coordinate.h"
-#include "dnpsoup_core/sph_physics_components/spin.h"
+#include "dnpsoup_core/spin_physics_components/spin.h"
 #include "dnpsoup_core/spinsys/SpinId.h"
 
 namespace dnpsoup {
@@ -29,5 +29,5 @@ namespace dnpsoup {
   private:
     SpinType m_type;
     Coordinate m_position;
-  }
+  };
 } // namespace dnpsoup

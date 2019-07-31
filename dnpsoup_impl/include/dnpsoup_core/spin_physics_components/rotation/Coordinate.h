@@ -61,6 +61,15 @@ namespace dnpsoup {
 
   std::tuple<double, double> calcAnglesWithZ(const Coordinate &c);  
 
+  inline double calcDistance(const Coordinate &c1, const Coordinate &c2)
+  {
+    double result_squared = 
+      (c1.x - c2.x) * (c1.x - c2.x) 
+      + (c1.y - c2.y) * (c1.y - c2.y) 
+      + (c1.z - c2.z) * (c1.z - c2.z);
+    return std::sqrt(result_squared); 
+  }
+
 } // namespace dnpsoup
 
 

@@ -107,7 +107,7 @@ namespace dnpsoup {
   }
 
   SpinSys& SpinSys::addDipole(const SpinId &s1, const SpinId &s2, 
-      double dist, double t1, double t2)
+      double t1, double t2)
   {
     if(m_spins.find(id1) == m_spins.end()){
       const string id_str = std::to_string(s1.get());
@@ -123,6 +123,7 @@ namespace dnpsoup {
 
     auto dipole = Observable(InteractionType::Dipole, s1, s2);
     auto p = Property();
+    double dist = calcDistance(m_spins[s1].getLocation(), m_spins[s2].getLocation());
     p.set(ValueName::distance, dist);
 
     dipole.setProperty(p);

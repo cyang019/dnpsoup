@@ -5,13 +5,11 @@
 
 namespace dnpsoup {
   ObservableId::ObservableId(const InteractionType &t, const SpinId &id1)
-    : m_type(t)
   {
     m_id = interactionName(t) + "_" + std::to_string(id1.get()); 
   }
 
   ObservableId::ObservableId(const InteractionType &t, const SpinId &id1, const SpinId &id2)
-    : m_type(t)
   {
     if(id1.get() < id2.get()){
       m_id = interactionName(t) + "_" 
@@ -29,7 +27,7 @@ namespace dnpsoup {
     : m_type(t), m_spin_ids({id})
   {}
 
-  Observable(const InteractionType &t, const SpinId &id1, const SpinId &id2)
+  Observable::Observable(const InteractionType &t, const SpinId &id1, const SpinId &id2)
     : m_type(t), m_spin_ids({id1, id2})
   {}
 } // namespace dnpsoup

@@ -11,7 +11,7 @@ namespace dnpsoup {
     Experiment& operator=(Experiment &&) noexcept = default;
     virtual ~Experiment() {}
 
-    double getB0() const { return m_bo; }
+    double getB0() const { return m_b0; }
     Experiment& setB0(double val) { m_b0 = val; return *this; }
   private:
     double m_b0;
@@ -31,3 +31,5 @@ namespace dnpsoup {
   {
   };
 } // namespace dnpsoup
+
+#endif

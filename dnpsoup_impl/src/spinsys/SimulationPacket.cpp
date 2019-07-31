@@ -8,6 +8,20 @@ namespace dnpsoup {
     : m_ptr_interface(std::move(ptr_interface)), m_property(p), m_e(e)
   {}
 
+  SimulationPacket::SimulationPacket(SimulationPacket &&sim_pack) noexcept
+    : m_ptr_interface(std::move(sim_pack.m_ptr_interface)),
+    m_property(std::move(sim_pack.m_property)),
+    m_e(std::move(sim_pack.m_e))
+  {}
+
+  SimulationPacket& SimulationPacket::operator=(SimulationPacket &&rhs) noexcept
+  {
+    m_ptr_interface = std::move(rhs.m_ptr_interface);
+    m_property = std::move(rhs.m_property);
+    m_e = std::move(rhs.m_e);
+    return *this;
+  }
+
   SimulationPacket& SimulationPacket::rotate(const Euler<> &e)
   {
     m_e = m_e * e;
@@ -30,6 +44,7 @@ namespace dnpsoup {
     return m_ptr_interface->genMatrix(m_property, m_e);
   }
 
+  // class PacketCollection
   PacketCollection& PacketCollection::add(SimulationPacket &&sp)
   {
     m_packets.push_back(std::move(sp));
@@ -60,5 +75,23 @@ namespace dnpsoup {
       res += m_packets[i].genMatrix();
     }
     return res;
+  }
+
+  std::vector<SpinType> PacketCollection::getSpinTypes() const
+  {
+    std::vector<SpinType> result;
+    for(std::size_t i = 0; i < m_ordered.size(); ++i){
+      result.push_back(m_ordered[i].second);
+    }
+    return result;
+  }
+
+  std::vector<SpinId> PacketCollection::getSpinIds() const
+  {
+    std::vector<SpinId> result;
+    for(std::size_t i = 0; i < m_ordered.size(); ++i){
+      result.push_back(m_ordered[i].first);
+    }
+    return result;
   }
 } // namespace dnpsoup
