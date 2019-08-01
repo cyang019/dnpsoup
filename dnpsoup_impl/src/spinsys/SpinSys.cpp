@@ -81,6 +81,7 @@ namespace dnpsoup {
     if(t_add_dipole){
       for(const auto &s : m_spins){
         if(s.first != id_name){
+          this->addDipole(s.first, id_name);
         }
       }
     }
@@ -141,10 +142,17 @@ namespace dnpsoup {
 
     auto dipole = Observable(InteractionType::Dipole, s1, s2);
     auto p = Property();
-    double dist = calcDistance(m_spins[s1].getLocation(), m_spins[s2].getLocation());
+    Coordinate c1 = m_spins[s1].getLocation();
+    Coordinate c2 = m_spins[s2].getLocation();
+    double dist = calcDistance(c1, c2);
     p.set(ValueName::distance, dist);
 
+    double phi, theta;
+    std::tie(phi, theta) = calcAnglesWithZ(c2 - c1);
+    auto e = Euler<>(phi, theta, 0);
+
     dipole.setProperty(p);
+    dipole.setEuler(e);
 
     const auto oid_name = ObservableId(InteractionType::Dipole, s1, s2);
     m_observables.insert({oid_name, dipole});
