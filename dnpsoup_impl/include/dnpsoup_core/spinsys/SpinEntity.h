@@ -5,6 +5,7 @@
 namespace dnpsoup {
   class SpinEntity {
   public:
+    SpinEntity();
     SpinEntity(const SpinType &t, const Coordinate &c)
       : m_type(t), m_position(c)
     {}

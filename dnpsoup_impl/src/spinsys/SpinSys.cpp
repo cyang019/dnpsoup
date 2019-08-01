@@ -4,6 +4,8 @@
 #include <sstream>
 #include <iterator>
 
+using namespace std;
+
 
 namespace dnpsoup {
   std::size_t calcDimBeforeId(
@@ -15,7 +17,7 @@ namespace dnpsoup {
       const auto t = (iter->second).getSpinType();
       std::size_t dim = getMatrixDimension(t);
       if(dim > 0){
-        res = (res > 0) res * dim : dim;
+        res = (res > 0) ? res * dim : dim;
       }
     }
     return res;
@@ -31,7 +33,7 @@ namespace dnpsoup {
       const auto t = (iter->second).getSpinType();
       std::size_t dim = getMatrixDimension(t);
       if(dim > 0){
-        res = (res > 0) res * dim : dim;
+        res = (res > 0) ? res * dim : dim;
       }
     }
     return res;
@@ -54,14 +56,14 @@ namespace dnpsoup {
       const auto t = (iter->second).getSpinType();
       std::size_t dim = getMatrixDimension(t);
       if(dim > 0){
-        res = (res > 0) res * dim : dim;
+        res = (res > 0) ? res * dim : dim;
       }
     }
     return res;
   }
 
   SpinSys::SpinSys()
-    : m_e(Euler<>(0.0,0.0,0.0))
+    : m_e(Euler<>(0.0,0.0,0.0)), m_ntotal(0)
   {}
 
   SpinSys& SpinSys::addSpin(const SpinId &id_name, const SpinEntity &s) 
@@ -71,7 +73,36 @@ namespace dnpsoup {
     } else {
       throw DuplicationError("SpinId already in the SpinSys.");
     }
-    m_dimensions.clear();
+    std::size_t dim = getMatrixDimension(s.getSpinType()); 
+    if(dim > 0){
+      m_ntotal = (m_ntotal > 0) ? m_ntotal * dim : dim;
+    }
+    return *this;
+  }
+
+  SpinSys& SpinSys::addSpin(int id_val, const SpinEntity &s) 
+  {
+    SpinId id_name(id_val);
+    if(m_spins.find(id_name) == m_spins.end()){
+      m_spins[id_name] = s;
+    } else {
+      throw DuplicationError("SpinId already in the SpinSys.");
+    }
+    std::size_t dim = getMatrixDimension(s.getSpinType()); 
+    if(dim > 0){
+      m_ntotal = (m_ntotal > 0) ? m_ntotal * dim : dim;
+    }
+    return *this;
+  }
+
+  SpinSys& SpinSys::addSpin(int id_val, SpinType t, double x, double y, double z)
+  {
+    SpinId id_name(id_val);
+    if(m_spins.find(id_name) != m_spins.end()){
+      throw DuplicationError("SpinId already in the SpinSys.");
+    }
+    auto s = SpinEntity(t, x, y, z);
+    m_spins[id_name] = s;
     std::size_t dim = getMatrixDimension(s.getSpinType()); 
     if(dim > 0){
       m_ntotal = (m_ntotal > 0) ? m_ntotal * dim : dim;
@@ -101,7 +132,7 @@ namespace dnpsoup {
     csa.setT2(t2);
 
     const auto oid_name = ObservableId(InteractionType::Csa, sid);
-    m_observables[oid_name] = csa;
+    m_observables.insert({oid_name, csa});
 
     return *this;
   }
@@ -109,12 +140,12 @@ namespace dnpsoup {
   SpinSys& SpinSys::addDipole(const SpinId &s1, const SpinId &s2, 
       double t1, double t2)
   {
-    if(m_spins.find(id1) == m_spins.end()){
+    if(m_spins.find(s1) == m_spins.end()){
       const string id_str = std::to_string(s1.get());
       std::ostringstream oss;
       oss << "SpinId " << id_str << " not found in the SpinSys.";
       throw IndexError(oss.str());
-    } else if(m_spins.find(id2) == m_spins.end()) {
+    } else if(m_spins.find(s2) == m_spins.end()) {
       const string id_str = std::to_string(s2.get());
       std::ostringstream oss;
       oss << "SpinId " << id_str << " not found in the SpinSys.";
@@ -131,19 +162,19 @@ namespace dnpsoup {
     dipole.setT2(t2);
 
     const auto oid_name = ObservableId(InteractionType::Dipole, s1, s2);
-    m_observables[oid_name] = dipole;
+    m_observables.insert({oid_name, dipole});
     return *this;
   }
 
   SpinSys& SpinSys::addScalar(const SpinId &s1, const SpinId &s2,
       double val, double t1, double t2)
   {
-    if(m_spins.find(id1) == m_spins.end()){
+    if(m_spins.find(s1) == m_spins.end()){
       const string id_str = std::to_string(s1.get());
       std::ostringstream oss;
       oss << "SpinId " << id_str << " not found in the SpinSys.";
       throw IndexError(oss.str());
-    } else if(m_spins.find(id2) == m_spins.end()) {
+    } else if(m_spins.find(s2) == m_spins.end()) {
       const string id_str = std::to_string(s2.get());
       std::ostringstream oss;
       oss << "SpinId " << id_str << " not found in the SpinSys.";
@@ -154,12 +185,12 @@ namespace dnpsoup {
     auto p = Property();
     p.set(ValueName::scalar, val);
     
-    scalar.setProperty(scalar);
+    scalar.setProperty(p);
     scalar.setT1(t1);
     scalar.setT2(t2);
 
     const auto oid_name = ObservableId(InteractionType::Scalar, s1, s2);
-    m_observables[oid_name] = scalar;
+    m_observables.insert({oid_name, scalar});
     return *this;
   }
 
@@ -185,7 +216,7 @@ namespace dnpsoup {
     shielding.setT2(t2);
 
     const auto oid_name = ObservableId(InteractionType::Shielding, sid);
-    m_observables[oid_name] = shielding;
+    m_observables.insert({oid_name, shielding});
     return *this;
   }
 
@@ -202,7 +233,6 @@ namespace dnpsoup {
   {
     m_observables.clear();
     m_spins.clear();
-    m_dimensions.clear();
     m_ntotal = 0;
     return *this;
   }
@@ -225,7 +255,7 @@ namespace dnpsoup {
     std::vector<std::size_t> dims;
     for(const auto &s : m_spins){
       const std::size_t d = getMatrixDimension(s.second.getSpinType());
-      dims.push_back((d);
+      dims.push_back(d);
     }
     return dims;
   }

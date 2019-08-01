@@ -27,8 +27,14 @@ namespace dnpsoup {
     std::string m_id; 
   };
 
-  bool operator==(const ObservableId &oid1, const ObservableId &oid2)
+  inline bool operator==(const ObservableId &oid1, const ObservableId &oid2)
   { return oid1.get() == oid2.get(); }
+
+  inline bool operator<(const ObservableId &oid1, const ObservableId &oid2)
+  { return oid1.get() < oid2.get(); }
+
+  inline bool operator>(const ObservableId &oid1, const ObservableId &oid2)
+  { return oid1.get() > oid2.get(); }
 
   class Observable {
   public:
@@ -69,6 +75,7 @@ namespace dnpsoup {
   };
 
   class ObservableIdHash {
+  public:
     std::size_t operator()(const ObservableId &o_id) const
     {
       return std::hash<std::string>{}(o_id.get());

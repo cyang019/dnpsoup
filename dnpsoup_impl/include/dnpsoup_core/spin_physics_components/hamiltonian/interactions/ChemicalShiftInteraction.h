@@ -34,11 +34,10 @@ namespace dnpsoup {
     matrix::Matrix<cxdbl> m_y;
     matrix::Matrix<cxdbl> m_z;
 
+    double m_gamma;
     size_t m_n;
     size_t m_nbefore;
     size_t m_nafter;
-
-    double m_gamma;
   };  // class ChemicalShiftInteraction
 }   // namespace dnpsoup
 

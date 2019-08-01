@@ -38,7 +38,12 @@ namespace dnpsoup {
     SpinSys();
 
     SpinSys& addSpin(const SpinId &, const SpinEntity &); 
+    SpinSys& addSpin(int, const SpinEntity &); 
+    SpinSys& addSpin(int, SpinType, double x, double y, double z);
 
+    // ===============================================
+    // add observables
+    // ===============================================
     SpinSys& addCsa(const SpinId &, 
         double xx, double yy, double zz, const Euler<> &e,
         double t1 = inf, double t2 = inf);
@@ -52,12 +57,13 @@ namespace dnpsoup {
     SpinSys& addShielding(const SpinId&, 
         double gxx, double gyy, double gzz, const Euler<> &e,
         double t1 = inf, double t2 = inf);
+    // ===============================================
 
     /// @param T: either DnpExperiment or Nmrexperiment
     /// If DnpExperiment only e in rotating frame, everything else in the lab frame.
     /// If nmr experiment, everything in the rotating frame
     template<typename T>
-    PacketCollection Summarize() const;
+    PacketCollection summarize() const;
 
     SpinSys& setEuler(const Euler<> &e) { m_e = e; return *this; }
     Euler<> getEuler() const { return m_e; }
@@ -72,13 +78,11 @@ namespace dnpsoup {
     std::map<SpinId, SpinEntity> m_spins;
     std::unordered_map<ObservableId, Observable, ObservableIdHash> m_observables;
     Euler<> m_e;
+    std::size_t m_ntotal;
 
     /// need to use position info from SpinSys
     template<typename T>
     std::unique_ptr<InteractionInterface> genInteractionFromObservable(const Observable&) const;
-
-    std::vector<std::size_t> m_dimensions;
-    std::size_t m_ntotal;
   };  // class SpinSys
 } // namespace dnpsoup
 

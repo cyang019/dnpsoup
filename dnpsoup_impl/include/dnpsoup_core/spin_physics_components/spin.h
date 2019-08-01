@@ -7,6 +7,7 @@
 
 namespace dnpsoup {
   enum class SpinType : int {
+    Null = -1,
     e =     0,
     H =     1,
     D =     2,

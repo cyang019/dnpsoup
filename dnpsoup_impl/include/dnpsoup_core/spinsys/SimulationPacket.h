@@ -54,6 +54,9 @@ namespace dnpsoup {
 
     std::vector<SpinType> getSpinTypes() const;
     std::vector<SpinId> getSpinIds() const;
+
+    std::size_t getNumOfPackets() const
+    { return m_packets.size(); }
   private:
     std::vector<SimulationPacket> m_packets;
     std::vector<std::pair<SpinId, SpinType>> m_ordered;

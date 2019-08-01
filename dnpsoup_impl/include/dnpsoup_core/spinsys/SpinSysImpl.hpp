@@ -1,12 +1,12 @@
 namespace dnpsoup {
     template<typename T>
-    PacketCollection SpinSys::Summarize() const
+    PacketCollection SpinSys::summarize() const
     {
       PacketCollection result;
       for(const auto &obs : m_observables){
-        auto ptr_interaction = genInteractionFromObservable<T>(obs);
+        auto ptr_interaction = genInteractionFromObservable<T>(obs.second);
         auto packet = SimulationPacket(
-            std::move(ptr_interaction), obs.getProperty(), obs.getEuler());
+            std::move(ptr_interaction), obs.second.getProperty(), obs.second.getEuler());
         result.add(std::move(packet));
       }
       return result;
@@ -17,20 +17,13 @@ namespace dnpsoup {
   std::unique_ptr<InteractionInterface> 
   SpinSys::genInteractionFromObservable(const Observable &ob) const
   {
-    if(m_dimensions.size() == 0){
-      m_dimensions = self.calcDimensions();
-    }
-    if(m_ntotal.size() == 0){
-      m_ntotal = self.calcTotalDimension();
-    }
-
     const auto ob_type = ob.getType();
     std::unique_ptr<InteractionInterface> res = nullptr;
     switch(ob_type){
       case InteractionType::Csa:
         {
           SpinId sid = ob.getSpinIds()[0];
-          SpinType t = m_spins[sid].getSpinType();
+          SpinType t = m_spins.at(sid).getSpinType();
           std::size_t n = getMatrixDimension(t);
           std::size_t nbefore = calcDimBeforeId(m_spins, sid);
           std::size_t nafter = calcDimAfterId(m_spins, sid);
@@ -47,7 +40,7 @@ namespace dnpsoup {
       case InteractionType::Shielding:
         {
           SpinId sid = ob.getSpinIds()[0];
-          SpinType t = m_spins[sid].getSpinType();
+          SpinType t = m_spins.at(sid).getSpinType();
           std::size_t n = getMatrixDimension(t);
           std::size_t nbefore = calcDimBeforeId(m_spins, sid);
           std::size_t nafter = calcDimAfterId(m_spins, sid);
@@ -60,8 +53,8 @@ namespace dnpsoup {
         {
           SpinId sid1 = ob.getSpinIds()[0];
           SpinId sid2 = ob.getSpinIds()[1];
-          SpinType t1 = m_spins[sid1].getSpinType();
-          SpinType t2 = m_spins[sid2].getSpinType();
+          SpinType t1 = m_spins.at(sid1).getSpinType();
+          SpinType t2 = m_spins.at(sid2).getSpinType();
           std::size_t n1 = getMatrixDimension(t1);
           std::size_t n2 = getMatrixDimension(t2);
           std::size_t nbefore = calcDimBeforeId(m_spins, sid1);
@@ -100,8 +93,8 @@ namespace dnpsoup {
         {
           SpinId sid1 = ob.getSpinIds()[0];
           SpinId sid2 = ob.getSpinIds()[1];
-          SpinType t1 = m_spins[sid1].getSpinType();
-          SpinType t2 = m_spins[sid2].getSpinType();
+          SpinType t1 = m_spins.at(sid1).getSpinType();
+          SpinType t2 = m_spins.at(sid2).getSpinType();
           std::size_t n1 = getMatrixDimension(t1);
           std::size_t n2 = getMatrixDimension(t2);
           std::size_t nbefore = calcDimBeforeId(m_spins, sid1);
@@ -110,7 +103,7 @@ namespace dnpsoup {
           const double gyro1 = getGyromagneticRatio(t1);
           const double gyro2 = getGyromagneticRatio(t2);
           res = std::make_unique<
-            ScalarInteraction(
+            ScalarInteraction>(
                 gyro1, gyro2, n1, n2, nbefore, nbetween, nafter);
         }
         break;
