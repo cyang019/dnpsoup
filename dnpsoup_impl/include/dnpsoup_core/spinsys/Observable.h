@@ -46,14 +46,14 @@ namespace dnpsoup {
     Observable& operator=(Observable &&) noexcept;
     ~Observable() {}
 
-    std::vector<SpinId> getSpinIds() const { return m_spin_ids; }
+    const std::vector<SpinId>& getSpinIds() const { return m_spin_ids; }
     InteractionType getType() const { return m_type; }
 
-    Euler<> getEuler() const { return m_e; }
+    const Euler<>& getEuler() const { return m_e; }
     Observable& setEuler(const Euler<> &e) 
     { m_e = e; return *this; }
 
-    Property getProperty() const { return m_p; }
+    const Property& getProperty() const { return m_p; }
     Observable& setProperty(const Property &p) 
     { m_p = p; return *this; }
   private:

@@ -20,9 +20,9 @@ namespace dnpsoup {
       Euler<T>& operator=(Euler<T> &&) noexcept;
       ~Euler() {}
 
-      double alpha() const { return m_alpha; }
-      double beta() const { return m_beta; }
-      double gamma() const { return m_gamma; }
+      const double& alpha() const { return m_alpha; }
+      const double& beta() const { return m_beta; }
+      const double& gamma() const { return m_gamma; }
 
       Euler<T>& alpha(double a) { m_alpha = a; return *this; }
       Euler<T>& beta(double b) { m_beta = b; return *this; }

@@ -20,11 +20,11 @@ namespace dnpsoup {
     SpinEntity& operator=(SpinEntity &&) noexcept = default;
     ~SpinEntity() {}
 
-    Coordinate getLocation() const { return m_position; }
+    const Coordinate& getLocation() const { return m_position; }
     SpinEntity& setLocation(const Coordinate &c) 
     { m_position = c; return *this; }
 
-    SpinType getSpinType() const { return m_type; }
+    const SpinType& getSpinType() const { return m_type; }
     SpinEntity& setSpinType(const SpinType &t)
     { m_type = t; return *this; }
   private:

@@ -63,7 +63,7 @@ namespace dnpsoup {
     PacketCollection summarize() const;
 
     SpinSys& setEuler(const Euler<> &e) { m_e = e; return *this; }
-    Euler<> getEuler() const { return m_e; }
+    const Euler<>& getEuler() const { return m_e; }
     SpinSys& rotate(const Euler<> &);
 
     SpinSys& clearObservables();

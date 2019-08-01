@@ -54,9 +54,6 @@ namespace dnpsoup {
 
     MatrixCxDbl genMatrix() const;
 
-    std::vector<SpinType> getSpinTypes() const;
-    std::vector<SpinId> getSpinIds() const;
-
     std::size_t getNumOfPackets() const
     { return m_packets.size(); }
   private:
