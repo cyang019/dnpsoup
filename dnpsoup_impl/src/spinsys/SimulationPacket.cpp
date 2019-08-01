@@ -76,22 +76,4 @@ namespace dnpsoup {
     }
     return res;
   }
-
-  std::vector<SpinType> PacketCollection::getSpinTypes() const
-  {
-    std::vector<SpinType> result;
-    for(std::size_t i = 0; i < m_ordered.size(); ++i){
-      result.push_back(m_ordered[i].second);
-    }
-    return result;
-  }
-
-  std::vector<SpinId> PacketCollection::getSpinIds() const
-  {
-    std::vector<SpinId> result;
-    for(std::size_t i = 0; i < m_ordered.size(); ++i){
-      result.push_back(m_ordered[i].first);
-    }
-    return result;
-  }
 } // namespace dnpsoup

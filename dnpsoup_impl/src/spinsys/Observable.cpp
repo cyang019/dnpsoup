@@ -33,8 +33,7 @@ namespace dnpsoup {
 
   Observable::Observable(Observable &&rhs) noexcept
     : m_type(std::move(rhs.m_type)), m_spin_ids(std::move(rhs.m_spin_ids)),
-    m_e(std::move(rhs.m_e)), m_p(std::move(rhs.m_p)),
-    m_t1(std::move(rhs.m_t1)), m_t2(std::move(rhs.m_t1))
+    m_e(std::move(rhs.m_e)), m_p(std::move(rhs.m_p))
   {}
 
   Observable& Observable::operator=(Observable &&rhs) noexcept
@@ -43,8 +42,6 @@ namespace dnpsoup {
     m_spin_ids = std::move(rhs.m_spin_ids);
     m_e = std::move(rhs.m_e);
     m_p = std::move(rhs.m_p);
-    m_t1 = std::move(rhs.m_t1);
-    m_t2 = std::move(rhs.m_t2);
     return *this;
   }
 } // namespace dnpsoup

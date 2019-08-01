@@ -59,7 +59,6 @@ namespace dnpsoup {
     { return m_packets.size(); }
   private:
     std::vector<SimulationPacket> m_packets;
-    std::vector<std::pair<SpinId, SpinType>> m_ordered;
   };
 } // namespace dnpsoup
 

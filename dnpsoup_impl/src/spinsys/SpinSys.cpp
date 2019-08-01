@@ -66,53 +66,43 @@ namespace dnpsoup {
     : m_e(Euler<>(0.0,0.0,0.0)), m_ntotal(0)
   {}
 
-  SpinSys& SpinSys::addSpin(const SpinId &id_name, const SpinEntity &s) 
+  SpinSys& SpinSys::addSpin(const SpinId &id_name, const SpinEntity &s, bool t_add_dipole) 
   {
-    if(m_spins.find(id_name) == m_spins.end()){
-      m_spins[id_name] = s;
-    } else {
-      throw DuplicationError("SpinId already in the SpinSys.");
-    }
-    std::size_t dim = getMatrixDimension(s.getSpinType()); 
-    if(dim > 0){
-      m_ntotal = (m_ntotal > 0) ? m_ntotal * dim : dim;
-    }
-    return *this;
-  }
-
-  SpinSys& SpinSys::addSpin(int id_val, const SpinEntity &s) 
-  {
-    SpinId id_name(id_val);
-    if(m_spins.find(id_name) == m_spins.end()){
-      m_spins[id_name] = s;
-    } else {
-      throw DuplicationError("SpinId already in the SpinSys.");
-    }
-    std::size_t dim = getMatrixDimension(s.getSpinType()); 
-    if(dim > 0){
-      m_ntotal = (m_ntotal > 0) ? m_ntotal * dim : dim;
-    }
-    return *this;
-  }
-
-  SpinSys& SpinSys::addSpin(int id_val, SpinType t, double x, double y, double z)
-  {
-    SpinId id_name(id_val);
     if(m_spins.find(id_name) != m_spins.end()){
       throw DuplicationError("SpinId already in the SpinSys.");
     }
-    auto s = SpinEntity(t, x, y, z);
-    m_spins[id_name] = s;
+    m_spins.insert({id_name, s});
     std::size_t dim = getMatrixDimension(s.getSpinType()); 
     if(dim > 0){
       m_ntotal = (m_ntotal > 0) ? m_ntotal * dim : dim;
     }
+
+    // automatically add dipole interactions.
+    if(t_add_dipole){
+      for(const auto &s : m_spins){
+        if(s.first != id_name){
+        }
+      }
+    }
     return *this;
   }
 
+  SpinSys& SpinSys::addSpin(int id_val, const SpinEntity &s, bool t_add_dipole) 
+  {
+    SpinId id_name(id_val);
+    return addSpin(id_name, s, t_add_dipole);
+  }
+
+  SpinSys& SpinSys::addSpin(int id_val, SpinType t, double x, double y, double z,
+      bool t_add_dipole)
+  {
+    SpinId id_name(id_val);
+    auto s = SpinEntity(t, x, y, z);
+    return addSpin(id_name, s, t_add_dipole);
+  }
+
   SpinSys& SpinSys::addCsa(const SpinId &sid, 
-      double xx, double yy, double zz, const Euler<> &e,
-      double t1, double t2)
+      double xx, double yy, double zz, const Euler<> &e)
   {
     if(m_spins.find(sid) == m_spins.end()){
       const string id_str = std::to_string(sid.get());
@@ -128,8 +118,6 @@ namespace dnpsoup {
 
     csa.setProperty(p);
     csa.setEuler(e);
-    csa.setT1(t1);
-    csa.setT2(t2);
 
     const auto oid_name = ObservableId(InteractionType::Csa, sid);
     m_observables.insert({oid_name, csa});
@@ -137,8 +125,7 @@ namespace dnpsoup {
     return *this;
   }
 
-  SpinSys& SpinSys::addDipole(const SpinId &s1, const SpinId &s2, 
-      double t1, double t2)
+  SpinSys& SpinSys::addDipole(const SpinId &s1, const SpinId &s2) 
   {
     if(m_spins.find(s1) == m_spins.end()){
       const string id_str = std::to_string(s1.get());
@@ -158,8 +145,6 @@ namespace dnpsoup {
     p.set(ValueName::distance, dist);
 
     dipole.setProperty(p);
-    dipole.setT1(t1);
-    dipole.setT2(t2);
 
     const auto oid_name = ObservableId(InteractionType::Dipole, s1, s2);
     m_observables.insert({oid_name, dipole});
@@ -167,7 +152,7 @@ namespace dnpsoup {
   }
 
   SpinSys& SpinSys::addScalar(const SpinId &s1, const SpinId &s2,
-      double val, double t1, double t2)
+      double val)
   {
     if(m_spins.find(s1) == m_spins.end()){
       const string id_str = std::to_string(s1.get());
@@ -186,8 +171,6 @@ namespace dnpsoup {
     p.set(ValueName::scalar, val);
     
     scalar.setProperty(p);
-    scalar.setT1(t1);
-    scalar.setT2(t2);
 
     const auto oid_name = ObservableId(InteractionType::Scalar, s1, s2);
     m_observables.insert({oid_name, scalar});
@@ -195,8 +178,7 @@ namespace dnpsoup {
   }
 
   SpinSys& SpinSys::addShielding(const SpinId &sid, 
-      double gxx, double gyy, double gzz, const Euler<> &e,
-      double t1, double t2)
+      double gxx, double gyy, double gzz, const Euler<> &e)
   {
     if(m_spins.find(sid) == m_spins.end()){
       const string id_str = std::to_string(sid.get());
@@ -212,8 +194,6 @@ namespace dnpsoup {
 
     shielding.setProperty(p);
     shielding.setEuler(e);
-    shielding.setT1(t1);
-    shielding.setT2(t2);
 
     const auto oid_name = ObservableId(InteractionType::Shielding, sid);
     m_observables.insert({oid_name, shielding});

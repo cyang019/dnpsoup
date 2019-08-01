@@ -12,9 +12,14 @@ namespace dnpsoup {
   {}
 
 
-  bool SpinId::operator==(const SpinId &rhs)
+  bool SpinId::operator==(const SpinId &rhs) const
   {
     return rhs.m_id == m_id;
+  }
+
+  bool SpinId::operator!=(const SpinId &rhs) const
+  {
+    return rhs.m_id != m_id;
   }
 
   int SpinId::get() const 

@@ -49,14 +49,6 @@ namespace dnpsoup {
     std::vector<SpinId> getSpinIds() const { return m_spin_ids; }
     InteractionType getType() const { return m_type; }
 
-    double T1() const { return m_t1; }
-    double T2() const { return m_t2; }
-    Observable& setT1(double t1) 
-    { m_t1 = t1; return *this; }
-
-    Observable& setT2(double t2) 
-    { m_t2 = t2; return *this; }
-
     Euler<> getEuler() const { return m_e; }
     Observable& setEuler(const Euler<> &e) 
     { m_e = e; return *this; }
@@ -70,8 +62,6 @@ namespace dnpsoup {
 
     Euler<> m_e;
     Property m_p;
-    double m_t1;    // T1 relaxation, default infinity
-    double m_t2;    // T2 relaxation, default infinity
   };
 
   class ObservableIdHash {

@@ -37,26 +37,23 @@ namespace dnpsoup {
   public:
     SpinSys();
 
-    SpinSys& addSpin(const SpinId &, const SpinEntity &); 
-    SpinSys& addSpin(int, const SpinEntity &); 
-    SpinSys& addSpin(int, SpinType, double x, double y, double z);
+    SpinSys& addSpin(const SpinId &, const SpinEntity &, bool t_add_dipole=true); 
+    SpinSys& addSpin(int, const SpinEntity &, bool t_add_dipole=true); 
+    SpinSys& addSpin(int, SpinType, double x, double y, double z, bool t_add_dipole=true);
+    const std::map<SpinId, SpinEntity>& getSpins() const { return m_spins; }
 
     // ===============================================
     // add observables
     // ===============================================
     SpinSys& addCsa(const SpinId &, 
-        double xx, double yy, double zz, const Euler<> &e,
-        double t1 = inf, double t2 = inf);
+        double xx, double yy, double zz, const Euler<> &e);
 
-    SpinSys& addDipole(const SpinId&, const SpinId&,
-        double t1 = inf, double t2 = inf);
+    SpinSys& addDipole(const SpinId&, const SpinId&);
 
-    SpinSys& addScalar(const SpinId&, const SpinId&, double val,
-        double t1 = inf, double t2 = inf);
+    SpinSys& addScalar(const SpinId&, const SpinId&, double val);
 
     SpinSys& addShielding(const SpinId&, 
-        double gxx, double gyy, double gzz, const Euler<> &e,
-        double t1 = inf, double t2 = inf);
+        double gxx, double gyy, double gzz, const Euler<> &e);
     // ===============================================
 
     /// @param T: either DnpExperiment or Nmrexperiment

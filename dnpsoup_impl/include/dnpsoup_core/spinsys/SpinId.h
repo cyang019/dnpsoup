@@ -14,7 +14,8 @@ namespace dnpsoup {
     SpinId& operator=(SpinId &&) noexcept = default;
     ~SpinId();
 
-    bool operator==(const SpinId &);
+    bool operator==(const SpinId &) const;
+    bool operator!=(const SpinId &) const;
 
     int get() const;
     SpinId& set(int);
