@@ -6,9 +6,11 @@
 #include "dnpsoup_core/spin_physics_components/hamiltonian/InteractionInterface.h"
 #include "dnpsoup_core/spin_physics_components/hamiltonian/Property.h"
 #include "dnpsoup_core/spinsys/SpinId.h"
+#include "dnpsoup_core/spinsys/Observable.h"
 #include <vector>
 #include <tuple>
 #include <memory>   // unique_ptr
+#include <map>
 #include <utility>
 
 
@@ -46,7 +48,7 @@ namespace dnpsoup {
     PacketCollection& operator=(PacketCollection &&) noexcept = default;
     ~PacketCollection() {}
 
-    PacketCollection& add(SimulationPacket &&);
+    PacketCollection& add(const ObservableId &, SimulationPacket &&);
     PacketCollection& rotate(const Euler<> &e);
     PacketCollection& setPropertyValue(const ValueName &, double val);
 
@@ -58,7 +60,7 @@ namespace dnpsoup {
     std::size_t getNumOfPackets() const
     { return m_packets.size(); }
   private:
-    std::vector<SimulationPacket> m_packets;
+    std::map<ObservableId, SimulationPacket> m_packets;
   };
 } // namespace dnpsoup
 

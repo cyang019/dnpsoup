@@ -45,24 +45,24 @@ namespace dnpsoup {
   }
 
   // class PacketCollection
-  PacketCollection& PacketCollection::add(SimulationPacket &&sp)
+  PacketCollection& PacketCollection::add(const ObservableId &oid, SimulationPacket &&sp)
   {
-    m_packets.push_back(std::move(sp));
+    m_packets.insert({oid, std::move(sp)});
     return *this;
   }
 
   PacketCollection& PacketCollection::rotate(const Euler<> &e)
   {
-    for(auto &sp : m_packets){
-      sp.rotate(e);
+    for(auto &sp_pair : m_packets){
+      sp_pair.second.rotate(e);
     }
     return *this;
   }
 
   PacketCollection& PacketCollection::setPropertyValue(const ValueName &vname, double val)
   {;;
-    for(auto &sp : m_packets){
-      sp.setPropertyValue(vname, val);
+    for(auto &sp_pair : m_packets){
+      sp_pair.second.setPropertyValue(vname, val);
     }
     return *this;
   }
@@ -70,9 +70,13 @@ namespace dnpsoup {
   MatrixCxDbl PacketCollection::genMatrix() const
   {
     if(m_packets.size() == 0) return MatrixCxDbl();
-    MatrixCxDbl res = m_packets[0].genMatrix();
-    for(size_t i = 1; i < m_packets.size(); ++i){
-      res += m_packets[i].genMatrix();
+    auto res = MatrixCxDbl();
+    for(const auto &obs : m_packets){
+      if(res.nrows() == 0){
+        res = obs.second.genMatrix();
+      } else{
+        res += obs.second.genMatrix();
+      }
     }
     return res;
   }
