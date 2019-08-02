@@ -42,6 +42,9 @@ namespace dnpsoup {
     SpinSys& addSpin(int, SpinType, double x, double y, double z, bool t_add_dipole=true);
     const std::map<SpinId, SpinEntity>& getSpins() const { return m_spins; }
 
+    SpinSys& removeSpin(const SpinId &);
+    SpinSys& removeSpin(int);
+
     // ===============================================
     // add observables
     // ===============================================
@@ -64,7 +67,7 @@ namespace dnpsoup {
 
     SpinSys& setEuler(const Euler<> &e) { m_e = e; return *this; }
     const Euler<>& getEuler() const { return m_e; }
-    SpinSys& rotate(const Euler<> &);
+    SpinSys& rotate(const Euler<> &e);
 
     SpinSys& clearObservables();
     SpinSys& clear();
@@ -73,6 +76,7 @@ namespace dnpsoup {
     std::vector<std::size_t> calcDimensions() const;
   private:
     std::map<SpinId, SpinEntity> m_spins;
+    std::unordered_map<SpinType, std::vector<SpinId>> m_spin_types;
     std::unordered_map<ObservableId, Observable, ObservableIdHash> m_observables;
     Euler<> m_e;
     std::size_t m_ntotal;

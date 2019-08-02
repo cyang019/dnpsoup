@@ -1,6 +1,7 @@
 #include "dnpsoup_core/spinsys/Observable.h"
 #include "dnpsoup_core/common.h"
 #include <string>
+#include <algorithm>
 
 
 namespace dnpsoup {
@@ -54,5 +55,13 @@ namespace dnpsoup {
   double Observable::getPropertyValue(const ValueName &vname) const
   {
     return this->m_p.get(vname);
+  }
+
+  bool Observable::hasSpinId(const SpinId &sid) const
+  {
+    if(std::find(m_spin_ids.begin(), m_spin_ids.end(), sid) == m_spin_ids.end()){
+      return false;
+    }
+    return true;
   }
 } // namespace dnpsoup

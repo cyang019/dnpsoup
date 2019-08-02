@@ -49,6 +49,8 @@ namespace dnpsoup {
     const std::vector<SpinId>& getSpinIds() const { return m_spin_ids; }
     InteractionType getType() const { return m_type; }
 
+    bool hasSpinId(const SpinId &) const;
+
     const Euler<>& getEuler() const { return m_e; }
     Observable& setEuler(const Euler<> &e) 
     { m_e = e; return *this; }

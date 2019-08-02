@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <iterator>
+#include <algorithm>
 
 using namespace std;
 
@@ -72,6 +73,11 @@ namespace dnpsoup {
       throw DuplicationError("SpinId already in the SpinSys.");
     }
     m_spins.insert({id_name, s});
+    if(m_spin_types.find(s.getSpinType()) == m_spin_types.end()){
+      m_spin_types.insert({s.getSpinType(), {id_name}});
+    } else{
+      m_spin_types[s.getSpinType()].push_back(id_name);
+    }
     std::size_t dim = getMatrixDimension(s.getSpinType()); 
     if(dim > 0){
       m_ntotal = (m_ntotal > 0) ? m_ntotal * dim : dim;
@@ -100,6 +106,34 @@ namespace dnpsoup {
     SpinId id_name(id_val);
     auto s = SpinEntity(t, x, y, z);
     return addSpin(id_name, s, t_add_dipole);
+  }
+
+  SpinSys& SpinSys::removeSpin(const SpinId &sid)
+  {
+    const auto t = m_spins.at(sid).getSpinType();
+    m_spins.erase(sid);
+    auto vec = m_spin_types.at(t);
+    m_spin_types.at(t).erase(std::remove(vec.begin(), vec.end(), sid), vec.end());
+
+    std::vector<ObservableId> obs_to_remove;
+    for(const auto &ob_pair : m_observables){
+      if(ob_pair.second.hasSpinId(sid)){
+        obs_to_remove.push_back(ob_pair.first);
+      }
+    }
+
+    for(const auto &oid : obs_to_remove){
+      m_observables.erase(oid);
+    }
+
+    m_ntotal = this->calcTotalDimension();
+    return *this;
+  }
+
+  SpinSys& SpinSys::removeSpin(int id_val)
+  {
+    auto id_name = SpinId(id_val);
+    return this->removeSpin(id_name);
   }
 
   SpinSys& SpinSys::addCsa(const SpinId &sid, 
