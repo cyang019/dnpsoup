@@ -44,4 +44,15 @@ namespace dnpsoup {
     m_p = std::move(rhs.m_p);
     return *this;
   }
+
+  Observable& Observable::setPropertyValue(const ValueName &vname, double val)
+  {
+    this->m_p.set(vname, val);
+    return *this;
+  }
+
+  double Observable::getPropertyValue(const ValueName &vname) const
+  {
+    return this->m_p.get(vname);
+  }
 } // namespace dnpsoup

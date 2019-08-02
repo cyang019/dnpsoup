@@ -67,6 +67,53 @@ namespace dnpsoup {
     return *this;
   }
 
+  PacketCollection& PacketCollection::setPropertyValue(
+        const ObservableId &oid, const ValueName &vname, double val)
+  {
+    m_packets.at(oid).setPropertyValue(vname, val);
+    return *this;
+  }
+
+  PacketCollection& PacketCollection::setPropertyValue(
+      const InteractionType &t, const SpinId &sid,
+      const ValueName &vname, double val)
+  {
+    auto oid = ObservableId(t, sid);
+    m_packets.at(oid).setPropertyValue(vname, val);
+    return *this;
+  }
+
+  PacketCollection& PacketCollection::setPropertyValue(
+      const InteractionType &t, const SpinId &id1, const SpinId &id2,
+      const ValueName &vname, double val)
+  {
+    auto oid = ObservableId(t, id1, id2);
+    m_packets.at(oid).setPropertyValue(vname, val);
+    return *this;
+  }
+
+  double PacketCollection::getPropertyValue(
+      const ObservableId &oid, const ValueName &vname) const
+  {
+    return m_packets.at(oid).getPropertyValue(vname);
+  }
+
+  double PacketCollection::getPropertyValue(
+      const InteractionType &t, const SpinId &sid, 
+      const ValueName &vname) const
+  {
+    auto oid = ObservableId(t, sid);
+    return m_packets.at(oid).getPropertyValue(vname);
+  }
+
+  double PacketCollection::getPropertyValue(
+      const InteractionType &t, const SpinId &id1, const SpinId &id2,
+      const ValueName &vname) const
+  {
+    auto oid = ObservableId(t, id1, id2);
+    return m_packets.at(oid).getPropertyValue(vname);
+  }
+
   MatrixCxDbl PacketCollection::genMatrix() const
   {
     if(m_packets.size() == 0) return MatrixCxDbl();
@@ -79,5 +126,10 @@ namespace dnpsoup {
       }
     }
     return res;
+  }
+
+  std::size_t PacketCollection::getNumOfPackets() const
+  {
+    return m_packets.size();
   }
 } // namespace dnpsoup

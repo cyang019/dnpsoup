@@ -50,12 +50,28 @@ namespace dnpsoup {
 
     PacketCollection& add(const ObservableId &, SimulationPacket &&);
     PacketCollection& rotate(const Euler<> &e);
+
+    // set all values
     PacketCollection& setPropertyValue(const ValueName &, double val);
+    // set individual value
+    PacketCollection& setPropertyValue(const ObservableId &, const ValueName &, double val);
+    PacketCollection& setPropertyValue(
+        const InteractionType &, const SpinId &,
+        const ValueName &, double val);
+    PacketCollection& setPropertyValue(
+        const InteractionType &, const SpinId &, const SpinId &,
+        const ValueName &, double val);
+    double getPropertyValue(const ObservableId &, const ValueName &) const;
+    double getPropertyValue(
+        const InteractionType &, const SpinId &, 
+        const ValueName &) const;
+    double getPropertyValue(
+        const InteractionType &, const SpinId &, const SpinId &,
+        const ValueName &) const;
 
     MatrixCxDbl genMatrix() const;
 
-    std::size_t getNumOfPackets() const
-    { return m_packets.size(); }
+    std::size_t getNumOfPackets() const;
   private:
     std::map<ObservableId, SimulationPacket> m_packets;
   };

@@ -56,6 +56,9 @@ namespace dnpsoup {
     const Property& getProperty() const { return m_p; }
     Observable& setProperty(const Property &p) 
     { m_p = p; return *this; }
+
+    Observable& setPropertyValue(const ValueName &vname, double val);
+    double getPropertyValue(const ValueName &vname) const;
   private:
     InteractionType m_type;
     std::vector<SpinId> m_spin_ids;
