@@ -31,7 +31,7 @@ namespace dnpsoup {
     Property();
     ~Property() {}
 
-    double get(const ValueName &name) const;
+    const double& get(const ValueName &name) const;
     Property& set(const ValueName &name, double value);
   private:
     std::unordered_map<ValueName, double, HashType<ValueName>> m_values;

@@ -16,6 +16,7 @@ namespace dnpsoup {
   public:
     ObservableId(const InteractionType&, const SpinId &id1);
     ObservableId(const InteractionType&, const SpinId &id1, const SpinId &id2);
+    ObservableId(const InteractionType&, const SpinType &t);
     ObservableId(const ObservableId &) = default;
     ObservableId(ObservableId &&) noexcept = default;
     ObservableId& operator=(const ObservableId &) = default;
@@ -40,6 +41,7 @@ namespace dnpsoup {
   public:
     Observable(const InteractionType &, const SpinId &);
     Observable(const InteractionType &, const SpinId &, const SpinId &);
+    Observable(const InteractionType&, const std::vector<SpinId> &sids); 
     Observable(const Observable &) = default;
     Observable(Observable &&) noexcept;
     Observable& operator=(const Observable&) = default;

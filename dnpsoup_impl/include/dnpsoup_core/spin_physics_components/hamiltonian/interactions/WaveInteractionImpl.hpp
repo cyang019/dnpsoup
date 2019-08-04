@@ -21,7 +21,11 @@ namespace dnpsoup {
       std::size_t n = getMatrixDimension(t);
       if (t == irradiated_type){
         auto temp_x = spin<X>(n);
-        nafter = nbefore > 0 ? m_ntotal / (n * nbefore) : m_ntotal / n;
+        if(n > 0){
+          nafter = nbefore > 0 ? m_ntotal / (n * nbefore) : m_ntotal / n;
+        } else {
+          nafter = nbefore > 0 ? m_ntotal / nbefore : m_ntotal;
+        }
         MatrixCxDbl x_op = kron(std::vector<MatrixCxDbl>{identity<cxdbl>(nbefore), temp_x, identity<cxdbl>(nafter)});
         operators_x.emplace_back(std::move(x_op));
         if constexpr(std::is_same<T, RotatingFrame>::value){

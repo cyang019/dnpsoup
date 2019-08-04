@@ -2,6 +2,7 @@
 #define DNPSOUP_SPINID_H
 
 #include <utility>
+#include <string>
 
 
 namespace dnpsoup {
@@ -22,6 +23,10 @@ namespace dnpsoup {
   private:
     int m_id;
   };
+
+  inline std::string toString(const SpinId &t){
+    return std::to_string(t.get());
+  }
 
   inline bool operator<(const SpinId &id1, const SpinId &id2)
   {

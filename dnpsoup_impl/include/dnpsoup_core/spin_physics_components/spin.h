@@ -17,6 +17,39 @@ namespace dnpsoup {
     O17 =   17
   };
 
+  inline std::string toString(const SpinType &t){
+    switch(t){
+      case SpinType::Null:
+        return "Null";
+        break;
+      case SpinType::e:
+        return "e";
+        break;
+      case SpinType::H:
+        return "H";
+        break;
+      case SpinType::D:
+        return "D";
+        break;
+      case SpinType::C13:
+        return "C13";
+        break;
+      case SpinType::N14:
+        return "N14";
+        break;
+      case SpinType::N15:
+        return "N15";
+        break;
+      case SpinType::O17:
+        return "O17";
+        break;
+      default:
+        return "Unknown";
+        break;
+    }
+    return "Unknown";
+  }
+
   double getGyromagneticRatio(const SpinType &);
   std::size_t getMatrixDimension(const SpinType &);
 

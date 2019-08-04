@@ -58,6 +58,8 @@ namespace dnpsoup {
     SpinSys& addShielding(const SpinId&, 
         double gxx, double gyy, double gzz, const Euler<> &e);
     // ===============================================
+    
+    SpinSys& irradiateOn(const SpinType &);
 
     /// @param T: either DnpExperiment or Nmrexperiment
     /// If DnpExperiment only e in rotating frame, everything else in the lab frame.
@@ -74,6 +76,8 @@ namespace dnpsoup {
 
     std::size_t calcTotalDimension() const;
     std::vector<std::size_t> calcDimensions() const;
+
+    std::vector<SpinType> getSpinTypes() const;
   private:
     std::map<SpinId, SpinEntity> m_spins;
     std::unordered_map<SpinType, std::vector<SpinId>> m_spin_types;

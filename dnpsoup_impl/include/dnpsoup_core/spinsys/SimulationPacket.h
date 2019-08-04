@@ -27,7 +27,7 @@ namespace dnpsoup {
 
     // rotate e, then m_e
     SimulationPacket& rotate(const Euler<> &e);
-    Euler<> getEuler() const { return m_e; }
+    const Euler<>& getEuler() const { return m_e; }
 
     SimulationPacket& setPropertyValue(const ValueName &, double val);
     double getPropertyValue(const ValueName &) const;

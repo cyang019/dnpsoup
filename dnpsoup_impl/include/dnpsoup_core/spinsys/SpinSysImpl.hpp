@@ -107,6 +107,32 @@ namespace dnpsoup {
                 gyro1, gyro2, n1, n2, nbefore, nbetween, nafter);
         }
         break;
+      case InteractionType::Wave:
+        {
+          std::vector<SpinType> types = this->getSpinTypes();
+          if(ob.getSpinIds().size() == 0){
+            /// either frame is fine, since nothing irradiated.
+            res = std::make_unique<
+              WaveInteraction<RotatingFrame>>(types, SpinType::Null);
+          } else {
+            /// irradiated on the same type.
+            const SpinId sid0 = ob.getSpinIds()[0];
+            const SpinType t = m_spins.at(sid0).getSpinType();
+            if constexpr(std::is_same<T, DnpExperiment>::value){
+              if(t == SpinType::e){
+                res = std::make_unique<
+                  WaveInteraction<RotatingFrame>>(types, t);
+              } else {
+                res = std::make_unique<
+                  WaveInteraction<LabFrame>>(types, t);
+              }
+            } else {
+                res = std::make_unique<
+                  WaveInteraction<RotatingFrame>>(types, t);
+            }
+          }
+        }
+        break;
       default:
         throw NotImplementedError("Unknown InteractionType");
         break;

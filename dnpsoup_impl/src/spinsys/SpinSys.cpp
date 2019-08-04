@@ -242,6 +242,20 @@ namespace dnpsoup {
     return *this;
   }
 
+  SpinSys& SpinSys::irradiateOn(const SpinType &t)
+  {
+    auto irradiated_ids = m_spin_types.at(t);
+    auto irradiation = Observable(InteractionType::Wave, irradiated_ids);
+    auto p = Property();
+    p.set(ValueName::freq, 0.0);
+    p.set(ValueName::phase, 0.0);
+    p.set(ValueName::offset, 0.0);
+    irradiation.setProperty(p);
+    auto oid_name = ObservableId(InteractionType::Wave, t);
+    m_observables.insert({oid_name, irradiation});
+    return *this;
+  }
+
   SpinSys& SpinSys::rotate(const Euler<> &e)
   {
     m_e = m_e * e;    ///< first rotate e, then m_e
@@ -282,4 +296,13 @@ namespace dnpsoup {
     return dims;
   }
 
+  std::vector<SpinType> SpinSys::getSpinTypes() const
+  {
+    std::vector<SpinType> types;
+
+    for(const auto &s_pair : m_spins){
+      types.push_back(s_pair.second.getSpinType());
+    }
+    return types;
+  }
 } // namespace dnpsoup

@@ -23,6 +23,12 @@ namespace dnpsoup {
     }
   }
 
+  ObservableId::ObservableId(
+      const InteractionType &i_type, const SpinType &s_type)
+  {
+    m_id = interactionName(i_type) + "_" + toString(s_type);
+  }
+
   // class Observable
   Observable::Observable(const InteractionType &t, const SpinId &id)
     : m_type(t), m_spin_ids({id})
@@ -30,6 +36,11 @@ namespace dnpsoup {
 
   Observable::Observable(const InteractionType &t, const SpinId &id1, const SpinId &id2)
     : m_type(t), m_spin_ids({id1, id2})
+  {}
+
+  Observable::Observable(
+      const InteractionType &t, const std::vector<SpinId> &spin_ids)
+    : m_type(t), m_spin_ids(spin_ids)
   {}
 
   Observable::Observable(Observable &&rhs) noexcept
