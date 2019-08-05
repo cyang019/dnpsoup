@@ -46,7 +46,7 @@ namespace dnpsoup {
   {
   }
   
-  double Property::get(const ValueName &name) const
+  const double& Property::get(const ValueName &name) const
   {
     return m_values.at(name);
   }

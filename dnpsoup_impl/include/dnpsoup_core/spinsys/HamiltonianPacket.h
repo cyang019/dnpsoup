@@ -1,5 +1,5 @@
-#ifndef DNPSOUP_SIMULATIONPACKET_H
-#define DNPSOUP_SIMULATIONPACKET_H
+#ifndef DNPSOUP_HAMILTONIANPACKET_H
+#define DNPSOUP_HAMILTONIANPACKET_H
 
 #include "dnpsoup_core/common.h"
 #include "dnpsoup_core/spin_physics_components/rotation/Euler.h"
@@ -15,21 +15,21 @@
 
 
 namespace dnpsoup {
-  class SimulationPacket {
+  class HamiltonianPacket {
   public:
-    SimulationPacket(std::unique_ptr<InteractionInterface>, 
+    HamiltonianPacket(std::unique_ptr<InteractionInterface>, 
         const Property &, const Euler<> &);
-    SimulationPacket(const SimulationPacket &) = delete;
-    SimulationPacket(SimulationPacket &&) noexcept;
-    SimulationPacket& operator=(const SimulationPacket &) = delete;
-    SimulationPacket& operator=(SimulationPacket &&) noexcept;
-    ~SimulationPacket() {}
+    HamiltonianPacket(const HamiltonianPacket &) = delete;
+    HamiltonianPacket(HamiltonianPacket &&) noexcept;
+    HamiltonianPacket& operator=(const HamiltonianPacket &) = delete;
+    HamiltonianPacket& operator=(HamiltonianPacket &&) noexcept;
+    ~HamiltonianPacket() {}
 
     // rotate e, then m_e
-    SimulationPacket& rotate(const Euler<> &e);
+    HamiltonianPacket& rotate(const Euler<> &e);
     const Euler<>& getEuler() const { return m_e; }
 
-    SimulationPacket& setPropertyValue(const ValueName &, double val);
+    HamiltonianPacket& setPropertyValue(const ValueName &, double val);
     double getPropertyValue(const ValueName &) const;
 
     MatrixCxDbl genMatrix() const;
@@ -48,7 +48,7 @@ namespace dnpsoup {
     PacketCollection& operator=(PacketCollection &&) noexcept = default;
     ~PacketCollection() {}
 
-    PacketCollection& add(const ObservableId &, SimulationPacket &&);
+    PacketCollection& add(const ObservableId &, HamiltonianPacket &&);
     PacketCollection& rotate(const Euler<> &e);
 
     // set all values
@@ -73,7 +73,7 @@ namespace dnpsoup {
 
     std::size_t getNumOfPackets() const;
   private:
-    std::map<ObservableId, SimulationPacket> m_packets;
+    std::map<ObservableId, HamiltonianPacket> m_packets;
   };
 } // namespace dnpsoup
 

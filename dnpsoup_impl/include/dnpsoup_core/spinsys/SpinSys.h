@@ -12,7 +12,7 @@
 #include "dnpsoup_core/spinsys/SpinId.h"
 #include "dnpsoup_core/spinsys/SpinEntity.h"
 #include "dnpsoup_core/spinsys/Observable.h"
-#include "dnpsoup_core/spinsys/SimulationPacket.h"
+#include "dnpsoup_core/spinsys/HamiltonianPacket.h"
 #include <vector>
 #include <unordered_map>
 #include <map>
