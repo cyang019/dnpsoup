@@ -49,7 +49,7 @@ namespace dnpsoup {
     ~Observable() {}
 
     const std::vector<SpinId>& getSpinIds() const { return m_spin_ids; }
-    InteractionType getType() const { return m_type; }
+    const InteractionType& getType() const { return m_type; }
 
     bool hasSpinId(const SpinId &) const;
 

@@ -32,10 +32,6 @@ namespace dnpsoup {
   using matrix::eps;
 
   template<typename T>
-  constexpr matrix::Matrix<T> exp(const matrix::Matrix<T> &mat)
-  { return matrix::exp<T>(mat); }
-
-  template<typename T>
   constexpr matrix::Matrix<T> identity(size_t n)
   { return matrix::identity<T>(n); }
 
