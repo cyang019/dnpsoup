@@ -13,7 +13,7 @@ namespace dnpsoup {
   enum class ValueName : int {
     scalar = 0,  // for scalar
     distance  = 1,
-    offset = 2,   // for microwave frequency 
+    offset = 2,   // for operator around which a rotation frame is achieved
     xx = 10,  // for anisotropy
     yy = 11,
     zz = 12,

@@ -1,16 +1,46 @@
 namespace dnpsoup {
-    template<typename T>
-    PacketCollection SpinSys::summarize() const
-    {
-      PacketCollection result;
-      for(const auto &obs : m_observables){
-        auto ptr_interaction = genInteractionFromObservable<T>(obs.second);
-        auto packet = HamiltonianPacket(
-            std::move(ptr_interaction), obs.second.getProperty(), obs.second.getEuler());
-        result.add(obs.first, std::move(packet));
-      }
-      return result;
+  template<typename T>
+  PacketCollection SpinSys::summarize() const
+  {
+    PacketCollection result;
+    for(const auto &obs : m_observables){
+      auto ptr_interaction = genInteractionFromObservable<T>(obs.second);
+      auto packet = HamiltonianPacket(
+          std::move(ptr_interaction), obs.second.getProperty(), obs.second.getEuler());
+      result.add(obs.first, std::move(packet));
     }
+    return result;
+  }
+
+  template<typename T>
+  PacketCollection SpinSys::summarizeOffset() const
+  {
+    PacketCollection result;
+    if constexpr(std::is_same<T, DnpExperiment>::value){
+      // only electron offset
+      for(const auto &s_pair : m_spins){
+        if(s_pair.second.getSpinType() == SpinType::e){
+          auto ob = Observable(InteractionType::Offset, s_pair.first);
+          std::unique_ptr<OffsetInteraction> ptr_i = this->genInteractionFromObservable<T>(ob);
+          Property p;
+          Euler<> e;
+          auto packet = HamiltonianPacket(std::move(ptr_i), p, e);
+          result.add(ObservableId(InteractionType::Offset, s_pair.first), std::move(packet));
+        }
+      }
+    } else{
+      // all
+      for(const auto &s_pair : m_spins){
+        auto ob = Observable(InteractionType::Offset, s_pair.first);
+        std::unique_ptr<OffsetInteraction> ptr_i = this->genInteractionFromObservable<T>(ob);
+        Property p;
+        Euler<> e;
+        auto packet = HamiltonianPacket(std::move(ptr_i), p, e);
+        result.add(ObservableId(InteractionType::Offset, s_pair.first), std::move(packet));
+      }
+    }
+    return result;
+  }
 
   // private methods
   template<typename T>
@@ -46,6 +76,18 @@ namespace dnpsoup {
           std::size_t nafter = calcDimAfterId(m_spins, sid);
           const double gyro = getGyromagneticRatio(t);
           res = std::make_unique<ShieldingInteraction<RotatingFrame>>(
+              gyro, n, nbefore, nafter);
+        }
+        break;
+      case InteractionType::Offset:
+        {
+          SpinId sid = ob.getSpinIds()[0];
+          SpinType t = m_spins.at(sid).getSpinType();
+          std::size_t n = getMatrixDimension(t);
+          std::size_t nbefore = calcDimBeforeId(m_spins, sid);
+          std::size_t nafter = calcDimAfterId(m_spins, sid);
+          const double gyro = getGyromagneticRatio(t);
+          res = std::make_unique<OffsetInteraction>(
               gyro, n, nbefore, nafter);
         }
         break;

@@ -7,5 +7,6 @@
 #include "dnpsoup_core/spin_physics_components/hamiltonian/interactions/ScalarInteraction.h"
 #include "dnpsoup_core/spin_physics_components/hamiltonian/interactions/ShieldingInteraction.h"
 #include "dnpsoup_core/spin_physics_components/hamiltonian/interactions/WaveInteraction.h"
+#include "dnpsoup_core/spin_physics_components/hamiltonian/interactions/OffsetInteraction.h"
 
 #endif

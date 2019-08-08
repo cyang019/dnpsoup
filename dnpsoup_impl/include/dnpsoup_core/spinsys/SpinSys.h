@@ -67,6 +67,9 @@ namespace dnpsoup {
     template<typename T>
     PacketCollection summarize() const;
 
+    template<typename T>
+    PacketCollection summarizeOffset() const;
+
     SpinSys& setEuler(const Euler<> &e) { m_e = e; return *this; }
     const Euler<>& getEuler() const { return m_e; }
     SpinSys& rotate(const Euler<> &e);
