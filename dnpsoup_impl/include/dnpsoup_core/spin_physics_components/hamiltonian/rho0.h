@@ -6,6 +6,8 @@
 
 namespace dnpsoup {
   MatrixCxDbl genRho0(const MatrixCxDbl &mat);
+
+  std::tuple<MatrixDbl, MatrixCxDbl> diagonalizeMat(const MatrixCxDbl &mat);
 } // namespace dnpsoup
 
 #endif

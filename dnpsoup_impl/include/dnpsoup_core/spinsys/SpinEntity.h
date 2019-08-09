@@ -1,3 +1,6 @@
+#ifndef DNPSOUP_SPINENTITY_H
+#define DNPSOUP_SPINENTITY_H
+
 #include "dnpsoup_core/spin_physics_components/rotation/Coordinate.h"
 #include "dnpsoup_core/spin_physics_components/spin.h"
 #include "dnpsoup_core/spinsys/SpinId.h"
@@ -39,3 +42,5 @@ namespace dnpsoup {
     double m_t2;
   };
 } // namespace dnpsoup
+
+#endif

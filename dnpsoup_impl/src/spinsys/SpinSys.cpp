@@ -256,6 +256,17 @@ namespace dnpsoup {
     return *this;
   }
 
+  std::vector<RelaxationPacket> SpinSys::summarizeRelaxation() const
+  {
+    std::vector<RelaxationPacket> result;
+    for(const auto &s : m_spins){
+      auto nbefore = calcDimBeforeId(m_spins, s.first);
+      auto nafter = calcDimAfterId(m_spins, s.first);
+      result.emplace_back(s.first, s.second, nbefore, nafter);
+    }
+    return result;
+  }
+
   SpinSys& SpinSys::rotate(const Euler<> &e)
   {
     m_e = m_e * e;    ///< first rotate e, then m_e

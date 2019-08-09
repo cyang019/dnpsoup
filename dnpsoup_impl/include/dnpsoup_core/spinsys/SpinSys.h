@@ -13,6 +13,7 @@
 #include "dnpsoup_core/spinsys/SpinEntity.h"
 #include "dnpsoup_core/spinsys/Observable.h"
 #include "dnpsoup_core/spinsys/HamiltonianPacket.h"
+#include "dnpsoup_core/spinsys/RelaxationPacket.h"
 #include <vector>
 #include <unordered_map>
 #include <map>
@@ -69,6 +70,8 @@ namespace dnpsoup {
 
     template<typename T>
     PacketCollection summarizeOffset() const;
+
+    std::vector<RelaxationPacket> summarizeRelaxation() const;
 
     SpinSys& setEuler(const Euler<> &e) { m_e = e; return *this; }
     const Euler<>& getEuler() const { return m_e; }

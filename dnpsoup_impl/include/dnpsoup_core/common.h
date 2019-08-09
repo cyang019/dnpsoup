@@ -95,6 +95,20 @@ namespace dnpsoup {
   }
 
   std::int64_t genUniqueInt(std::int64_t val1, std::int64_t val2);
+
+  template<typename T>
+    inline
+  matrix::Matrix<T> expandMatrix(const matrix::Matrix<T> &mat, 
+      std::size_t nbefore, std::size_t nafter)
+    {
+      if(nbefore == 0 && nafter == 0) return mat;
+      auto mat_before = identity<T>(nbefore);
+      auto mat_after = identity<T>(nafter);
+      if(nbefore == 0) return kron(mat, mat_after);
+      if(nafter == 0) return kron(mat_before, mat);
+
+      return kron(mat_before, kron(mat, mat_after));
+    }
 } // namespace dnpsoup
 
 #endif

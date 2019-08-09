@@ -25,4 +25,10 @@ namespace dnpsoup {
     const double n = static_cast<double>(hamiltonian.nrows());
     return rho_pre * (1.0 / (n + trace(rho_pre)));
   }
+
+  std::tuple<MatrixDbl, MatrixCxDbl> diagonalizeMat(const MatrixCxDbl &mat)
+  {
+    auto [eigen_vals, eigen_vecs] = matrix::eigenSys<>(mat);
+    return std::make_tuple(eigen_vals, eigen_vecs);
+  }
 } // namespace dnpsoup
