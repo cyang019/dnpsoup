@@ -10,6 +10,13 @@ namespace dnpsoup {
     return Anq * Aq;
   }
 
+  MatrixCxDbl secularRelaxationSuperOp(const MatrixCxDbl &op, const MatrixCxDbl &eigen_vec)
+  {
+    auto Aq = commutationSuperOp(eigen_vec.t() * op * eigen_vec);
+    auto Anq = commutationSuperOp(eigen_vec.t() * op.adjoint() * eigen_vec);
+    return Anq * Aq;
+  }
+
   MatrixCxDbl t1SuperOp(
       double t1_inv,
       const MatrixCxDbl &eigen_vec,

@@ -4,6 +4,7 @@
 #include <sstream>
 #include <iterator>
 #include <algorithm>
+#include <limits>
 
 using namespace std;
 
@@ -259,7 +260,11 @@ namespace dnpsoup {
   std::vector<RelaxationPacket> SpinSys::summarizeRelaxation() const
   {
     std::vector<RelaxationPacket> result;
+    constexpr double dmax = std::numeric_limits<double>::max();
     for(const auto &s : m_spins){
+      auto t1 = s.second.getT1();
+      auto t2 = s.second.getT2();
+      if(t1 > dmax && t2 > dmax) continue;  // if inf, skip
       auto nbefore = calcDimBeforeId(m_spins, s.first);
       auto nafter = calcDimAfterId(m_spins, s.first);
       result.emplace_back(s.first, s.second, nbefore, nafter);

@@ -15,5 +15,7 @@ target_sources(dnpsoup_core
   "${CMAKE_CURRENT_LIST_DIR}/spinsys/RelaxationPacket.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/spinsys/SpinSys.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/spinsys/SpinEntity.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/pulseseq/PulseComponent.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/pulseseq/Segment.cpp"
   )
 

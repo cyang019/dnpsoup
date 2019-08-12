@@ -7,6 +7,7 @@
 
 namespace dnpsoup {
   MatrixCxDbl secularRelaxationSuperOp(const MatrixCxDbl &op);
+  MatrixCxDbl secularRelaxationSuperOp(const MatrixCxDbl &op, const MatrixCxDbl &eigen_vec);
 
   MatrixCxDbl t1SuperOp(
       double t1_inv,
