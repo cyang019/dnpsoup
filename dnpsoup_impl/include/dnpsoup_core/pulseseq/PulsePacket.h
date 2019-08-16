@@ -1,6 +1,7 @@
 #ifndef DNPSOUP_PULSEPACKET_H
 #define DNPSOUP_PULSEPACKET_H
 
+#include <iostream>
 
 namespace dnpsoup {
   struct PulsePacket {
@@ -15,10 +16,15 @@ namespace dnpsoup {
     PulsePacket& operator=(PulsePacket &&) noexcept = default;
     ~PulsePacket() {}
 
+    PulsePacket& reset();
+
     double freq;    // in Hz
     double phase;       // in rad
     double offset;      // in Hz
   };  // class PulsePacket
+
+  std::istream& operator>>(std::istream&, PulsePacket &);
+  std::ostream& operator<<(std::ostream&, const PulsePacket &);
 } // namespace dnpsoup
 
 #endif

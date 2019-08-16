@@ -10,6 +10,9 @@
 namespace dnpsoup {
   class Segment {
   public:
+    friend std::istream& operator>>(std::istream&, Segment &);
+    friend std::ostream& operator<<(std::ostream&, const Segment &);
+    Segment();
     Segment(double inc);
     Segment(const Segment&) = default;
     Segment(Segment &&) noexcept = default;
@@ -26,7 +29,7 @@ namespace dnpsoup {
     { m_repetition = rep; return *this; }
 
     Segment& addComponent(const PulseComponent &);
-    std::tuple<std::unordered_map<SpinType, PulsePacket>, std::uint64_t> next();
+    std::tuple<std::map<SpinType, PulsePacket>, std::uint64_t> next();
 
     const PulseComponent& operator[](std::size_t) const;
     PulseComponent& operator[](std::size_t);
@@ -42,8 +45,11 @@ namespace dnpsoup {
     std::uint64_t m_comp_index;
     std::uint64_t m_rep_index;
 
-    std::tuple<std::unordered_map<SpinType, PulsePacket>, std::uint64_t> nextInOneRep();
+    std::tuple<std::map<SpinType, PulsePacket>, std::uint64_t> nextInOneRep();
   };  // class Segment
+
+  std::istream& operator>>(std::istream&, Segment &);
+  std::ostream& operator<<(std::ostream&, const Segment &);
 } // namespace dnpsoup
 
 #endif

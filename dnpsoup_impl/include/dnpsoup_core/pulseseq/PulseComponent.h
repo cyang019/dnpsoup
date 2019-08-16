@@ -4,41 +4,46 @@
 #include "dnpsoup_core/spin_physics_components/spin.h"
 #include "dnpsoup_core/spinsys/SpinId.h"
 #include "dnpsoup_core/pulseseq/PulsePacket.h"
-#include <unordered_map>
+#include "dnpsoup_core/pulseseq/SequenceInterface.h"
+#include <map>
 #include <utility>
 #include <tuple>
 #include <cstdint>
 
 
 namespace dnpsoup {
-  class PulseComponent {
+  class PulseComponent : public SequenceInterface 
+  {
   public:
-    PulseComponent(std::uint64_t cnt, double inc);
+    friend std::istream& operator>>(std::istream&, PulseComponent &);
+    friend std::ostream& operator<<(std::ostream&, const PulseComponent &);
+    PulseComponent();
+    PulseComponent(std::uint64_t cnt);
     PulseComponent(const PulseComponent&) = default;
     PulseComponent(PulseComponent &&) noexcept = default;
     PulseComponent& operator=(const PulseComponent &) = default;
     PulseComponent& operator=(PulseComponent &&) noexcept = default;
     ~PulseComponent() {}
 
-    double getIncrement() const { return m_inc; }
-    std::uint64_t getCount() const { return m_count; }
+    std::pair<std::map<SpinType, PulsePacket>, std::uint64_t> next() override;
+    std::uint64_t size() const override { return m_count; }
+    void setSize(std::uint64_t) override;
+    SequenceType type() const override;   // type of interaction
 
-    PulseComponent& setIncrement(double);
-    PulseComponent& setCount(std::uint64_t);
+    PulseComponent& resetIndex() override;
+    std::uint64_t getIndex() const override { return m_index; }
 
     const PulsePacket& getChannel(const SpinType &) const;
     PulseComponent& setChannel(const SpinType &, const PulsePacket &);
     PulseComponent& removeChannel(const SpinType &);
-
-    std::tuple<std::unordered_map<SpinType, PulsePacket>, std::uint64_t> next();
-    PulseComponent& resetIndex();
-    std::uint64_t getIndex() const { return m_index; }
   private:
-    std::unordered_map<SpinType, PulsePacket> m_channels;
+    std::map<SpinType, PulsePacket> m_channels;
     std::uint64_t m_count; // number of steps
-    double m_inc; // size of each step
     std::uint64_t m_index;
   };
+
+  std::istream& operator>>(std::istream&, PulseComponent &);
+  std::ostream& operator<<(std::ostream&, const PulseComponent &);
 } // namespace dnpsoup
 
 #endif

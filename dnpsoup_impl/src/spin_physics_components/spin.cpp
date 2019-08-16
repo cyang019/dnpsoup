@@ -4,6 +4,82 @@
 
 
 namespace dnpsoup {
+  bool isSpinTypeStr(const std::string &s)
+  {
+    const std::vector<std::string> candidates = {
+      "e", "E", 
+      "H", "H1", "h", "h1",
+      "D", "D2", "d", "d2",
+      "C13", "c13",
+      "N14", "n14",
+      "N15", "n15",
+      "O17", "o17"
+    };
+    for(const auto &name : candidates){
+      if(s == name) return true;
+    }
+    return false;
+  }
+
+  SpinType toSpinType(const std::string &s)
+  {
+    if(s == "e" || s == "E"){
+      return SpinType::e;
+    }
+    else if(s == "H" || s == "H1" || s == "h" || s == "h1"){
+      return SpinType::H;
+    }
+    else if(s == "D" || s == "D1" || s == "d1" || s== "d"){
+      return SpinType::D;
+    }
+    else if(s == "C13" || s == "c13"){
+      return SpinType::C13;
+    }
+    else if(s == "N14" || s == "n14"){
+      return SpinType::N14;
+    }
+    else if(s == "N15" || s == "n15"){
+      return SpinType::N15;
+    }
+    else if(s == "O17" || s == "o17"){
+      return SpinType::O17;
+    }
+    return SpinType::Null;
+  }
+
+  std::string toString(const SpinType &t){
+    switch(t){
+      case SpinType::Null:
+        return "Null";
+        break;
+      case SpinType::e:
+        return "e";
+        break;
+      case SpinType::H:
+        return "H";
+        break;
+      case SpinType::D:
+        return "D";
+        break;
+      case SpinType::C13:
+        return "C13";
+        break;
+      case SpinType::N14:
+        return "N14";
+        break;
+      case SpinType::N15:
+        return "N15";
+        break;
+      case SpinType::O17:
+        return "O17";
+        break;
+      default:
+        return "Unknown";
+        break;
+    }
+    return "Unknown";
+  }
+
   double getGyromagneticRatio(const SpinType &t)
   {
     switch(t){
