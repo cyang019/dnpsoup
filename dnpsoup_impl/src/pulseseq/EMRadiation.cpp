@@ -1,4 +1,4 @@
-#include "dnpsoup_core/pulseseq/PulsePacket.h"
+#include "dnpsoup_core/pulseseq/EMRadiation.h"
 #include <string>
 #include <iostream>
 #include <iomanip>
@@ -9,7 +9,7 @@ using namespace std;
 
 
 namespace dnpsoup {
-  PulsePacket& PulsePacket::reset()
+  EMRadiation& EMRadiation::reset()
   {
     freq = 0.0;
     phase = 0.0;
@@ -17,7 +17,7 @@ namespace dnpsoup {
     return *this;
   }
 
-  std::istream& operator>>(std::istream &is, PulsePacket &p)
+  std::istream& operator>>(std::istream &is, EMRadiation &p)
   {
     p.reset();
     string word;
@@ -33,7 +33,7 @@ namespace dnpsoup {
     return is;
   }
 
-  std::ostream& operator<<(std::ostream &os, const PulsePacket &p)
+  std::ostream& operator<<(std::ostream &os, const EMRadiation &p)
   {
     std::streamsize ss = os.precision();
     os << std::setprecision(std::numeric_limits<double>::max_digits10);

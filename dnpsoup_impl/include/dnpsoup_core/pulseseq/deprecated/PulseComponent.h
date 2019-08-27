@@ -9,6 +9,7 @@
 #include <utility>
 #include <tuple>
 #include <cstdint>
+#include <string>
 
 
 namespace dnpsoup {
@@ -17,8 +18,8 @@ namespace dnpsoup {
   public:
     friend std::istream& operator>>(std::istream&, PulseComponent &);
     friend std::ostream& operator<<(std::ostream&, const PulseComponent &);
-    PulseComponent();
-    PulseComponent(std::uint64_t cnt);
+    PulseComponent(const std::string &);
+    PulseComponent(const std::string &, std::uint64_t cnt);
     PulseComponent(const PulseComponent&) = default;
     PulseComponent(PulseComponent &&) noexcept = default;
     PulseComponent& operator=(const PulseComponent &) = default;
@@ -36,6 +37,8 @@ namespace dnpsoup {
     const PulsePacket& getChannel(const SpinType &) const;
     PulseComponent& setChannel(const SpinType &, const PulsePacket &);
     PulseComponent& removeChannel(const SpinType &);
+
+    std::string name;
   private:
     std::map<SpinType, PulsePacket> m_channels;
     std::uint64_t m_count; // number of steps

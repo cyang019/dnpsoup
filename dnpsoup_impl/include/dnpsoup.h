@@ -17,6 +17,5 @@
 #include "dnpsoup_core/spinsys/SpinEntity.h"
 #include "dnpsoup_core/spinsys/HamiltonianPacket.h"
 #include "dnpsoup_core/spinsys/RelaxationPacket.h"
-#include "dnpsoup_core/pulseseq/PulseSeq.h"
 
 #endif

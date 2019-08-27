@@ -30,12 +30,12 @@ namespace dnpsoup {
       return SequenceType::Pulse;
     }
 
-    const PulsePacket& PulseComponent::getChannel(const SpinType &t) const
+    const EMRadiation& PulseComponent::getChannel(const SpinType &t) const
     {
       return m_channels.at(t);
     }
 
-    PulseComponent& PulseComponent::setChannel(const SpinType &t, const PulsePacket &p)
+    PulseComponent& PulseComponent::setChannel(const SpinType &t, const EMRadiation &p)
     {
       m_channels[t] = p;
       return *this;
@@ -51,7 +51,7 @@ namespace dnpsoup {
     }
 
     std::pair<
-      std::map<SpinType, PulsePacket>,
+      std::map<SpinType, EMRadiation>,
       std::uint64_t> PulseComponent::next()
     {
       if(m_index < m_count){
@@ -60,7 +60,7 @@ namespace dnpsoup {
         return res;
       } else {    // beyond range
         auto res = std::make_pair(
-            std::map<SpinType, PulsePacket>(),
+            std::map<SpinType, EMRadiation>(),
             m_count);
         return res;
       }
@@ -102,7 +102,7 @@ namespace dnpsoup {
         } // if
         else if(isSpinTypeStr(word)) {
           auto t = toSpinType(word);
-          PulsePacket packet;
+          EMRadiation packet;
           iss >> packet;
           p.setChannel(t, packet);
         }
