@@ -1,5 +1,6 @@
 #include "dnpsoup_core/pulseseq/PulseSequence.h"
 #include "dnpsoup_core/errors.h"
+#include <limits>
 #include <sstream>
 #include <iomanip>
 #include <memory>
@@ -140,8 +141,28 @@ namespace pulseseq{
   {
     auto ss = os.precision();
     os << setprecision(std::numeric_limits<double>::max_digits10);
+    os << pseq.name << "\n";
+    os << "Increment " << pseq.m_inc << "\n\n";
+    for(const auto &comp_pair : pseq.m_components){
+      os << "Component " << comp_pair.first << "\n";
+      os << comp_pair.second;
+      os << "ComponentEnd\n";
+    }
+    os << "\n";
 
-    os << "PulseSequenceuenceEnd\n";
+    for(const auto &section_pair : pseq.m_sections){
+      os << "Section " << section_pair.first
+         << section_pair.second->size() << "\n";
+      os << section_pair.second;
+      os << "SectionEnd\n";
+    }
+    os << "\n";
+
+    os << "PulseSequence\n";
+    for(const auto &name : pseq.m_sections_in_order){
+      os << "  " << name << "\n";
+    }
+    os << "PulseSequenceEnd\n";
 
     os << setprecision(ss);
     return os;

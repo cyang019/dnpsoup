@@ -3,12 +3,16 @@
 
 #include "dnpsoup_core/pulseseq/EMRadiation.h"
 #include <string>
+#include <iostream>
 #include <map>
 
 namespace dnpsoup {
   namespace pulseseq {
     using Name = std::string;
     using Component = std::map<SpinType, EMRadiation>;
+
+    std::istream& operator>>(std::istream &is, Component &comp);
+    std::ostream& operator<<(std::ostream &os, const Component &comp);
   }
 }
   

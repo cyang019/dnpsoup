@@ -5,6 +5,7 @@
 #include "dnpsoup_core/common.h"
 #include "dnpsoup_core/errors.h"
 #include <vector>
+#include <iostream>
 
 
 namespace dnpsoup {

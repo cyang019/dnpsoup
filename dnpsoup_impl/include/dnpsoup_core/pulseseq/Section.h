@@ -10,7 +10,7 @@ namespace dnpsoup {
     public:
       Section();
       Section(const Name &, const std::vector<Name> &);
-      Section(const Name &, std::uint64_t, const std::vector<Name> &, std::uint64_t);
+      Section(const Name &, std::uint64_t, const std::vector<Name> &);
       Section(const Section &) = default;
       Section(Section &&) noexcept = default;
       Section& operator=(const Section &) = default;

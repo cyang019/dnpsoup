@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 #include <cstdint>
+#include <iostream>
 
 
 namespace dnpsoup {
@@ -18,11 +19,16 @@ namespace dnpsoup {
       Pulse         = 0,
       Delay         = 1,
       Chirp         = 2,
-      Shape         = 3,
       Section       = 10,
+      Default       = 99
     };
 
+    std::ostream& operator<<(std::ostream &os, const SequenceType &t);
+    std::istream& operator>>(std::istream &is, SequenceType &t);
+
     class SubSequenceInterface {
+      friend std::unique_ptr<SubSequenceInterface> genPtrSequence(std::istream &is);
+      friend std::ostream operator<<(std::ostream &os, const std::unique_ptr<SubSequenceInterface> &uptr_seq);
     public:
       SubSequenceInterface();
       SubSequenceInterface(const Name &);
@@ -49,14 +55,17 @@ namespace dnpsoup {
       double getParam(const Name &n) const { return m_params.at(n); }
       void setParam(const Name &, double);
 
-      Name name;
+      //Name name;
     protected:
       std::uint64_t m_sz;
       std::uint64_t m_idx;
     private:
       std::map<Name, double> m_params;
     };
-  }
+
+    std::unique_ptr<SubSequenceInterface> genPtrSequence(std::istream &is);
+    std::ostream operator<<(std::ostream &os, const std::unique_ptr<SubSequenceInterface> &uptr_seq);
+  } // namespace pulseseq
 } // namespace dnpsoup
 
 #endif
