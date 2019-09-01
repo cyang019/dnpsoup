@@ -19,7 +19,6 @@ target_sources(dnpsoup_core
   "${CMAKE_CURRENT_LIST_DIR}/spinsys/SpinEntity.cpp"
 
   "${CMAKE_CURRENT_LIST_DIR}/pulseseq/EMRadiation.cpp"
-  "${CMAKE_CURRENT_LIST_DIR}/pulseseq/PulseComponent.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/pulseseq/Pulse.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/pulseseq/Delay.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/pulseseq/PulseSequence.cpp"

@@ -9,6 +9,7 @@ using namespace std;
 
 
 namespace dnpsoup {
+namespace pulseseq {
   EMRadiation& EMRadiation::reset()
   {
     freq = 0.0;
@@ -42,4 +43,5 @@ namespace dnpsoup {
     os << std::setprecision(ss);
     return os;
   }
+} // namespace pulseseq
 } // namespace dnpsoup

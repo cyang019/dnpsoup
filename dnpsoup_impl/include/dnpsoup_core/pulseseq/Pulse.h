@@ -8,8 +8,8 @@ namespace dnpsoup {
     class Pulse : public SubSequenceInterface {
     public:
       Pulse();
-      Pulse(const Name &, const Name &);
-      Pulse(const Name &, std::uint64_t, const Name &);
+      Pulse(const Name &);
+      Pulse(std::uint64_t, const Name &);
       Pulse(const Pulse &) = default;
       Pulse(Pulse &&) noexcept = default;
       Pulse& operator=(const Pulse &) = default;

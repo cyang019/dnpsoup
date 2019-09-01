@@ -8,9 +8,12 @@
 #include <functional>     // hash
 #include <type_traits>    // conditional
 #include <cstdint>
+#include "json.hpp"
 
 
 namespace dnpsoup {
+  using json = nlohmann::json;
+
   // https://stackoverflow.com/questions/18837857/cant-use-enum-class-as-unordered-map-key
   struct EnumClassHash
   {

@@ -15,8 +15,8 @@
 namespace dnpsoup {
   namespace pulseseq{
     class PulseSequence {
-      friend operator>>(std::istream &is, PulseSequence &);
-      friend operator<<(std::ostream &os, const PulseSequence &);
+      friend std::istream& operator>>(std::istream &is, PulseSequence &);
+      friend std::ostream& operator<<(std::ostream &os, const PulseSequence &);
     public:
       PulseSequence();
       PulseSequence(double inc);
@@ -43,6 +43,7 @@ namespace dnpsoup {
       PulseSequence& remove(const Name &name);
 
       Component next();
+      std::size_t size() const { return m_sections_in_order.size(); }
 
       Name name;
     private:
@@ -53,8 +54,8 @@ namespace dnpsoup {
       std::uint64_t m_idx;
     };
 
-    friend operator>>(std::istream &is, PulseSequence &);
-    friend operator<<(std::ostream &os, const PulseSequence &);
+    std::istream& operator>>(std::istream &is, PulseSequence &);
+    std::ostream& operator<<(std::ostream &os, const PulseSequence &);
   } // namespace pulseseq
 } // namespace dnpsoup
 

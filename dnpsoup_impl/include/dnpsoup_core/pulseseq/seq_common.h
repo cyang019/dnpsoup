@@ -2,6 +2,7 @@
 #define DNPSOUP_SEQ_COMMON_H
 
 #include "dnpsoup_core/pulseseq/EMRadiation.h"
+#include "dnpsoup_core/common.h"
 #include <string>
 #include <iostream>
 #include <map>

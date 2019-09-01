@@ -9,12 +9,12 @@ namespace dnpsoup {
       : SubSequenceInterface()
     {}
 
-    Pulse::Pulse(const Name &name, const Name &component_name)
-      : SubSequenceInterface(name), m_component_name(component_name)
+    Pulse::Pulse(const Name &component_name)
+      : SubSequenceInterface(), m_component_name(component_name)
     {}
 
-    Pulse::Pulse(const Name &name, std::uint64_t sz, const Name &component_name)
-      : SubSequenceInterface(name, sz), m_component_name(component_name)
+    Pulse::Pulse(std::uint64_t sz, const Name &component_name)
+      : SubSequenceInterface(sz), m_component_name(component_name)
     {}
 
     std::pair<Component, std::uint64_t> Pulse::next(
@@ -23,6 +23,7 @@ namespace dnpsoup {
         )
     {
       if(m_idx >= m_sz){
+        m_idx = 0;
         return make_pair(Component(), m_sz);
       }
 
@@ -36,9 +37,9 @@ namespace dnpsoup {
     }
 
     SequenceType Pulse::type() const 
-    { return SequenceType::Pulse; }
+    { return SequenceType::PulseType; }
 
-    std::vector<Name> Pulse::getNames() const override
+    std::vector<Name> Pulse::getNames() const
     {
       std::vector<Name> res = {m_component_name};
       return res;

@@ -9,8 +9,8 @@ namespace dnpsoup {
     class Section : public SubSequenceInterface {
     public:
       Section();
-      Section(const Name &, const std::vector<Name> &);
-      Section(const Name &, std::uint64_t, const std::vector<Name> &);
+      Section(const std::vector<Name> &);
+      Section(std::uint64_t, const std::vector<Name> &);
       Section(const Section &) = default;
       Section(Section &&) noexcept = default;
       Section& operator=(const Section &) = default;
@@ -25,10 +25,11 @@ namespace dnpsoup {
 
       virtual SequenceType type() const override;
       virtual std::vector<Name> getNames() const override;
+      virtual void resetIndex() override;
     private:
       /// names in sections
       std::vector<Name> m_names;
-      std::uint64_t m_sub_idx;
+      std::uint64_t m_names_idx;
     };
   } // namespace pulseseq
 } // namespace dnpsoup

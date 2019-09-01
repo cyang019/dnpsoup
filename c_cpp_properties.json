@@ -1,0 +1,12 @@
+"configurations": 
+[
+    {
+        "name": "Mac",
+        "includePath": 
+        ["/usr/local/include",
+            "dnpsoup_impl/include",
+            "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1"
+        ]
+    }
+]
+

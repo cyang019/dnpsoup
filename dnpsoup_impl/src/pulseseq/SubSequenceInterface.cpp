@@ -1,25 +1,64 @@
 #include "dnpsoup_core/pulseseq/SubSequenceInterface.h"
+#include "dnpsoup_core/errors.h"
 #include "dnpsoup_core/pulseseq/Delay.h"
 #include "dnpsoup_core/pulseseq/Pulse.h"
 #include "dnpsoup_core/pulseseq/Section.h"
+#include <string>
+#include <limits>
 #include <iostream>
 #include <sstream>
+#include <iomanip>
+#include <utility>
 
 using namespace std;
 
 
 namespace dnpsoup {
   namespace pulseseq {
+    std::string toString(const SequenceType &t)
+    {
+      switch(t){
+      case SequenceType::PulseType:
+        return "Pulse";
+      case SequenceType::DelayType:
+        return "Delay";
+      case SequenceType::ChirpType:
+        return "Chirp";
+      case SequenceType::SectionType:
+        return "Section";
+      default:
+        return "Default";
+      };
+      return "NotDefined";
+    }
+
+    SequenceType toSequenceType(const std::string &s)
+    {
+      if(s == "Pulse"){
+        return SequenceType::PulseType;
+      }
+      else if(s == "Delay"){
+        return SequenceType::DelayType;
+      }
+      else if(s == "Chirp"){
+        return SequenceType::ChirpType;
+      }
+      else if(s == "Section"){
+        return SequenceType::SectionType;
+      }
+      return SequenceType::DefaultType;
+    }
+
     std::ostream& operator<<(std::ostream &os, const SequenceType &t)
     {
       switch(t){
-        case SequenceType::Pulse:
+        case SequenceType::PulseType:
           os << "Pulse";
           break;
-        case SequenceType::Delay:
+        case SequenceType::DelayType:
           os << "Delay";
           break;
-        case SequenceType::Section:
+        case SequenceType::SectionType:
           os << "Section";
           break;
         default:
@@ -34,30 +73,26 @@ namespace dnpsoup {
       string name;
       is >> name;
       if(name == "Pulse"){
-        t = SequenceType::Pulse;
+        t = SequenceType::PulseType;
       } 
       else if(name == "Delay"){
-        t = SequenceType::Delay;
+        t = SequenceType::DelayType;
       }
       else if(name == "Section"){
-        t = SequenceType::Section;
+        t = SequenceType::SectionType;
       }
       else {
-        t = SequenceType::Default;
+        t = SequenceType::DefaultType;
       }
       return is;
     }
 
     SubSequenceInterface::SubSequenceInterface()
-      : name("default"), m_sz(0), m_idx(0)
+      : m_sz(1), m_idx(0)
     {}
 
-    SubSequenceInterface::SubSequenceInterface(const Name &name)
-      : name(name), m_sz(0), m_idx(0)
-    {}
-
-    SubSequenceInterface::SubSequenceInterface(const Name &name, std::uint64_t sz)
-      : name(name), m_sz(sz), m_idx(0)
+    SubSequenceInterface::SubSequenceInterface(std::uint64_t sz)
+      : m_sz(sz), m_idx(0)
     {}
 
     void SubSequenceInterface::setParam(const Name &name, double val)
@@ -69,13 +104,13 @@ namespace dnpsoup {
       }
     }
 
-    std::unique_ptr<SubSequenceInterface> genPtrSequence(std::istream &is)
+    std::vector<Name> SubSequenceInterface::getParamNames() const
     {
-    }
-
-    std::ostream operator<<(std::ostream &os, const std::unique_ptr<SubSequenceInterface> &uptr_seq)
-    {
-      os << "  " << uptr_seq->type() << " " uptr_seq->size() << "\n";
+      vector<Name> res;
+      for(const auto &p_pair : m_params){
+        res.push_back(p_pair.first);
+      }
+      return res;
     }
   } // namespace pulseseq
 } // namespace dnpsoup

@@ -9,8 +9,8 @@ namespace dnpsoup {
       : SubSequenceInterface()
     {}
 
-    Delay::Delay(const Name &name, std::uint64_t sz)
-      : SubSequenceInterface(name, sz)
+    Delay::Delay(std::uint64_t sz)
+      : SubSequenceInterface(sz)
     {}
 
     std::pair<Component, std::uint64_t> Delay::next(
@@ -19,6 +19,7 @@ namespace dnpsoup {
         )
     {
       if(m_idx >= m_sz){
+        m_idx = 0;
         return make_pair(Component(), m_sz);
       }
       else {
@@ -29,9 +30,9 @@ namespace dnpsoup {
     }
 
     SequenceType Delay::type() const 
-    { return SequenceType::Delay; }
+    { return SequenceType::DelayType; }
 
-    std::vector<Name> Delay::getNames() const override
+    std::vector<Name> Delay::getNames() const
     {
       auto res = std::vector<Name>();
       return res;

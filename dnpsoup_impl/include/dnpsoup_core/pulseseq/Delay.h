@@ -8,7 +8,7 @@ namespace dnpsoup {
     class Delay : public SubSequenceInterface {
     public:
       Delay();
-      Delay(const Name &, std::uint64_t);
+      Delay(std::uint64_t);
       Delay(const Delay &) = default;
       Delay(Delay &&) noexcept = default;
       Delay& operator=(const Delay &) = default;

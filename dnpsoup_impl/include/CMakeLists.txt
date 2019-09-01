@@ -21,8 +21,7 @@ target_sources(dnpsoup_core
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spinsys/SpinSys.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spinsys/HamiltonianPacket.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spinsys/RelaxationPacket.h"
-  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/pulseseq/PulseComponent.h"
-  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/pulseseq/Segment.h"
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/pulseseq/pulse_sequence.h"
 
   PUBLIC
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup.h"
