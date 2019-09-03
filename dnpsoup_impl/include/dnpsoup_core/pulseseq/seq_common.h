@@ -3,6 +3,7 @@
 
 #include "dnpsoup_core/pulseseq/EMRadiation.h"
 #include "dnpsoup_core/common.h"
+#include "dnpsoup_core/spin_physics_components/spin.h"
 #include <string>
 #include <iostream>
 #include <map>

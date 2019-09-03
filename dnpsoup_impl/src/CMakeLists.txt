@@ -24,5 +24,6 @@ target_sources(dnpsoup_core
   "${CMAKE_CURRENT_LIST_DIR}/pulseseq/PulseSequence.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/pulseseq/Section.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/pulseseq/SubSequenceInterface.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/pulseseq/seq_common.cpp"
   )
 

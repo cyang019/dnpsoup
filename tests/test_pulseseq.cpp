@@ -1,10 +1,12 @@
 #include "dnpsoup.h"
+#include "json.hpp"
 #include "gtest/gtest.h"
 #include <limits>
 #include <string>
 #include <iostream>
 #include <sstream>
 #include <cmath>
+#include <sstream>
 
 
 namespace {
@@ -20,10 +22,76 @@ namespace {
       ASSERT_EQ(0u, p2.size());
     }
 
-    TEST(TestDnpsoup, PulseSeqUtopia){
-      auto p = PulseSeq();
+    TEST(TestDnpsoup, PulseSeqTopDnp){
+      // Tan, Kong Ooi, Chen Yang, Ralph T. Weber, Guinevere Mathies, and Robert G. Griffin. "Time-optimized pulsed dynamic nuclear polarization." Science advances 5, no. 1 (2019): eaav6909.
+      const std::string pulse_seq_str = 
+        "{\n"
+        "   \"increment\": 1.0e-9,"
+        "   \"components\": " 
+        "   {"
+        "     \"emr1\": {"
+        "            \"e\": { \"frequency\": 2.0e6, \"phase\": 0.0, \"offset\": 0.0 }"
+        "           }"
+        "   },"
+        "   \"sections\": "
+        "   {"
+        "     \"loop\":"
+        "     {"
+        "       \"type\": \"Section\","
+        "       \"size\": 1,"
+        "       \"names\": [\"pulse_train\", \"d2\"],"
+        "       \"params\": {}"
+        "     },"
+        "     \"pulse_train\":"
+        "     {"
+        "       \"type\": \"Section\","
+        "       \"size\": 1,"
+        "       \"names\": [\"p1\", \"d1\"],"
+        "       \"params\": {}"
+        "     },"
+        "     \"p1\":"
+        "     {"
+        "       \"type\": \"Pulse\","
+        "       \"size\": 5,"
+        "       \"names\": [\"emr1\"],"
+        "       \"params\": {}"
+        "     },"
+        "     \"d1\":"
+        "     {"
+        "       \"type\": \"Delay\","
+        "       \"size\": 3,"
+        "       \"names\": [],"
+        "       \"params\": {}"
+        "     },"
+        "     \"d2\":"
+        "     {"
+        "       \"type\": \"Delay\","
+        "       \"size\": 1,"
+        "       \"names\": [],"
+        "       \"params\": {}"
+        "     }"
+        "   },"            
+        "   \"sequence\": [\"pulse_train\"]"
+        "}";
+      PulseSeq top_dnp_seq;
+      std::istringstream iss(pulse_seq_str);
+      iss >> top_dnp_seq;
+      std::cout << top_dnp_seq << std::endl;
 
-      std::cout << p << std::endl;
+      // call next on PulseSeq
+      std::vector<dnpsoup::pulseseq::Component> emrs;
+      dnpsoup::pulseseq::Component temp;
+      std::uint64_t idx = 0;
+      while(idx < top_dnp_seq.size()){
+        std::tie(temp, idx) = top_dnp_seq.next();
+        if(idx >= top_dnp_seq.size()) break;
+        emrs.push_back(temp);
+      }
+      std::cout << "Print EMRadiations: " << std::endl;
+      for(const auto &emr : emrs){
+        std::cout << emr << "\n";
+      }
+      std::cout << "incremented " << emrs.size() << " components." << std::endl;
     }
 } // namespace dnpsoup
 

@@ -88,10 +88,11 @@ namespace pulseseq{
     return *this;
   }
 
-  Component PulseSequence::next()
+  std::pair<Component, std::uint64_t> PulseSequence::next()
   {
-    if (m_idx == m_sections_in_order.size()){
-      return Component();
+    if (m_idx >= m_sections_in_order.size()){
+      m_idx = m_sections_in_order.size();
+      return std::make_pair(Component(), m_sections_in_order.size());
     }
 
     auto name = m_sections_in_order[m_idx];
@@ -103,7 +104,7 @@ namespace pulseseq{
       std::tie(comp, idx) = m_sections[name]->next(&m_components, &m_sections);
     }
 
-    return comp;
+    return std::make_pair(comp, m_idx);
   }
 
   std::istream& operator>>(std::istream &is, PulseSequence &pseq)

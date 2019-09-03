@@ -1,4 +1,5 @@
 #include "dnpsoup_core/pulseseq/Pulse.h"
+#include "dnpsoup_core/errors.h"
 
 
 using namespace std;
@@ -27,13 +28,15 @@ namespace dnpsoup {
         return make_pair(Component(), m_sz);
       }
 
-      if(components->find(this->name) != components->end()){
+      if(components->find(this->m_component_name) != components->end()){
         auto idx = m_idx;
         ++m_idx;
-        return make_pair(components->at(name), idx);
+        return make_pair(components->at(m_component_name), idx);
       }
-
-      return make_pair(Component(), m_sz);
+      else{
+        const string err_str = "Inside " + this->name + ": " + m_component_name + " not found.";
+        throw PulseSequenceError(err_str);
+      }
     }
 
     SequenceType Pulse::type() const 

@@ -30,6 +30,9 @@ namespace dnpsoup {
         )
     {
       if(m_idx >= m_sz){    // parent protected member
+        m_idx = 0;
+        m_names_idx = 0;
+        //cout << "[Termination] section " << this->name << ": " << " m_idx: " << m_idx << " " << " m_names_idx: " << m_names_idx << endl;
         return make_pair(Component(), m_sz);
       }
 
@@ -46,24 +49,32 @@ namespace dnpsoup {
         std::uint64_t component_idx = 0;
         Component p;
         while(m_names_idx < m_names.size()){
-          auto name = m_names[m_names_idx];
-          if(sections->find(name) == sections->end()){
-            const std::string error_str = "cannot find section " + name + ".";
+          auto sub_name = m_names[m_names_idx];
+          if(sections->find(sub_name) == sections->end()){
+            const std::string error_str = "cannot find section " + sub_name + ".";
             throw PulseSequenceError(error_str);
           }
 
-          std::tie(p, component_idx) = (sections->at(name))->next(components, sections);
-          if(component_idx == (sections->at(name)->size())){
+          std::tie(p, component_idx) = (sections->at(sub_name))->next(components, sections);
+          if(component_idx >= (sections->at(sub_name)->size())){
             ++m_names_idx;
           }
           else{
             break;
           }
         }
+        //cout << "[Normal] section " << this->name << ": " << " m_idx: " << m_idx << " " << " m_names_idx: " << m_names_idx << endl;
+        if(m_names_idx >= m_names.size()){
+          continue;
+        }
 
         return make_pair(p, m_idx);
       }
 
+      // finished iteration
+      m_idx = 0;
+      m_names_idx = 0;
+      //cout << "[Termination] section " << this->name << ": " << " m_idx: " << m_idx << " " << " m_names_idx: " << m_names_idx << endl;
       return make_pair(Component(), m_sz);
     }
 

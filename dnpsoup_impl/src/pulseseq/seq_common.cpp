@@ -14,7 +14,7 @@ namespace dnpsoup {
     std::istream& operator>>(std::istream &is, Component &comp)
     {
       string line;
-      while(getline(comp, line)){
+      while(getline(is, line)){
         if(line.find_first_not_of(" \n\t") == string::npos) continue;
       
         istringstream iss(line);
@@ -35,11 +35,15 @@ namespace dnpsoup {
     {
       auto ss = os.precision();
       os << setprecision(std::numeric_limits<double>::max_digits10);
-      for(const auto &emr_pair : comp){
-        os << "  " << toString(emr_pair.first) << " "
-           << emr_pair.second.freq << " "
-           << emr_pair.second.phase << " "
-           << emr_pair.second.offset << "\n";
+      if(comp.size() > 0){
+        for(const auto &emr_pair : comp){
+          os << toString(emr_pair.first) << " "
+             << emr_pair.second.freq << " "
+             << emr_pair.second.phase << " "
+             << emr_pair.second.offset;
+        }
+      } else {
+        os << "delay";
       }
       os << setprecision(ss);
       return os;
