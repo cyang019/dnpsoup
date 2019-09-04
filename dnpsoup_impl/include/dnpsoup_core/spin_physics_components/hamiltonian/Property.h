@@ -18,6 +18,7 @@ namespace dnpsoup {
     yy = 11,
     zz = 12,
     b0 = 100,
+
     freq = 200,
     phase = 201,
     phase0 = 202,   /// lab frame rotatin: cos(w t + phi(t)): phase0 = w * t, phase = phi(t)

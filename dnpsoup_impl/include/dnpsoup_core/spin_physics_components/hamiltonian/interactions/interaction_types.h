@@ -13,7 +13,7 @@ namespace dnpsoup {
     Csa     = 1,
     Dipole  = 2,
     Shielding   = 3,
-    Wave        = 10,     ///< RF or Microwave Irradiation
+    EMR         = 10,     ///< RF or Microwave Irradiation
     Offset      = 20
   };
 
@@ -52,8 +52,8 @@ namespace dnpsoup {
       case InteractionType::Shielding:
         name = "Shielding";
         break;
-      case InteractionType::Wave:
-        name = "Wave";
+      case InteractionType::EMR:
+        name = "EMR";
         break;
       case InteractionType::Offset:
         name = "Offset";

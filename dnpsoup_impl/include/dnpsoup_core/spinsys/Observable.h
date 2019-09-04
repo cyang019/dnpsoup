@@ -16,6 +16,8 @@ namespace dnpsoup {
   public:
     ObservableId(const InteractionType&, const SpinId &id1);
     ObservableId(const InteractionType&, const SpinId &id1, const SpinId &id2);
+
+    // for pulse sequence
     ObservableId(const InteractionType&, const SpinType &t);
     ObservableId(const ObservableId &) = default;
     ObservableId(ObservableId &&) noexcept = default;

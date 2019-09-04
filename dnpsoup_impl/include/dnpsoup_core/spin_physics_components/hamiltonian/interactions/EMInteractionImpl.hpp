@@ -1,7 +1,7 @@
 namespace dnpsoup {
 
   template<typename T>
-  WaveInteraction<T>::WaveInteraction(const std::vector<SpinType> &spin_types, const SpinType &irradiated_type)
+  EMInteraction<T>::EMInteraction(const std::vector<SpinType> &spin_types, const SpinType &irradiated_type)
     : InteractionInterface(), m_ntotal(0)
   { 
     static_assert(is_frame_type<T>::value, "T needs to be either LabFrame or RotatingFrame");
@@ -54,7 +54,7 @@ namespace dnpsoup {
   }
 
   template<typename T>
-  MatrixCxDbl WaveInteraction<T>::genMatrixInternal(const Property &p) const
+  MatrixCxDbl EMInteraction<T>::genMatrixInternal(const Property &p) const
   {
     const double freq = p.get(ValueName::freq);
     const double phase = p.get(ValueName::phase);
@@ -70,7 +70,7 @@ namespace dnpsoup {
   }
   
   template<typename T>
-  MatrixCxDbl WaveInteraction<T>::genMatrix(
+  MatrixCxDbl EMInteraction<T>::genMatrix(
       const Property &p,
       [[maybe_unused]] const Euler<ActiveRotation> &e) const
   {
@@ -78,7 +78,7 @@ namespace dnpsoup {
   }
 
   template<typename T>
-  MatrixCxDbl WaveInteraction<T>::genMatrix(
+  MatrixCxDbl EMInteraction<T>::genMatrix(
       const Property &p,
       [[maybe_unused]] const Euler<PassiveRotation> &e) const
   {
@@ -86,7 +86,7 @@ namespace dnpsoup {
   }
 
   template<typename T>
-  std::size_t WaveInteraction<T>::dimension() const
+  std::size_t EMInteraction<T>::dimension() const
   { 
     return m_ntotal;
   }
