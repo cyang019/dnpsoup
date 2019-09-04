@@ -38,40 +38,40 @@ namespace {
         "     \"loop\":"
         "     {"
         "       \"type\": \"Section\","
-        "       \"size\": 1,"
+        "       \"size\": 3,"
         "       \"names\": [\"pulse_train\", \"d2\"],"
         "       \"params\": {}"
         "     },"
         "     \"pulse_train\":"
         "     {"
         "       \"type\": \"Section\","
-        "       \"size\": 1,"
+        "       \"size\": 5,"
         "       \"names\": [\"p1\", \"d1\"],"
         "       \"params\": {}"
         "     },"
         "     \"p1\":"
         "     {"
         "       \"type\": \"Pulse\","
-        "       \"size\": 5,"
+        "       \"size\": 50,"
         "       \"names\": [\"emr1\"],"
         "       \"params\": {}"
         "     },"
         "     \"d1\":"
         "     {"
         "       \"type\": \"Delay\","
-        "       \"size\": 3,"
+        "       \"size\": 65,"
         "       \"names\": [],"
         "       \"params\": {}"
         "     },"
         "     \"d2\":"
         "     {"
         "       \"type\": \"Delay\","
-        "       \"size\": 1,"
+        "       \"size\": 100,"
         "       \"names\": [],"
         "       \"params\": {}"
         "     }"
         "   },"            
-        "   \"sequence\": [\"pulse_train\"]"
+        "   \"sequence\": [\"loop\"]"
         "}";
       PulseSeq top_dnp_seq;
       std::istringstream iss(pulse_seq_str);
@@ -87,11 +87,14 @@ namespace {
         if(idx >= top_dnp_seq.size()) break;
         emrs.push_back(temp);
       }
-      std::cout << "Print EMRadiations: " << std::endl;
-      for(const auto &emr : emrs){
-        std::cout << emr << "\n";
-      }
-      std::cout << "incremented " << emrs.size() << " components." << std::endl;
+
+      std::size_t desired = ((50 + 65) * 5 + 100) * 3;
+      ASSERT_EQ(desired, emrs.size());
+      //std::cout << "Print EMRadiations: " << std::endl;
+      //for(const auto &emr : emrs){
+      //  std::cout << emr << "\n";
+      //}
+      //std::cout << "incremented " << emrs.size() << " components." << std::endl;
     }
 } // namespace dnpsoup
 
