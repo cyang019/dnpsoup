@@ -33,6 +33,7 @@ namespace dnpsoup {
     double getPropertyValue(const ValueName &) const;
 
     MatrixCxDbl genMatrix() const;
+    MatrixCxDbl genMatrix(const Euler<> &e) const;
   private:
     std::unique_ptr<InteractionInterface> m_ptr_interface;
     Property m_property;
@@ -70,6 +71,7 @@ namespace dnpsoup {
         const ValueName &) const;
 
     MatrixCxDbl genMatrix() const;
+    MatrixCxDbl genMatrix(const Euler<> &e) const;
 
     std::size_t getNumOfPackets() const;
   private:

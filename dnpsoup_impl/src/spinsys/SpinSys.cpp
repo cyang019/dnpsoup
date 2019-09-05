@@ -245,7 +245,7 @@ namespace dnpsoup {
 
   SpinSys& SpinSys::irradiateOn(const SpinType &t)
   {
-    auto irradiated_ids = m_spin_types.at(t);
+    const auto irradiated_ids = m_spin_types.at(t);
     auto irradiation = Observable(InteractionType::EMR, irradiated_ids);
     auto p = Property();
     p.set(ValueName::freq, 0.0);
@@ -254,6 +254,20 @@ namespace dnpsoup {
     irradiation.setProperty(p);
     auto oid_name = ObservableId(InteractionType::EMR, t);
     m_observables.insert({oid_name, irradiation});
+    return *this;
+  }
+
+  SpinSys& SpinSys::acquireOn(const SpinType &t)
+  {
+    const auto acq_ids = m_spin_types.at(t);
+    auto acq = Observable(InteractionType::Acquisition, acq_ids);
+    auto p = Property();
+    p.set(ValueName::freq, 0.0);
+    p.set(ValueName::phase, 0.0);
+    p.set(ValueName::offset, 0.0);
+    acq.setProperty(p);
+    const auto oid_name = ObservableId(InteractionType::Acquisition, t);
+    m_observables.insert({oid_name, acq});
     return *this;
   }
 

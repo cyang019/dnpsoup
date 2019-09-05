@@ -1,5 +1,5 @@
-#ifndef DNPSOUP_EMINTERACTION_H
-#define DNPSOUP_EMINTERACTION_H
+#ifndef DNPSOUP_ACQUISITIONINTERACTION_H
+#define DNPSOUP_ACQUISITIONINTERACTION_H
 
 #include "dnpsoup_core/constants.h"
 #include "dnpsoup_core/common.h"
@@ -15,11 +15,11 @@ namespace dnpsoup {
   /// Microwave or Radio Frequency Interaction
   /// enable only if T is a frame type (i.e. RotatingFrame or LabFrame)
   template<typename T>
-  class EMInteraction
+  class AcquisitionInteraction
   : public InteractionInterface {
   public:
-    EMInteraction(const std::vector<SpinType> &spins, const SpinType &irradiated);
-    ~EMInteraction() {}
+    AcquisitionInteraction(const std::vector<SpinType> &spins, const SpinType &irradiated);
+    ~AcquisitionInteraction() {}
 
     matrix::Matrix<cxdbl> genMatrix(
         const Property &,   // freq = 0.5 * gamma * B1 in Hz; phase in rad. phase0 in rad
@@ -31,16 +31,13 @@ namespace dnpsoup {
     std::size_t dimension() const;
   private:
     std::size_t m_ntotal;
-
-    matrix::Matrix<cxdbl> m_x;
-    matrix::Matrix<cxdbl> m_y;
-
-    matrix::Matrix<cxdbl> genMatrixInternal(const Property &) const;
+    matrix::Matrix<cxdbl> m_p;
   };  // class ChemicalShiftInteraction
 }   // namespace dnpsoup
 
-#include "dnpsoup_core/spin_physics_components/hamiltonian/interactions/EMInteractionImpl.hpp"
+#include "dnpsoup_core/spin_physics_components/hamiltonian/interactions/AcquisitionInteractionImpl.hpp"
 
 #endif
+
 
 

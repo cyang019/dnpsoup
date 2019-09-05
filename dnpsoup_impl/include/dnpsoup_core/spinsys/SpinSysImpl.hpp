@@ -175,6 +175,32 @@ namespace dnpsoup {
           }
         }
         break;
+      case InteractionType::Acquisition:
+        {
+          std::vector<SpinType> types = this->getSpinTypes();
+          if(ob.getSpinIds().size() == 0){
+            /// either frame is fine, since nothing irradiated.
+            res = std::make_unique<
+              AcquisitionInteraction<RotatingFrame>>(types, SpinType::Null);
+          } else {
+            /// irradiated on the same type.
+            const SpinId sid0 = ob.getSpinIds()[0];
+            const SpinType t = m_spins.at(sid0).getSpinType();
+            if constexpr(std::is_same<T, DnpExperiment>::value){
+              if(t == SpinType::e){ // on electron (not preferred)
+                res = std::make_unique<
+                  AcquisitionInteraction<RotatingFrame>>(types, t);
+              } else {  // on nuclei
+                res = std::make_unique<
+                  AcquisitionInteraction<LabFrame>>(types, t);
+              }
+            } else {  // NmrExperiment
+                res = std::make_unique<
+                  AcquisitionInteraction<RotatingFrame>>(types, t);
+            }
+          }
+        }
+        break;
       default:
         throw NotImplementedError("Unknown InteractionType");
         break;

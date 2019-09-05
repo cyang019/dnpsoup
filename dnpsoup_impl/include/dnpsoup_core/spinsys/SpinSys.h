@@ -61,6 +61,7 @@ namespace dnpsoup {
     // ===============================================
     
     SpinSys& irradiateOn(const SpinType &);
+    SpinSys& acquireOn(const SpinType &);
 
     /// @param T: either DnpExperiment or Nmrexperiment
     /// If DnpExperiment only e in rotating frame, everything else in the lab frame.
@@ -68,6 +69,7 @@ namespace dnpsoup {
     template<typename T>
     PacketCollection summarize() const;
 
+    /// collect the OffsetInteraction operators (needed for relaxation, emradiation)
     template<typename T>
     PacketCollection summarizeOffset() const;
 

@@ -14,7 +14,9 @@ namespace dnpsoup {
     Dipole  = 2,
     Shielding   = 3,
     EMR         = 10,     ///< RF or Microwave Irradiation
-    Offset      = 20
+    Offset      = 20,
+
+    Acquisition  = 900
   };
 
   inline bool operator>(const InteractionType &t1, const InteractionType &t2)
@@ -57,6 +59,9 @@ namespace dnpsoup {
         break;
       case InteractionType::Offset:
         name = "Offset";
+        break;
+      case InteractionType::Acquisition:
+        name = "Acquisition";
         break;
       default:
         name = "Default";

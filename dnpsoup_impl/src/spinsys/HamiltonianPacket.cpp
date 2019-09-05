@@ -44,6 +44,12 @@ namespace dnpsoup {
     return m_ptr_interface->genMatrix(m_property, m_e);
   }
 
+  MatrixCxDbl HamiltonianPacket::genMatrix(const Euler<> &e) const
+  {
+    auto angle = m_e * e;
+    return m_ptr_interface->genMatrix(m_property, angle);
+  }
+
   // class PacketCollection
   PacketCollection& PacketCollection::add(const ObservableId &oid, HamiltonianPacket &&sp)
   {
@@ -123,6 +129,20 @@ namespace dnpsoup {
         res = obs.second.genMatrix();
       } else{
         res += obs.second.genMatrix();
+      }
+    }
+    return res;
+  }
+
+  MatrixCxDbl PacketCollection::genMatrix(const Euler<> &e) const
+  {
+    if(m_packets.size() == 0) return MatrixCxDbl();
+    auto res = MatrixCxDbl();
+    for(const auto &obs : m_packets){
+      if(res.nrows() == 0){
+        res = obs.second.genMatrix(e);
+      } else{
+        res += obs.second.genMatrix(e);
       }
     }
     return res;
