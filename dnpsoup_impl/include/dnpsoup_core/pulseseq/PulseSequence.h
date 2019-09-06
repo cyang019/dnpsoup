@@ -45,6 +45,8 @@ namespace dnpsoup {
       std::pair<Component, std::uint64_t> next();
       std::size_t size() const { return m_sections_in_order.size(); }
 
+      double getIncrement() const { return m_inc; }
+
       Name name;
     private:
       std::map<Name, Component> m_components;

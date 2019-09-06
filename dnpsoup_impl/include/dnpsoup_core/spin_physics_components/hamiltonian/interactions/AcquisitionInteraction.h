@@ -19,6 +19,8 @@ namespace dnpsoup {
   : public InteractionInterface {
   public:
     AcquisitionInteraction(const std::vector<SpinType> &spins, const SpinType &irradiated);
+    AcquisitionInteraction(const std::map<SpinId, SpinEntity> &spins,
+                           const std::vector<SpinId> &irradiated);
     ~AcquisitionInteraction() {}
 
     matrix::Matrix<cxdbl> genMatrix(

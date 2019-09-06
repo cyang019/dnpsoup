@@ -10,7 +10,7 @@ target_sources(dnpsoup_core
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/rotation/Quaternion.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/rotation/Coordinate.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/Property.h"
-  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/rho0.h"
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/rho_eq.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/interactions/ChemicalShiftInteraction.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/interactions/DipolarInteraction.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/hamiltonian/interactions/ScalarInteraction.h"

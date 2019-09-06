@@ -1,11 +1,11 @@
-#include "dnpsoup_core/spin_physics_components/hamiltonian/rho0.h"
+#include "dnpsoup_core/spin_physics_components/hamiltonian/rho_eq.h"
 #include "dnpsoup_core/errors.h"
 #include "dnpsoup_core/constants.h"
 
 
 namespace dnpsoup {
   /// @param hamiltonian in Hz
-  MatrixCxDbl genRho0(const MatrixCxDbl &hamiltonian, double temperature)
+  MatrixCxDbl genRhoEq(const MatrixCxDbl &hamiltonian, double temperature)
   {
 #ifndef NDEBUG
     if(hamiltonian.nrows() != hamiltonian.ncols()){

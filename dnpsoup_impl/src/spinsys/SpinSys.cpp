@@ -257,18 +257,20 @@ namespace dnpsoup {
     return *this;
   }
 
-  SpinSys& SpinSys::acquireOn(const SpinType &t)
+  MatrixCxDbl SpinSys::acquireOn(const SpinType &t)
   {
-    const auto acq_ids = m_spin_types.at(t);
-    auto acq = Observable(InteractionType::Acquisition, acq_ids);
-    auto p = Property();
-    p.set(ValueName::freq, 0.0);
-    p.set(ValueName::phase, 0.0);
-    p.set(ValueName::offset, 0.0);
-    acq.setProperty(p);
-    const auto oid_name = ObservableId(InteractionType::Acquisition, t);
-    m_observables.insert({oid_name, acq});
-    return *this;
+    auto acq = AcquisitionInteraction(this->getSpinTypes(), t);
+    Property p; ///< placeholder
+    Euler<> e;  ///< placeholder
+    return acq.genMatrix(p,  e);
+  }
+
+  MatrixCxDbl SpinSys::acquireOn(const std::vector<SpinId> &sids)
+  {
+    auto acq = AcquisitionInteraction(m_spins, sids);
+    Property p;
+    Euler<> e;
+    return acq.genMatrix(p, e);
   }
 
   std::vector<RelaxationPacket> SpinSys::summarizeRelaxation() const
@@ -334,5 +336,10 @@ namespace dnpsoup {
       types.push_back(s_pair.second.getSpinType());
     }
     return types;
+  }
+
+  std::vector<SpinId> SpinSys::getSpinIds(const SpinType &t) const
+  {
+    return m_spin_types[t];
   }
 } // namespace dnpsoup

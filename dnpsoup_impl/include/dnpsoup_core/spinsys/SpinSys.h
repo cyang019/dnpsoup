@@ -61,7 +61,10 @@ namespace dnpsoup {
     // ===============================================
     
     SpinSys& irradiateOn(const SpinType &);
-    SpinSys& acquireOn(const SpinType &);
+
+    /// @returns matrix for I+ operator
+    MatrixCxDbl acquireOn(const SpinType &);
+    MatrixCxDbl acquireOn(const std::vector<SpinId> &);
 
     /// @param T: either DnpExperiment or Nmrexperiment
     /// If DnpExperiment only e in rotating frame, everything else in the lab frame.
@@ -86,6 +89,7 @@ namespace dnpsoup {
     std::vector<std::size_t> calcDimensions() const;
 
     std::vector<SpinType> getSpinTypes() const;
+    std::vector<SpinId> getSpinIds(const SpinType &) const;
   private:
     std::map<SpinId, SpinEntity> m_spins;
     std::unordered_map<SpinType, std::vector<SpinId>> m_spin_types;
