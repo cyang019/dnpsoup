@@ -4,6 +4,8 @@
 #include "dnpsoup_core/constants.h"
 #include "dnpsoup_core/common.h"
 #include "dnpsoup_core/errors.h"
+#include "dnpsoup_core/spinsys/SpinId.h"
+#include "dnpsoup_core/spinsys/SpinEntity.h"
 #include "dnpsoup_core/spin_physics_components/spin.h"
 #include "dnpsoup_core/spin_physics_components/hamiltonian/InteractionInterface.h"
 #include "dnpsoup_core/spin_physics_components/rotation/Euler.h"
@@ -14,7 +16,7 @@
 namespace dnpsoup {
   /// Microwave or Radio Frequency Interaction
   /// enable only if T is a frame type (i.e. RotatingFrame or LabFrame)
-  template<typename T>
+  template<typename T = RotatingFrame>
   class AcquisitionInteraction
   : public InteractionInterface {
   public:
@@ -33,7 +35,7 @@ namespace dnpsoup {
     std::size_t dimension() const;
   private:
     std::size_t m_ntotal;
-    matrix::Matrix<cxdbl> m_p;
+    matrix::Matrix<cxdbl> m_minus_op;
   };  // class ChemicalShiftInteraction
 }   // namespace dnpsoup
 

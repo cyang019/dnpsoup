@@ -4,6 +4,7 @@
 #include "dnpsoup_core/constants.h"
 #include "dnpsoup_core/common.h"
 #include "dnpsoup_core/errors.h"
+#include "dnpsoup_core/powder/ZCW.h"
 #include "dnpsoup_core/spin_physics_components/rotation/Euler.h"
 #include "dnpsoup_core/spin_physics_components/rotation/Quaternion.h"
 #include "dnpsoup_core/spin_physics_components/rotation/Coordinate.h"
@@ -18,5 +19,6 @@
 #include "dnpsoup_core/spinsys/HamiltonianPacket.h"
 #include "dnpsoup_core/spinsys/RelaxationPacket.h"
 #include "dnpsoup_core/pulseseq/pulse_sequence.h"
+#include "dnpsoup_core/experiment/DnpRunner.h"
 
 #endif

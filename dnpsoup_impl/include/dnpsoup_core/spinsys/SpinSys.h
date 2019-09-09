@@ -63,8 +63,8 @@ namespace dnpsoup {
     SpinSys& irradiateOn(const SpinType &);
 
     /// @returns matrix for I+ operator
-    MatrixCxDbl acquireOn(const SpinType &);
-    MatrixCxDbl acquireOn(const std::vector<SpinId> &);
+    MatrixCxDbl acquireOn(const SpinType &) const;
+    MatrixCxDbl acquireOn(const std::vector<SpinId> &) const;
 
     /// @param T: either DnpExperiment or Nmrexperiment
     /// If DnpExperiment only e in rotating frame, everything else in the lab frame.

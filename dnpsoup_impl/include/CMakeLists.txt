@@ -5,7 +5,6 @@ target_sources(dnpsoup_core
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/common.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/errors.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/spin.h"
-  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/spin.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/rotation/Euler.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/rotation/Quaternion.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/rotation/Coordinate.h"
@@ -22,6 +21,8 @@ target_sources(dnpsoup_core
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spinsys/HamiltonianPacket.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spinsys/RelaxationPacket.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/pulseseq/pulse_sequence.h"
+
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/experiment/DnpRunner.h"
 
   PUBLIC
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup.h"

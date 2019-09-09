@@ -5,7 +5,7 @@ namespace dnpsoup {
     : InteractionInterface(), m_ntotal(0)
   { 
     static_assert(is_frame_type<T>::value, "T needs to be either LabFrame or RotatingFrame");
-    std::vector<MatrixCxDbl> operators_p;
+    std::vector<MatrixCxDbl> operators_m;
 
     for(const auto &t : spin_types){
       std::size_t n = getMatrixDimension(t);
@@ -19,36 +19,37 @@ namespace dnpsoup {
     for(const auto &t : spin_types){
       std::size_t n = getMatrixDimension(t);
       if (t == irradiated_type){
-        auto temp_p = spin<P>(n);
+        auto temp_m = spin<M>(n);
         if(n > 0){
           nafter = nbefore > 0 ? m_ntotal / (n * nbefore) : m_ntotal / n;
         } else {
           nafter = nbefore > 0 ? m_ntotal / nbefore : m_ntotal;
         }
-        MatrixCxDbl p_op = kron(std::vector<MatrixCxDbl>{identity<cxdbl>(nbefore), temp_p, identity<cxdbl>(nafter)});
-        operators_p.emplace_back(std::move(p_op));
+        MatrixCxDbl minus_op = kron(std::vector<MatrixCxDbl>{identity<cxdbl>(nbefore), temp_m, identity<cxdbl>(nafter)});
+        operators_m.emplace_back(std::move(minus_op));
       }
       if(n > 0){
         nbefore = (nbefore == 0) ? n : nbefore * n;
       }
     }
 
-    m_p = zeros<cxdbl>(m_ntotal, m_ntotal);
-    for(const auto &m : operators_p){
-      m_p += m;
+    m_minus_op = zeros<cxdbl>(m_ntotal, m_ntotal);
+    for(const auto &m : operators_m){
+      m_minus_op += m;
     }
   }
 
   template<typename T>
-  AcquisitionInteraction::AcquisitionInteraction(
+  AcquisitionInteraction<T>::AcquisitionInteraction(
       const std::map<SpinId, SpinEntity> &spins,
       const std::vector<SpinId> &irradiated)
     : InteractionInterface(), m_ntotal(0)
   { 
     static_assert(is_frame_type<T>::value, "T needs to be either LabFrame or RotatingFrame");
-    std::vector<MatrixCxDbl> operators_p;
+    std::vector<MatrixCxDbl> operators_m;
 
-    for(auto [sid, s_info] : irradiated){
+    for(const auto &sid : irradiated){
+      auto s_info = spins.at(sid);
       std::size_t n = getMatrixDimension(s_info.getSpinType());
       if(n > 0){
         m_ntotal = (m_ntotal == 0) ? n : m_ntotal * n;
@@ -58,24 +59,24 @@ namespace dnpsoup {
     std::size_t nbefore = 0;
     std::size_t nafter = 0;
     for(const auto &sid : irradiated){
-      const std::size_t n = getMatrixDimension(spins[sid].getSpinType());
-      auto temp_p = spin<P>(n);
+      const std::size_t n = getMatrixDimension(spins.at(sid).getSpinType());
+      auto temp_m = spin<M>(n);
       if(n > 0){
         nafter = nbefore > 0 ? m_ntotal / (n * nbefore) : m_ntotal / n;
       } else {
         nafter = nbefore > 0 ? m_ntotal / nbefore : m_ntotal;
       }
-      MatrixCxDbl p_op = kron(
-          std::vector<MatrixCxDbl>{identity<cxdbl>(nbefore), temp_p, identity<cxdbl>(nafter)});
-      operators_p.emplace_back(std::move(p_op));
+      MatrixCxDbl minus_op = kron(
+          std::vector<MatrixCxDbl>{identity<cxdbl>(nbefore), temp_m, identity<cxdbl>(nafter)});
+      operators_m.emplace_back(std::move(minus_op));
       if(n > 0){
         nbefore = (nbefore == 0) ? n : nbefore * n;
       }
     }
 
-    m_p = zeros<cxdbl>(m_ntotal, m_ntotal);
-    for(const auto &m : operators_p){
-      m_p += m;
+    m_minus_op = zeros<cxdbl>(m_ntotal, m_ntotal);
+    for(const auto &m : operators_m){
+      m_minus_op += m;
     }
   }
 
@@ -84,7 +85,7 @@ namespace dnpsoup {
       [[maybe_unused]] const Property &p,
       [[maybe_unused]] const Euler<ActiveRotation> &e) const
   {
-    return m_p;
+    return m_minus_op;
   }
 
   template<typename T>
@@ -92,7 +93,7 @@ namespace dnpsoup {
       [[maybe_unused]] const Property &p,
       [[maybe_unused]] const Euler<PassiveRotation> &e) const
   {
-    return m_p;
+    return m_minus_op;
   }
 
   template<typename T>

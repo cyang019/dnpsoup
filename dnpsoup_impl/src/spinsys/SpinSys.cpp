@@ -257,17 +257,17 @@ namespace dnpsoup {
     return *this;
   }
 
-  MatrixCxDbl SpinSys::acquireOn(const SpinType &t)
+  MatrixCxDbl SpinSys::acquireOn(const SpinType &t) const
   {
-    auto acq = AcquisitionInteraction(this->getSpinTypes(), t);
+    auto acq = AcquisitionInteraction<>(this->getSpinTypes(), t);
     Property p; ///< placeholder
     Euler<> e;  ///< placeholder
     return acq.genMatrix(p,  e);
   }
 
-  MatrixCxDbl SpinSys::acquireOn(const std::vector<SpinId> &sids)
+  MatrixCxDbl SpinSys::acquireOn(const std::vector<SpinId> &sids) const
   {
-    auto acq = AcquisitionInteraction(m_spins, sids);
+    auto acq = AcquisitionInteraction<>(m_spins, sids);
     Property p;
     Euler<> e;
     return acq.genMatrix(p, e);
@@ -340,6 +340,6 @@ namespace dnpsoup {
 
   std::vector<SpinId> SpinSys::getSpinIds(const SpinType &t) const
   {
-    return m_spin_types[t];
+    return m_spin_types.at(t);
   }
 } // namespace dnpsoup

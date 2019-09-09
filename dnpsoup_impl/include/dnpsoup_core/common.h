@@ -33,8 +33,12 @@ namespace dnpsoup {
 
   using matrix::allclose;
   using matrix::eps;
-  using trace = matrix::projection<std::complex<double>>;
-  using exp = matrix::exp<std::complex<double>>;
+
+  //template<typename T>
+  //constexpr matrix::Matrix<T> exp(const matrix::Matrix<T> &m)
+  //{
+  //  return matrix::exp<T>(m);
+  //}
 
   template<typename T>
   constexpr matrix::Matrix<T> identity(size_t n)
