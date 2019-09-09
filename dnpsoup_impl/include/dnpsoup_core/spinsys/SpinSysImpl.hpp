@@ -21,7 +21,7 @@ namespace dnpsoup {
       for(const auto &s_pair : m_spins){
         if(s_pair.second.getSpinType() == SpinType::e){
           auto ob = Observable(InteractionType::Offset, s_pair.first);
-          std::unique_ptr<OffsetInteraction> ptr_i = this->genInteractionFromObservable<T>(ob);
+          auto ptr_i = this->genInteractionFromObservable<T>(ob);
           Property p;
           Euler<> e;
           auto packet = HamiltonianPacket(std::move(ptr_i), p, e);
@@ -32,7 +32,7 @@ namespace dnpsoup {
       // all
       for(const auto &s_pair : m_spins){
         auto ob = Observable(InteractionType::Offset, s_pair.first);
-        std::unique_ptr<OffsetInteraction> ptr_i = this->genInteractionFromObservable<T>(ob);
+        auto ptr_i = this->genInteractionFromObservable<T>(ob);
         Property p;
         Euler<> e;
         auto packet = HamiltonianPacket(std::move(ptr_i), p, e);

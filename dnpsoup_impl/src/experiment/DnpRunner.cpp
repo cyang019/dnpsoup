@@ -91,7 +91,7 @@ namespace dnpsoup {
         rho0_relative = evolve(rho0_relative, hamiltonian, rpackets, dt);
       }
 
-      double result = projection(acq_mat, rho0_relative + rho0_offset);
+      double result = projection(acq_mat, rho0_relative + rho0_offset).real();
       return result;
     }
 
@@ -124,11 +124,16 @@ namespace dnpsoup {
       auto rho_eq = genRhoEq(hamiltonian);
       auto delta_rho = rho_prev - rho_eq;
       auto [eigenvals, eigenvec] = diagonalizeMat(hamiltonian);
-      MatrixCxDbl t1_superop = rpacket.genSuperOpT1(eigenvec);
-      MatrixCxDbl t2_superop = rpacket.genSuperOpT2(eigenvec);
+      const size_t sz = hamiltonian.nrows() * hamiltonian.ncols();
+      auto t1_superop = zeros<cxdbl>(sz, sz);
+      auto t2_superop = zeros<cxdbl>(sz, sz);
+      for(const auto &rpacket : rpackets){
+        t1_superop += rpacket.genSuperOpT1(eigenvec);
+        t2_superop += rpacket.genSuperOpT2(eigenvec);
+      }
       auto h_super = commutationSuperOp(hamiltonian);
-      auto super_op = complex<double>(0,-1) * h_super - t1_super + t2_super;
-      auto d_delta_rho = ::dnpsoup::exp(-super_op * dt) * delta_rho;
+      auto super_op = complex<double>(0,-1) * h_super + t1_superop + t2_superop;
+      auto d_delta_rho = exp(super_op * dt) * delta_rho;
       return d_delta_rho + rho_eq;
     }
 } // namespace dnpsoup

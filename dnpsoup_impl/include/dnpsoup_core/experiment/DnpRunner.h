@@ -35,7 +35,7 @@ namespace dnpsoup {
     MatrixCxDbl evolve(
         const MatrixCxDbl &rho_prev, 
         const MatrixCxDbl &hamiltonian,
-        const RelaxationPacket &rpacket,
+        const std::vector<RelaxationPacket> &rpackets,
         double dt) const;
   };
 
