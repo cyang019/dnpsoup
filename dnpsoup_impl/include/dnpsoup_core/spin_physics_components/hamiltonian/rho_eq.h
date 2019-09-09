@@ -5,7 +5,7 @@
 
 
 namespace dnpsoup {
-  MatrixCxDbl genRhoEq(const MatrixCxDbl &mat);
+  MatrixCxDbl genRhoEq(const MatrixCxDbl &mat, double temperature);
 
   std::tuple<MatrixDbl, MatrixCxDbl> diagonalizeMat(const MatrixCxDbl &mat);
 } // namespace dnpsoup

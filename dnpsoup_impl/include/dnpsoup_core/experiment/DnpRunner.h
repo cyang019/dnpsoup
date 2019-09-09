@@ -36,7 +36,7 @@ namespace dnpsoup {
         const MatrixCxDbl &rho_prev, 
         const MatrixCxDbl &hamiltonian,
         const std::vector<RelaxationPacket> &rpackets,
-        double dt) const;
+        double dt, double temperature) const;
   };
 
 } // namespace dnpsoup

@@ -13,8 +13,9 @@ namespace dnpsoup {
     double em_frequency;   ///< in Hz
   };
 
-  class Probe {
+  struct Probe {
     double mas_frequency;
+    double temperature;
   };
 } // namespace dnpsoup
 

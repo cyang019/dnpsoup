@@ -7,9 +7,9 @@
 namespace dnpsoup {
   inline std::uint64_t fibonacci(std::uint64_t m)
   {
-    if(M == 0){
+    if(m == 0){
       return 8u;
-    } else if(M == 1){
+    } else if(m == 1){
       return 13u;
     } else {
       return fibonacci(m-1) + fibonacci(m-2);

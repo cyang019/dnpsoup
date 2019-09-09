@@ -28,6 +28,16 @@ namespace dnpsoup {
       auto offset_packets = spin_sys.summarizeOffset<DnpExperiment>();
       auto rpackets = spin_sys.summarizeRelaxation();
       auto acq_mat = spin_sys.acquireOn(acq_spin);
+      double mas_inc = -1.0;
+      if(p.mas_frequency > 1.0){
+        mas_inc = 1.0/p.mas_frequency * 0.001;   /// 0.1% of MAS
+      }
+      double t = 0.0;
+      double t_prev = 0.0;
+      auto mas_angle = Euler<>(0.0, magic_angle, 0.0);
+      if(mas_inc < 0){
+        mas_angle = Euler<>(0.0, 0.0, 0.0);
+      }
 
       packets.setPropertyValue(ValueName::b0, m.b0);
       offset_packets.setPropertyValue(ValueName::b0, m.b0);
@@ -53,8 +63,8 @@ namespace dnpsoup {
       MatrixCxDbl hamiltonian = packets.genMatrix(spin_sys_euler);
       MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(spin_sys_euler);
       auto hamiltonian_lab = hamiltonian + hamiltonian_offset;
-      MatrixCxDbl rho0_lab = genRhoEq(hamiltonian_lab);
-      MatrixCxDbl rho0_relative = genRhoEq(hamiltonian);
+      MatrixCxDbl rho0_lab = genRhoEq(hamiltonian_lab, p.temperature);
+      MatrixCxDbl rho0_relative = genRhoEq(hamiltonian, p.temperature);
       auto rho0_offset = rho0_lab - rho0_relative;
       std::uint64_t cnt = 0;    /// keep track of identical hamiltonians
       constexpr double eps = std::numeric_limits<double>::epsilon();
@@ -73,14 +83,20 @@ namespace dnpsoup {
             //    InteractionType::EMR, sid, ValueName::offset, emr.offset);
           }
         }
-        auto hamiltonian_temp = packets.genMatrix(spin_sys_euler);
+        t += inc;
+        if((t - t_prev) > mas_inc && mas_inc > 0){
+          mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
+          t_prev = t;
+        }
+
+        auto hamiltonian_temp = packets.genMatrix(spin_sys_euler * mas_angle);
         if(allclose(hamiltonian_temp, hamiltonian, eps)){
           ++cnt;
           continue;
         } else {
           if(cnt > 0){
             const double dt = inc * static_cast<double>(cnt);
-            rho0_relative = evolve(rho0_relative, hamiltonian, rpackets, dt);
+            rho0_relative = evolve(rho0_relative, hamiltonian, rpackets, dt, p.temperature);
           }
           hamiltonian = hamiltonian_temp;
           cnt = 1;
@@ -88,10 +104,10 @@ namespace dnpsoup {
       } while(idx < seq.size());
       if(cnt > 0){
         const double dt = inc * static_cast<double>(cnt);
-        rho0_relative = evolve(rho0_relative, hamiltonian, rpackets, dt);
+        rho0_relative = evolve(rho0_relative, hamiltonian, rpackets, dt, p.temperature);
       }
 
-      double result = projection(acq_mat, rho0_relative + rho0_offset).real();
+      double result = ::dnpsoup::projection(acq_mat, rho0_relative + rho0_offset).real();
       return result;
     }
 
@@ -119,9 +135,9 @@ namespace dnpsoup {
         const MatrixCxDbl &rho_prev, 
         const MatrixCxDbl &hamiltonian,
         const std::vector<RelaxationPacket> &rpackets,
-        double dt) const
+        double dt, double temperature) const
     {
-      auto rho_eq = genRhoEq(hamiltonian);
+      auto rho_eq = genRhoEq(hamiltonian, temperature);
       auto delta_rho = rho_prev - rho_eq;
       auto [eigenvals, eigenvec] = diagonalizeMat(hamiltonian);
       const size_t sz = hamiltonian.nrows() * hamiltonian.ncols();
