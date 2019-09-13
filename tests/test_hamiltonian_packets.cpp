@@ -25,8 +25,8 @@ namespace {
 
       auto packets1 = spins.summarize<dnpsoup::DnpExperiment>();
       auto packets2 = spins.summarize<dnpsoup::NmrExperiment>();
-      ASSERT_EQ(4u, packets1.getNumOfPackets());
-      ASSERT_EQ(4u, packets2.getNumOfPackets());
+      ASSERT_EQ(7u, packets1.getNumOfPackets());
+      ASSERT_EQ(7u, packets2.getNumOfPackets());
 
       auto mat = packets1.genMatrix();
       std::cout << "Matrix of a \'e H H\' spin system.\n";

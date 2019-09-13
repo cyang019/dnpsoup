@@ -25,6 +25,7 @@ namespace dnpsoup {
   };
 
   std::ostream& operator<<(std::ostream &, const ValueName &);
+  std::string toString(const ValueName &);
 
   // values are in Hz
   class Property {

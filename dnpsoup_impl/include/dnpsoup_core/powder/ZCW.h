@@ -10,7 +10,7 @@
 
 
 namespace dnpsoup {
-  inline std::pair<std::vector<Euler<>>, double> getZCWAngles(std::uint64_t m)
+  inline std::vector<Euler<>> getZCWAngles(std::uint64_t m)
   {
     // full sphere
     constexpr double c1 = 1.0;
@@ -25,9 +25,9 @@ namespace dnpsoup {
       const double beta = std::acos(c1 * (c2 * std::fmod(i/N_M, 1.0) - 1.0));
       result.push_back(Euler<>(alpha, beta, 0.0));
     }
-    double scaling_factor = 1.0/static_cast<double>(N_M);
+    //double scaling_factor = 1.0/static_cast<double>(N_M);
 
-    return std::make_pair(result, scaling_factor);
+    return result;
   }
 } // namespace dnpsoup
 

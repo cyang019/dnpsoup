@@ -1,5 +1,6 @@
 #include "dnpsoup_core/spin_physics_components/hamiltonian/Property.h"
 #include "dnpsoup_core/constants.h"
+#include "dnpsoup_core/errors.h"
 #include <sstream>
 #include <utility>
 
@@ -28,7 +29,7 @@ namespace dnpsoup {
         os << "zz";
         break;
       case ValueName::b0:
-        os << "bz";
+        os << "b0";
         break;
       case ValueName::freq:
         os << "freq";
@@ -42,12 +43,55 @@ namespace dnpsoup {
     return os;
   }
 
+  std::string toString(const ValueName &vname)
+  {
+    switch(vname){
+      case ValueName::scalar:
+        return "scalar";
+        break;
+      case ValueName::distance:
+        return "distance";
+        break;
+      case ValueName::offset:
+        return "offset";
+        break;
+      case ValueName::xx:
+        return "xx";
+        break;
+      case ValueName::yy:
+        return "yy";
+        break;
+      case ValueName::zz:
+        return "zz";
+        break;
+      case ValueName::b0:
+        return "b0";
+        break;
+      case ValueName::freq:
+        return "freq";
+        break;
+      case ValueName::phase:
+        return "phase";
+        break;
+      default:
+        return "Unknown";
+        break;
+    }
+    return "Unknown";
+  }
+
   Property::Property()
   {
   }
   
   const double& Property::get(const ValueName &name) const
   {
+#ifndef NDEBUG
+    if(m_values.find(name) == m_values.end()){
+      const std::string err_str = toString(name) + " not found in property.";
+      throw NameNotFoundInProperty(err_str);
+    }
+#endif
     return m_values.at(name);
   }
   

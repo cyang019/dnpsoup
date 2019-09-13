@@ -23,6 +23,7 @@
 #include <string>
 #include <type_traits>
 #include <iterator>
+#include <iostream>
 
 
 namespace dnpsoup {
@@ -35,16 +36,19 @@ namespace dnpsoup {
       const SpinId &sid1, const SpinId &sid2);
 
   class SpinSys {
+    friend std::ostream& operator<<(std::ostream &os, const SpinSys &spin_sys);
+    friend std::istream& operator>>(std::istream &is, SpinSys &spin_sys);
   public:
     SpinSys();
 
-    SpinSys& addSpin(const SpinId &, const SpinEntity &, bool t_add_dipole=true); 
-    SpinSys& addSpin(int, const SpinEntity &, bool t_add_dipole=true); 
-    SpinSys& addSpin(int, SpinType, double x, double y, double z, bool t_add_dipole=true);
+    SpinSys& addSpin(const SpinId &, const SpinEntity &, bool t_auto_add=true); 
+    SpinSys& addSpin(int, const SpinEntity &, bool t_auto_add=true); 
+    SpinSys& addSpin(int, SpinType, double x, double y, double z, bool t_auto_add=true);
     const std::map<SpinId, SpinEntity>& getSpins() const { return m_spins; }
 
     SpinSys& removeSpin(const SpinId &);
     SpinSys& removeSpin(int);
+    SpinSys& removeObservable(const ObservableId &);
 
     // ===============================================
     // add observables
@@ -101,6 +105,11 @@ namespace dnpsoup {
     template<typename T>
     std::unique_ptr<InteractionInterface> genInteractionFromObservable(const Observable&) const;
   };  // class SpinSys
+
+  std::ostream& operator<<(std::ostream &os, const SpinSys &spin_sys);
+
+  // do not automatically add dipole
+  std::istream& operator>>(std::istream &is, SpinSys &spin_sys);
 } // namespace dnpsoup
 
 #include "dnpsoup_core/spinsys/SpinSysImpl.hpp"
