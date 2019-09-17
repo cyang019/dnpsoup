@@ -17,7 +17,7 @@ namespace dnpsoup {
   {
     PacketCollection result;
     if constexpr(std::is_same<T, DnpExperiment>::value){
-      // only electron offset
+      // only electron offset (because only e in rotating frame)
       for(const auto &s_pair : m_spins){
         if(s_pair.second.getSpinType() == SpinType::e){
           auto ob = Observable(InteractionType::Offset, s_pair.first);

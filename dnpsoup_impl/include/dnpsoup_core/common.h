@@ -39,6 +39,9 @@ namespace dnpsoup {
   //{
   //  return matrix::exp<T>(m);
   //}
+  template<typename T>
+  constexpr matrix::Matrix<T> flatten(const matrix::Matrix<T> &mat, char c)
+  { return matrix::flatten<T>(mat, c); }
 
   template<typename T>
   constexpr matrix::Matrix<T> identity(size_t n)

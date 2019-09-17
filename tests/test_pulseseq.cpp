@@ -21,6 +21,26 @@ namespace {
       iss >> p2;
       ASSERT_EQ(0u, p2.size());
     }
+    TEST(TestDnpsoup, PulseSeqCW){
+      dnpsoup::PulseSequence p;
+      dnpsoup::pulseseq::EMRadiation emr(1.0e6, 0.0, 0.0);
+      dnpsoup::pulseseq::Component c;
+      c.insert({dnpsoup::SpinType::e, emr});
+      p.set("emr", c);
+      std::unique_ptr<dnpsoup::pulseseq::SubSequenceInterface>
+        uptr_sec = std::make_unique<dnpsoup::pulseseq::Pulse>(10, "emr");
+      p.set("cw", std::move(uptr_sec));
+      std::vector<std::string> seq_names = { "cw" };
+      p.set(seq_names);
+      std::cout << "CW Pulse Sequence:\n" << p << std::endl;
+      std::ostringstream oss;
+      oss << p;
+      std::istringstream iss(oss.str());
+      dnpsoup::PulseSequence p2;
+      std::cout << "Initialize pulse sequence from stream..." << std::endl;
+      iss >> p2;
+      std::cout << "CW Pulse Sequence:\n" << p2 << std::endl;
+    }
 
     TEST(TestDnpsoup, PulseSeqTopDnp){
       // Tan, Kong Ooi, Chen Yang, Ralph T. Weber, Guinevere Mathies, and Robert G. Griffin. "Time-optimized pulsed dynamic nuclear polarization." Science advances 5, no. 1 (2019): eaav6909.

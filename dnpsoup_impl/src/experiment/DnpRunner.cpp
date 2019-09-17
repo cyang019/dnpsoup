@@ -73,15 +73,13 @@ namespace dnpsoup {
         std::tie(comp, idx) = seq.next();
 
         for(auto &[t, emr] : comp){
-          auto sids = spin_sys.getSpinIds(t);
-          for(const auto &sid : sids){
-            packets.setPropertyValue(
-                InteractionType::EMR, sid, ValueName::freq, emr.freq);
-            packets.setPropertyValue(
-                InteractionType::EMR, sid, ValueName::phase, emr.phase);
-            //packets.setPropertyValue(
-            //    InteractionType::EMR, sid, ValueName::offset, emr.offset);
-          }
+          auto obs_id = ObservableId(InteractionType::EMR, t);
+          packets.setPropertyValue(
+              obs_id, ValueName::freq, emr.freq);
+          packets.setPropertyValue(
+              obs_id, ValueName::phase, emr.phase);
+          packets.setPropertyValue(
+              obs_id, ValueName::offset, emr.offset);
         }
         t += inc;
         if((t - t_prev) > mas_inc && mas_inc > 0){
@@ -108,6 +106,44 @@ namespace dnpsoup {
       }
 
       double result = ::dnpsoup::projection(acq_mat, rho0_relative + rho0_offset).real();
+      return result;
+    }
+
+    std::vector<double> DnpRunner::calcFieldProfile(
+        const std::vector<Magnet> &fields, 
+        const Gyrotron &g,
+        const Probe &p,
+        const SpinSys &spin_sys,
+        const std::string &pulse_seq_str,
+        const SpinType &acq_spin,
+        const std::vector<Euler<>> &spin_sys_eulers,
+        [[maybe_unused]] int ncores) const
+    {
+      std::vector<double> result;
+      for(const auto field : fields){
+        const double res = this->calcPowderIntensity(
+            field, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers);
+        result.push_back(res);
+      }
+      return result;
+    }
+
+    std::vector<double> DnpRunner::calcFieldProfile(
+        const Magnet &m, 
+        const std::vector<Gyrotron> &emrs,
+        const Probe &p,
+        const SpinSys &spin_sys,
+        const std::string &pulse_seq_str,
+        const SpinType &acq_spin,
+        const std::vector<Euler<>> &spin_sys_eulers,
+        [[maybe_unused]] int ncores) const
+    {
+      std::vector<double> result;
+      for(const auto g : emrs) {
+        const double res = this->calcPowderIntensity(
+            m, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers);
+        result.push_back(res);
+      }
       return result;
     }
 
@@ -138,7 +174,7 @@ namespace dnpsoup {
         double dt, double temperature) const
     {
       auto rho_eq = genRhoEq(hamiltonian, temperature);
-      auto delta_rho = rho_prev - rho_eq;
+      auto delta_rho = ::dnpsoup::flatten(rho_prev - rho_eq, 'c');
       auto [eigenvals, eigenvec] = diagonalizeMat(hamiltonian);
       const size_t sz = hamiltonian.nrows() * hamiltonian.ncols();
       auto t1_superop = zeros<cxdbl>(sz, sz);
@@ -149,7 +185,15 @@ namespace dnpsoup {
       }
       auto h_super = commutationSuperOp(hamiltonian);
       auto super_op = complex<double>(0,-1) * h_super + t1_superop + t2_superop;
-      auto d_delta_rho = exp(super_op * dt) * delta_rho;
+      auto d_delta_rho_super = exp(super_op * dt) * delta_rho;
+
+      auto d_delta_rho = MatrixCxDbl(rho_eq.nrows(), rho_eq.ncols());
+      const size_t nrows = d_delta_rho.nrows();
+      for(size_t i = 0; i < d_delta_rho.ncols(); ++i){
+        for(size_t j = 0; j < nrows; ++j){
+          d_delta_rho(j, i) = d_delta_rho_super(i * nrows + j, 0);
+        }
+      }
       return d_delta_rho + rho_eq;
     }
 } // namespace dnpsoup

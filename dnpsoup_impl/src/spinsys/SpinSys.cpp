@@ -397,7 +397,6 @@ namespace dnpsoup {
     j["spins"] = spins_js;
 
     json obs_js;
-    json acq_js = json::array();
     json emr_js = json::array();
     for(const auto &[oid, obs] : spin_sys.m_observables){
       json named_js;
@@ -475,18 +474,11 @@ namespace dnpsoup {
             }
           }
           break;
-        case InteractionType::Acquisition:
-          {
-            auto ids = obs.getSpinIds();
-            acq_js.push_back(ids[0].get());
-          }
-          break;
         default:
           break;
       } // switch
     } // for
     j["interactions"] = obs_js;
-    j["acquisition"] = acq_js;
     j["irradiation"] = emr_js;
 
     os << j.dump(4) << std::endl;
@@ -558,13 +550,6 @@ namespace dnpsoup {
       for(auto stype : j["irradiation"]){
         auto t = toSpinType(stype);
         spin_sys.irradiateOn(t);
-      }
-    }
-
-    if(j.find("acquisition") != j.end()){
-      vector<SpinId> sids;
-      for(auto sid : j["acquisition"]){
-        sids.push_back(SpinId(sid.get<int>()));
       }
     }
 

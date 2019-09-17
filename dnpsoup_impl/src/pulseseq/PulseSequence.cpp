@@ -120,6 +120,20 @@ namespace pulseseq{
         auto comp = Component();
         for(auto &[emr_name_str, emr_js] : comp_emrs_js.items()){
           auto emr_name = toSpinType(emr_name_str);
+#ifndef NDEBUG
+          const std::string err_str_postfix = 
+            " not found for " + emr_name_str + " of " + comp_name;
+          
+          if(emr_js.find("frequency") == emr_js.end()){
+            throw PulseSequenceError("frequency" + err_str_postfix);
+          }
+          if(emr_js.find("phase") == emr_js.end()){
+            throw PulseSequenceError("phase" + err_str_postfix);
+          }
+          if(emr_js.find("offset") == emr_js.end()){
+            throw PulseSequenceError("offset" + err_str_postfix);
+          }
+#endif
           const double freq = emr_js["frequency"].get<double>();
           const double phase = emr_js["phase"].get<double>();
           const double offset = emr_js["offset"].get<double>();
@@ -132,11 +146,19 @@ namespace pulseseq{
     if(j.find("sections") != j.end()){
       for(auto& [section_name, section_info_js] : j["sections"].items()){
         const std::string name_str = section_name;
+#ifndef NDEBUG
+        if(section_info_js.find("type") == section_info_js.end()){
+          throw PulseSequenceError("type not found in section");
+        }
+        if(section_info_js.find("size") == section_info_js.end()){
+          throw PulseSequenceError("size not found in section");
+        }
+#endif
         const std::string seq_type_str = section_info_js["type"].get<std::string>();
         const std::uint64_t sz = section_info_js["size"].get<unsigned>();
         std::vector<std::string> member_names;
-        for(auto& name : section_info_js["names"]){
-          member_names.push_back(name.get<std::string>());
+        for(string name : section_info_js["names"]){
+          member_names.push_back(name);
         }
         std::map<std::string, double> params;
         for(auto& [key, value_js] : section_info_js["params"].items()){
@@ -187,12 +209,12 @@ namespace pulseseq{
     os << setprecision(std::numeric_limits<double>::max_digits10);
     json seq_json = json::object();
     seq_json["increment"] = pseq.m_inc;
-    json components = json::object();
+    json components_js = json::object();
 
     for(const auto &comp_pair : pseq.m_components){
-      components[comp_pair.first] = {};
+      components_js[comp_pair.first] = {};
       for(const auto &emr_pair : comp_pair.second){
-        components[comp_pair.first][toString(emr_pair.first)] = 
+        components_js[comp_pair.first][toString(emr_pair.first)] = 
         {
           {"frequency", emr_pair.second.freq},
           {"phase", emr_pair.second.phase},
@@ -200,9 +222,9 @@ namespace pulseseq{
         };
       }
     }
-    seq_json["components"] = components;
+    seq_json["components"] = components_js;
 
-    json sections = json::object();
+    json sections_js = json::object();
     for(const auto &section_pair : pseq.m_sections){
       auto names = section_pair.second->getNames();
       json names_js(names);
@@ -211,16 +233,14 @@ namespace pulseseq{
       for(const auto &pname : param_names){
         params_js[pname] = section_pair.second->getParam(pname);
       }
-      sections[section_pair.first] = {
-        {
+      sections_js[section_pair.first] = {
           {"type", toString(section_pair.second->type())},
           {"size", section_pair.second->size()},
           {"names", names_js},
           {"params", params_js}
-        }
       };
     }
-    seq_json["sections"] = sections;
+    seq_json["sections"] = sections_js;
 
     json sequence(pseq.m_sections_in_order);
     seq_json["sequence"] = sequence;
