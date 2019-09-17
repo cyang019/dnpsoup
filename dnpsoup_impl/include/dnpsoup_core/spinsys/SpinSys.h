@@ -53,14 +53,14 @@ namespace dnpsoup {
     // ===============================================
     // add observables
     // ===============================================
-    SpinSys& addCsa(const SpinId &, 
+    SpinSys& setCsa(const SpinId &, 
         double xx, double yy, double zz, const Euler<> &e);
 
-    SpinSys& addDipole(const SpinId&, const SpinId&);
+    SpinSys& setDipole(const SpinId&, const SpinId&);
 
-    SpinSys& addScalar(const SpinId&, const SpinId&, double val);
+    SpinSys& setScalar(const SpinId&, const SpinId&, double val);
 
-    SpinSys& addShielding(const SpinId&, 
+    SpinSys& setShielding(const SpinId&, 
         double gxx, double gyy, double gzz, const Euler<> &e);
     // ===============================================
     

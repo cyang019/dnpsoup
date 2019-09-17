@@ -31,6 +31,10 @@ namespace dnpsoup {
   class Property {
   public:
     Property();
+    Property(const Property &) = default;
+    Property(Property &&) noexcept = default;
+    Property& operator=(const Property &) = default;
+    Property& operator=(Property &&) noexcept = default;
     ~Property() {}
 
     const double& get(const ValueName &name) const;

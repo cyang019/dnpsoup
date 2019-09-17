@@ -89,19 +89,19 @@ namespace dnpsoup {
     if(t_auto_add){
       for(const auto &s : m_spins){
         if(s.first != id_name){
-          this->addDipole(s.first, id_name);
+          this->setDipole(s.first, id_name);
         }
       }
 
       auto t = s.getSpinType();
       switch(t){
         case SpinType::e:
-          this->addShielding(id_name, 0.0, 0.0, 0.0, Euler<>(0.0, 0.0, 0.0));
+          this->setShielding(id_name, 0.0, 0.0, 0.0, Euler<>(0.0, 0.0, 0.0));
           break;
         case SpinType::Null:
           break;
         default:
-          this->addCsa(id_name, 0.0, 0.0, 0.0, Euler<>(0.0, 0.0, 0.0));
+          this->setCsa(id_name, 0.0, 0.0, 0.0, Euler<>(0.0, 0.0, 0.0));
           break;
       }
     }
@@ -156,7 +156,7 @@ namespace dnpsoup {
     return *this;
   }
 
-  SpinSys& SpinSys::addCsa(const SpinId &sid, 
+  SpinSys& SpinSys::setCsa(const SpinId &sid, 
       double xx, double yy, double zz, const Euler<> &e)
   {
     if(m_spins.find(sid) == m_spins.end()){
@@ -176,12 +176,12 @@ namespace dnpsoup {
     csa.setEuler(e);
 
     const auto oid_name = ObservableId(InteractionType::Csa, sid);
-    m_observables.insert({oid_name, csa});
+    m_observables[oid_name] = csa;
 
     return *this;
   }
 
-  SpinSys& SpinSys::addDipole(const SpinId &s1, const SpinId &s2) 
+  SpinSys& SpinSys::setDipole(const SpinId &s1, const SpinId &s2) 
   {
     if(m_spins.find(s1) == m_spins.end()){
       const string id_str = std::to_string(s1.get());
@@ -210,11 +210,11 @@ namespace dnpsoup {
     dipole.setEuler(e);
 
     const auto oid_name = ObservableId(InteractionType::Dipole, s1, s2);
-    m_observables.insert({oid_name, dipole});
+    m_observables[oid_name] = dipole;
     return *this;
   }
 
-  SpinSys& SpinSys::addScalar(const SpinId &s1, const SpinId &s2,
+  SpinSys& SpinSys::setScalar(const SpinId &s1, const SpinId &s2,
       double val)
   {
     if(m_spins.find(s1) == m_spins.end()){
@@ -236,11 +236,11 @@ namespace dnpsoup {
     scalar.setProperty(p);
 
     const auto oid_name = ObservableId(InteractionType::Scalar, s1, s2);
-    m_observables.insert({oid_name, scalar});
+    m_observables[oid_name] = scalar;
     return *this;
   }
 
-  SpinSys& SpinSys::addShielding(const SpinId &sid, 
+  SpinSys& SpinSys::setShielding(const SpinId &sid, 
       double gxx, double gyy, double gzz, const Euler<> &e)
   {
     if(m_spins.find(sid) == m_spins.end()){
@@ -261,7 +261,7 @@ namespace dnpsoup {
     shielding.setEuler(e);
 
     const auto oid_name = ObservableId(InteractionType::Shielding, sid);
-    m_observables.insert({oid_name, shielding});
+    m_observables[oid_name] = shielding;
     return *this;
   }
 
@@ -275,7 +275,7 @@ namespace dnpsoup {
     p.set(ValueName::offset, 0.0);
     irradiation.setProperty(p);
     auto oid_name = ObservableId(InteractionType::EMR, t);
-    m_observables.insert({oid_name, irradiation});
+    m_observables[oid_name] = irradiation;
     return *this;
   }
 
@@ -517,14 +517,14 @@ namespace dnpsoup {
         int id1 = interaction["id1"].get<int>();
         int id2 = interaction["id2"].get<int>();
         double val = interaction["value"].get<double>();
-        spin_sys.addScalar(id1, id2, val);
+        spin_sys.setScalar(id1, id2, val);
       }
       else if(interaction_name == "dipole"
           || interaction_name == "hyperfine"
           || interaction_name == "throughspace"){
         auto id1 = interaction["id1"].get<int>();
         auto id2 = interaction["id2"].get<int>();
-        spin_sys.addDipole(SpinId(id1), SpinId(id2));
+        spin_sys.setDipole(SpinId(id1), SpinId(id2));
       }
       else if(interaction_name == "csa"
           || interaction_name == "shielding"){
@@ -538,10 +538,10 @@ namespace dnpsoup {
         const auto g = euler_js["gamma"].get<double>();
         const auto angle = Euler<>(a,b,g);
         if(interaction_name == "csa"){
-          spin_sys.addCsa(sid, x, y, z, angle);
+          spin_sys.setCsa(sid, x, y, z, angle);
         }
         else{
-          spin_sys.addShielding(sid, x, y, z, angle);
+          spin_sys.setShielding(sid, x, y, z, angle);
         }
       }
     }

@@ -16,7 +16,8 @@ namespace dnpsoup {
     EMR         = 10,     ///< RF or Microwave Irradiation
     Offset      = 20,
 
-    Acquisition  = 900
+    Acquisition  = 900,
+    Null         = -1
   };
 
   inline bool operator>(const InteractionType &t1, const InteractionType &t2)

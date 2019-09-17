@@ -30,6 +30,10 @@ namespace dnpsoup {
   }
 
   // class Observable
+  Observable::Observable()
+    : m_type(InteractionType::Null)
+  {}
+
   Observable::Observable(const InteractionType &t, const SpinId &id)
     : m_type(t), m_spin_ids({id})
   {}

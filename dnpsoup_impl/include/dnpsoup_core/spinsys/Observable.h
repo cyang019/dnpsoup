@@ -41,6 +41,7 @@ namespace dnpsoup {
 
   class Observable {
   public:
+    Observable();
     Observable(const InteractionType &, const SpinId &);
     Observable(const InteractionType &, const SpinId &, const SpinId &);
     Observable(const InteractionType&, const std::vector<SpinId> &sids); 
