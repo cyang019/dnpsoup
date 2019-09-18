@@ -105,7 +105,7 @@ namespace dnpsoup {
         rho0_relative = evolve(rho0_relative, hamiltonian, rpackets, dt, p.temperature);
       }
 
-      double result = ::dnpsoup::projection(acq_mat, rho0_relative + rho0_offset).real();
+      double result = ::dnpsoup::projectionNorm(acq_mat, rho0_relative + rho0_offset).real();
       return result;
     }
 

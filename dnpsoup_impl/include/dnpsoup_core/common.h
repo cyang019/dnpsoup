@@ -74,6 +74,10 @@ namespace dnpsoup {
   { return matrix::projection<T>(m1, m2); }
 
   template<typename T>
+  constexpr T projectionNorm(const matrix::Matrix<T> &m1, const matrix::Matrix<T> &m2)
+  { return matrix::projectionNorm<T>(m1, m2); }
+
+  template<typename T>
   constexpr bool approxEqual(const T &v1, const T&v2, double eps)
   {
     return matrix::approxEqual<T>(v1, v2, eps);

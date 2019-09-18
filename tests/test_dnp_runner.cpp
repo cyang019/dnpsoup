@@ -59,7 +59,9 @@ namespace {
       spins.addSpin(3, SpinType::H, 0.0, 2.0, 1.0);
       spins.setShielding(dnpsoup::SpinId(1), 2.02, 2.06, 2.09, dnpsoup::Euler<>(0.0,0.0,0.0));
       spins.irradiateOn(SpinType::e);
-      spins.acquireOn(SpinType::H);
+      std::vector<dnpsoup::SpinId> acq_spins;
+      acq_spins.push_back(dnpsoup::SpinId(3));
+      spins.acquireOn(acq_spins);
 
       dnpsoup::PulseSequence p;
       dnpsoup::pulseseq::EMRadiation emr(1.0e6, 0.0, 400.0e6);

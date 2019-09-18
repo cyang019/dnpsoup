@@ -1,6 +1,7 @@
 target_sources(dnpsoup_core
   PRIVATE
-  "${CMAKE_CURRENT_LIST_DIR}//common.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/common.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/powder/ZCW.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/spin_physics_components/spin.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/spin_physics_components/hamiltonian/Property.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/spin_physics_components/hamiltonian/rho_eq.cpp"
