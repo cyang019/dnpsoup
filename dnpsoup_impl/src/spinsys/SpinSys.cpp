@@ -122,6 +122,18 @@ namespace dnpsoup {
     return addSpin(id_name, s, t_auto_add);
   }
 
+  SpinSys& SpinSys::setT1(const SpinId &sid, double t)
+  {
+    m_spins[sid].setT1(t);
+    return *this;
+  }
+
+  SpinSys& SpinSys::setT2(const SpinId &sid, double t)
+  {
+    m_spins[sid].setT2(t);
+    return *this;
+  }
+
   SpinSys& SpinSys::removeSpin(const SpinId &sid)
   {
     const auto t = m_spins.at(sid).getSpinType();

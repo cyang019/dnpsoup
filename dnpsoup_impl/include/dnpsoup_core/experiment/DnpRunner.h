@@ -31,7 +31,7 @@ namespace dnpsoup {
         const std::string &pulse_seq_str,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
-        int ncores) const;
+        int ncores=1) const;
 
     std::vector<double> calcFieldProfile(
         const Magnet &fields, 
@@ -41,7 +41,7 @@ namespace dnpsoup {
         const std::string &pulse_seq_str,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
-        int ncores) const;
+        int ncores=1) const;
 
     double calcPowderIntensity(
         const Magnet &m, 

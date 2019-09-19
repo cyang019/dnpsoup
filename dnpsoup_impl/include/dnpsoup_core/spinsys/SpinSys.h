@@ -44,6 +44,9 @@ namespace dnpsoup {
     SpinSys& addSpin(const SpinId &, const SpinEntity &, bool t_auto_add=true); 
     SpinSys& addSpin(int, const SpinEntity &, bool t_auto_add=true); 
     SpinSys& addSpin(int, SpinType, double x, double y, double z, bool t_auto_add=true);
+    SpinSys& setT1(const SpinId &, double);
+    SpinSys& setT2(const SpinId &, double);
+
     const std::map<SpinId, SpinEntity>& getSpins() const { return m_spins; }
 
     SpinSys& removeSpin(const SpinId &);
