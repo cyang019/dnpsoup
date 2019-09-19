@@ -163,7 +163,7 @@ namespace dnpsoup {
           this->calcIntensity(m, g, p, spin_sys, pulse_seq_str, acq_spin, e);
         result += xtal_intensity * std::sin(e.beta());
       }
-      result = result * scaling_factor / (4.0 * pi);
+      result = result * scaling_factor / pi * 4.0;
       return result;
     }
 
@@ -177,8 +177,8 @@ namespace dnpsoup {
       auto delta_rho = ::dnpsoup::flatten(rho_prev - rho_eq, 'c');
       auto [eigenvals, eigenvec] = diagonalizeMat(hamiltonian);
       const size_t sz = hamiltonian.nrows() * hamiltonian.ncols();
-      auto t1_superop = zeros<cxdbl>(sz, sz);
-      auto t2_superop = zeros<cxdbl>(sz, sz);
+      auto t1_superop = zeros<cxdbl>(sz, sz); ///< sz: 'size'
+      auto t2_superop = zeros<cxdbl>(sz, sz); ///< sz: 'size'
       for(const auto &rpacket : rpackets){
         t1_superop += rpacket.genSuperOpT1(eigenvec);
         t2_superop += rpacket.genSuperOpT2(eigenvec);

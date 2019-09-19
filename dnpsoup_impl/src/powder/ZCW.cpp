@@ -13,8 +13,6 @@ namespace dnpsoup {
 
     std::uint64_t N_M = fibonacci(m+2);
     std::uint64_t F_M = fibonacci(m);
-    std::cout << "N_M: " << N_M << std::endl;
-    std::cout << "F_M: " << F_M << std::endl;
     std::vector<Euler<>> result;
     for(std::uint64_t i = 0; i < N_M; ++i){
       const double alpha = 2.0 * pi / c3 * std::fmod(i * F_M / static_cast<double>(N_M), 1.0);
