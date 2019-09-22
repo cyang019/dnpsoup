@@ -100,13 +100,13 @@ namespace dnpsoup {
   {
     if(std::abs(val2) < eps){
       if((val1 > eps && val2 < 0) || (val1 < -eps && val2 > 0)){
-        return pi;
+        return -0.5 * pi;
       } else {
         return 0.5 * pi;
       }
     } else {
       double res = std::atan(val1/val2);
-      return res > -eps ? res : res + pi;
+      return res;
     }
   }
 
@@ -124,6 +124,11 @@ namespace dnpsoup {
       if(nafter == 0) return kron(mat_before, mat);
 
       return kron(mat_before, kron(mat, mat_after));
+    }
+
+    inline matrix::Matrix<double> eigenVal(const matrix::Matrix<cxdbl> &mat)
+    {
+      return ::matrix::eigenVal<::matrix::EigenMethod::zheevd>(mat);
     }
 } // namespace dnpsoup
 

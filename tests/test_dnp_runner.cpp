@@ -3,6 +3,7 @@
 #include <limits>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <cmath>
 #include <memory>
 
@@ -10,20 +11,70 @@ namespace {
     using SpinSys = dnpsoup::SpinSys;
     using SpinType = dnpsoup::SpinType;
 
+    TEST(TestDnpsoup, TotapolMASEigen){
+      constexpr double pi = ::dnpsoup::pi;
+      auto spins = SpinSys();
+      spins.addSpin(1, SpinType::e, 1.0, 0.0, 0.0);
+      spins.addSpin(2, SpinType::H, 0.0, 0.0, 0.0);
+      spins.addSpin(3, SpinType::e, 9.3, 0.0, 0.0);
+      spins.irradiateOn(SpinType::e);
+      spins.acquireOn(SpinType::H);
+      spins.setShielding(dnpsoup::SpinId(1), 2.0017, 2.006, 2.0094, 
+          dnpsoup::Euler<>(0.0,0.0,0.0));
+      spins.setShielding(dnpsoup::SpinId(3), 2.0017, 2.006, 2.0094, 
+          dnpsoup::Euler<>(124.0/180.0 * pi,108.0/180.0 * pi,-107.0/180.0 * pi));
+      spins.setT1(1, 1.0e-3);
+      spins.setT1(2, 2.0);
+      spins.setT1(3, 1.0e-3);
+      spins.setT2(1, 2.0e-6);
+      spins.setT2(2, 1.0e-3);
+      spins.setT2(3, 2.0e-6);
+
+      dnpsoup::PulseSequence p(1.0e-7);
+      // [number] x increment duration
+      auto uptr_sec = std::make_unique<dnpsoup::pulseseq::Delay>(800);
+      p.set("delay", std::move(uptr_sec));
+      std::vector<std::string> seq_names = { "delay" };
+      p.set(seq_names);
+      std::ostringstream buffer;
+      buffer << p;
+
+      auto magnet = dnpsoup::Magnet(9.402);
+      // Hz
+      auto gyrotron = dnpsoup::Gyrotron(263.46e9);
+      // MAS, Temperature
+      auto probe = dnpsoup::Probe(12.5e3, 77.0);
+
+      dnpsoup::DnpRunner runner;
+      auto res = runner.calcEigenValues(
+          magnet, gyrotron, probe, spins,
+          buffer.str(), ::dnpsoup::Euler<>(320.0/180.0*pi, 141.0/180.0*pi, 80.0/180.0*pi));
+
+      std::ofstream ofss("eigen_values.log");
+      ofss << "EigenValues:\n";
+      for(auto vals : res){
+        for(auto val : vals){
+          ofss << val << ",\t";
+        }
+        ofss << std::endl;
+      }
+      ofss << std::endl;
+    }
+
     TEST(TestDnpsoup, SEXtal){
       auto spins = SpinSys();
       spins.addSpin(1, SpinType::e, 0.0, 0.0, 0.0);
-      spins.addSpin(2, SpinType::H, 2.5, 0.0, 0.0);
+      spins.addSpin(2, SpinType::H, 2.0, 0.0, 0.0);
       spins.irradiateOn(SpinType::e);
       spins.acquireOn(SpinType::H);
       spins.setShielding(dnpsoup::SpinId(1), 2.02, 2.06, 2.09, dnpsoup::Euler<>(0.0,0.0,0.0));
 
       dnpsoup::PulseSequence p;
-      dnpsoup::pulseseq::EMRadiation emr(1.0e6, 0.0, 400.0e6);
+      dnpsoup::pulseseq::EMRadiation emr(1.0e6, 0.0, 0.0e6);
       dnpsoup::pulseseq::Component c;
       c.insert({SpinType::e, emr});
       p.set("emr", c);
-      auto uptr_sec = std::make_unique<dnpsoup::pulseseq::Pulse>("emr");
+      auto uptr_sec = std::make_unique<dnpsoup::pulseseq::Pulse>(200, "emr");
       p.set("cw", std::move(uptr_sec));
       std::vector<std::string> seq_names = { "cw" };
       p.set(seq_names);
@@ -31,7 +82,7 @@ namespace {
       buffer << p;
 
       auto magnet = dnpsoup::Magnet(9.4);
-      auto gyrotron = dnpsoup::Gyrotron(300.0e9);
+      auto gyrotron = dnpsoup::Gyrotron(263.0e9);
       auto probe = dnpsoup::Probe(0.0, 77.0);
 
       dnpsoup::DnpRunner runner;
@@ -54,17 +105,17 @@ namespace {
     TEST(TestDnpsoup, SEPowder){
       auto spins = SpinSys();
       spins.addSpin(1, SpinType::e, 0.0, 0.0, 0.0);
-      spins.addSpin(2, SpinType::H, 2.5, 0.0, 0.0);
+      spins.addSpin(2, SpinType::H, 2.0, 0.0, 0.0);
       spins.irradiateOn(SpinType::e);
       spins.acquireOn(SpinType::H);
       spins.setShielding(dnpsoup::SpinId(1), 2.02, 2.06, 2.09, dnpsoup::Euler<>(0.0,0.0,0.0));
 
       dnpsoup::PulseSequence p;
-      dnpsoup::pulseseq::EMRadiation emr(1.0e6, 0.0, 400.0e6);
+      dnpsoup::pulseseq::EMRadiation emr(1.0e6, 0.0, 0.0e6);
       dnpsoup::pulseseq::Component c;
       c.insert({SpinType::e, emr});
       p.set("emr", c);
-      auto uptr_sec = std::make_unique<dnpsoup::pulseseq::Pulse>("emr");
+      auto uptr_sec = std::make_unique<dnpsoup::pulseseq::Pulse>(200, "emr");
       p.set("cw", std::move(uptr_sec));
       std::vector<std::string> seq_names = { "cw" };
       p.set(seq_names);
@@ -72,7 +123,7 @@ namespace {
       buffer << p;
 
       auto magnet = dnpsoup::Magnet(9.4);
-      auto gyrotron = dnpsoup::Gyrotron(300.0e9);
+      auto gyrotron = dnpsoup::Gyrotron(263.0e9);
       auto probe = dnpsoup::Probe(0.0, 77.0);
 
       dnpsoup::DnpRunner runner;
@@ -93,20 +144,28 @@ namespace {
       std::cout << "Intensity without radiation: " << res2 << std::endl;
     }
     
-    TEST(TestDnpsoup, SEPowderFieldProfile){
+#ifdef ENABLEFP
+    TEST(TestDnpsoup, BDPASolidEffectFieldProfile){
       auto spins = SpinSys();
       spins.addSpin(1, SpinType::e, 0.0, 0.0, 0.0);
-      spins.addSpin(2, SpinType::H, 2.5, 0.0, 0.0);
+      spins.addSpin(2, SpinType::H, 2.0, 0.0, 0.0);
       spins.irradiateOn(SpinType::e);
       spins.acquireOn(SpinType::H);
-      spins.setShielding(dnpsoup::SpinId(1), 2.02, 2.06, 2.09, dnpsoup::Euler<>(0.0,0.0,0.0));
+      spins.setShielding(dnpsoup::SpinId(1), 2.00263, 2.00259, 2.00234, 
+          dnpsoup::Euler<>(0.0,0.0,0.0));
+      spins.setT1(1, 1.0e-3);
+      spins.setT1(2, 2.0);
+      spins.setT2(1, 2.0e-6);
+      spins.setT2(2, 1.0e-3);
+      spins.setScalar(1, 2, 2.5e6);
 
-      dnpsoup::PulseSequence p;
-      dnpsoup::pulseseq::EMRadiation emr(1.0e6, 0.0, 400.0e6);
+      dnpsoup::PulseSequence p(1.0e-9);
+      dnpsoup::pulseseq::EMRadiation emr(0.85e6, 0.0, 0.0);
       dnpsoup::pulseseq::Component c;
       c.insert({SpinType::e, emr});
       p.set("emr", c);
-      auto uptr_sec = std::make_unique<dnpsoup::pulseseq::Pulse>("emr");
+      // [number] x increment duration
+      auto uptr_sec = std::make_unique<dnpsoup::pulseseq::Pulse>(1000, "emr");
       p.set("cw", std::move(uptr_sec));
       std::vector<std::string> seq_names = { "cw" };
       p.set(seq_names);
@@ -114,14 +173,16 @@ namespace {
       buffer << p;
 
       std::vector<dnpsoup::Magnet> fields;
-      for(int i = 0; i < 50; ++i){
-        fields.push_back(dnpsoup::Magnet(9.35 + static_cast<double>(i) * 0.02));
+      for(int i = 0; i < 30; ++i){
+        fields.push_back(dnpsoup::Magnet(9.397 + static_cast<double>(i) * 0.0002));
       }
-      auto gyrotron = dnpsoup::Gyrotron(300.0e9);
-      auto probe = dnpsoup::Probe(0.0, 77.0);
+      // Hz
+      auto gyrotron = dnpsoup::Gyrotron(263.46e9);
+      // MAS, Temperature
+      auto probe = dnpsoup::Probe(8000.0, 77.0);
 
       dnpsoup::DnpRunner runner;
-      auto eulers = dnpsoup::getZCWAngles(4);  // 144 angles
+      auto eulers = dnpsoup::getZCWAngles(2); 
       auto res = runner.calcFieldProfile(
           fields, gyrotron, probe, spins, 
           buffer.str(), 
@@ -145,6 +206,7 @@ namespace {
       }
       std::cout << std::endl;
     }
+#endif
 
     TEST(TestDnpsoup, CWCrossEffectXtal){
       auto spins = SpinSys();

@@ -15,6 +15,78 @@ using namespace std;
 
 
 namespace dnpsoup {
+    std::vector<std::vector<double>> DnpRunner::calcEigenValues(
+        const Magnet &m,
+        const Gyrotron &g,
+        const Probe &p,
+        const SpinSys &spin_sys,
+        const std::string &pulse_seq_str,
+        const Euler<> &spin_sys_euler
+        ) const
+    {
+      vector<vector<double>> results;
+      auto packets = spin_sys.summarize<DnpExperiment>();
+      auto offset_packets = spin_sys.summarizeOffset<DnpExperiment>();
+
+      double t = 0.0;
+      Euler<> mas_angle = p.magic_angle;
+
+      packets.setPropertyValue(ValueName::b0, m.b0);
+      offset_packets.setPropertyValue(ValueName::b0, m.b0);
+      auto spin_ids = spin_sys.getSpinIds(SpinType::e);
+      for(const auto &sid : spin_ids){
+        packets.setPropertyValue(
+            InteractionType::Shielding, sid, ValueName::offset, g.em_frequency);
+        offset_packets.setPropertyValue(
+            InteractionType::Offset, sid, ValueName::offset, g.em_frequency);
+      }
+
+      PulseSequence seq;
+      istringstream iss(pulse_seq_str);
+      try{
+        iss >> seq;
+      }
+      catch(const exception &e){
+        throw PulseSequenceError(e.what());
+      }
+      const double inc = seq.getIncrement();
+      uint64_t idx = 0;
+
+      do {
+        pulseseq::Component comp;
+        std::tie(comp, idx) = seq.next();
+        if(idx == seq.size()) break;
+
+        for(auto &[t_spin, emr] : comp){
+          auto obs_id = ObservableId(InteractionType::EMR, t_spin);
+          packets.setPropertyValue(
+              obs_id, ValueName::freq, emr.freq);
+          packets.setPropertyValue(
+              obs_id, ValueName::phase, emr.phase);
+          packets.setPropertyValue(
+              obs_id, ValueName::offset, emr.offset);
+        }
+#ifndef NDEBUG
+        std::cout << "t: " << t << std::endl;
+#endif
+        mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
+
+        MatrixCxDbl hamiltonian = packets.genMatrix(spin_sys_euler * mas_angle);
+        MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(spin_sys_euler * mas_angle);
+        //auto eigen_values = ::dnpsoup::eigenVal(hamiltonian);
+        auto eigen_values = ::dnpsoup::eigenVal(hamiltonian + hamiltonian_offset);
+        vector<double> eigen_values_temp;
+        for(size_t i = 0; i < eigen_values.nelements(); ++i){
+          eigen_values_temp.push_back(eigen_values(i, 0));
+        }
+        results.push_back(eigen_values_temp);
+
+        t = t + inc;
+      } while(idx < seq.size());
+
+      return results;
+    }
+
     double DnpRunner::calcIntensity(
         const Magnet &m, 
         const Gyrotron &g,
@@ -28,16 +100,18 @@ namespace dnpsoup {
       auto offset_packets = spin_sys.summarizeOffset<DnpExperiment>();
       auto rpackets = spin_sys.summarizeRelaxation();
       auto acq_mat = spin_sys.acquireOn(acq_spin);
-      double mas_inc = -1.0;
+      double mas_inc = -1;
       if(p.mas_frequency > 1.0){
-        mas_inc = 1.0/p.mas_frequency * 0.001;   /// 0.1% of MAS
+        if(p.mas_increment > 0.0){
+          mas_inc = p.mas_increment;
+        }
+        else {
+          mas_inc = 1.0/p.mas_frequency * 0.001;   /// 0.1% of MAS
+        }
       }
       double t = 0.0;
       double t_prev = 0.0;
-      auto mas_angle = Euler<>(0.0, magic_angle, 0.0);
-      if(mas_inc < 0){
-        mas_angle = Euler<>(0.0, 0.0, 0.0);
-      }
+      auto mas_angle = p.magic_angle;
 
       packets.setPropertyValue(ValueName::b0, m.b0);
       offset_packets.setPropertyValue(ValueName::b0, m.b0);
@@ -72,8 +146,8 @@ namespace dnpsoup {
         pulseseq::Component comp;
         std::tie(comp, idx) = seq.next();
 
-        for(auto &[t, emr] : comp){
-          auto obs_id = ObservableId(InteractionType::EMR, t);
+        for(auto &[spin_t, emr] : comp){
+          auto obs_id = ObservableId(InteractionType::EMR, spin_t);
           packets.setPropertyValue(
               obs_id, ValueName::freq, emr.freq);
           packets.setPropertyValue(
@@ -124,7 +198,13 @@ namespace dnpsoup {
         const double res = this->calcPowderIntensity(
             field, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers);
         result.push_back(res);
+#ifndef NDEBUG
+        std::cout << "." << std::flush;
+#endif
       }
+#ifndef NDEBUG
+        std::cout << std::endl;
+#endif
       return result;
     }
 

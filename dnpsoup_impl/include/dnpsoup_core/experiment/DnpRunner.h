@@ -14,6 +14,15 @@
 namespace dnpsoup {
   class DnpRunner {
   public:
+    std::vector<std::vector<double>> calcEigenValues(
+        const Magnet &m,
+        const Gyrotron &g,
+        const Probe &p,
+        const SpinSys &spin_sys,
+        const std::string &pulse_seq_str,
+        const Euler<> &spin_sys_euler
+        ) const;
+
     double calcIntensity(
         const Magnet &m, 
         const Gyrotron &g,

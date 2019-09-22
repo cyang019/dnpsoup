@@ -1,6 +1,7 @@
 #ifndef DNPSOUP_HARDWARE_H
 #define DNPSOUP_HARDWARE_H
 
+#include "dnpsoup_core/constants.h"
 
 
 namespace dnpsoup {
@@ -30,8 +31,13 @@ namespace dnpsoup {
   };
 
   struct Probe {
-    Probe() : mas_frequency(0.0), temperature(77.0) {}
-    Probe(double mas, double t) : mas_frequency(mas), temperature(t) {}
+    Probe() 
+      : mas_frequency(0.0), magic_angle(0.0, ::dnpsoup::magic_angle, 0.0),
+        mas_increment(-1.0), temperature(77.0) {}
+    Probe(double mas_freq, double t) 
+      : mas_frequency(mas_freq), magic_angle(0.0, ::dnpsoup::magic_angle, 0.0),
+        mas_increment(-1.0), temperature(t)
+    {}
     Probe(const Probe &) = default;
     Probe(Probe &&) noexcept = default;
     Probe& operator=(const Probe &) = default;
@@ -39,6 +45,8 @@ namespace dnpsoup {
     ~Probe() {}
 
     double mas_frequency;
+    Euler<> magic_angle;
+    double mas_increment;
     double temperature;
   };
 } // namespace dnpsoup
