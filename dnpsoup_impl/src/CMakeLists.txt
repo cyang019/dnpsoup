@@ -28,5 +28,8 @@ target_sources(dnpsoup_core
   "${CMAKE_CURRENT_LIST_DIR}/pulseseq/seq_common.cpp"
 
   "${CMAKE_CURRENT_LIST_DIR}/experiment/DnpRunner.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/experiment/hardware.cpp"
+  PUBLIC
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_api.cpp"
   )
 

@@ -111,6 +111,9 @@ namespace pulseseq{
   {
     json j;
     is >> j;
+    if(j.find("pulse_sequence") != j.end()){
+      j = j["pulse_sequence"];
+    }
     if(j.find("increment") != j.end()){
       pseq.m_inc = j["increment"].get<double>();      
     }

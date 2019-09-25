@@ -28,6 +28,7 @@ namespace dnpsoup {
   // =======================================================
   // gyromagnetic ratios
   /// From Nist
+  // 1.39962450412e10
   constexpr double beta_e = -mu_b/h; ///< in Hz/T
   constexpr double gamma_H1 = 42.57747892e6;  // in Hz/T, actually gamma_H1/2pi
   constexpr double gamma_N14 = 3.077e6; // in Hz/T, actually gamma_N14/2pi

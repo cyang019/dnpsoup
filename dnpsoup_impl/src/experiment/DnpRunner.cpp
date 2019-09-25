@@ -66,9 +66,6 @@ namespace dnpsoup {
           packets.setPropertyValue(
               obs_id, ValueName::offset, emr.offset);
         }
-#ifndef NDEBUG
-        std::cout << "t: " << t << std::endl;
-#endif
         mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
 
         MatrixCxDbl hamiltonian = packets.genMatrix(spin_sys_euler * mas_angle);
@@ -96,6 +93,7 @@ namespace dnpsoup {
         const SpinType &acq_spin,
         const Euler<> &spin_sys_euler) const
     {
+      constexpr double eps = std::numeric_limits<double>::epsilon();
       auto packets = spin_sys.summarize<DnpExperiment>();
       auto offset_packets = spin_sys.summarizeOffset<DnpExperiment>();
       auto rpackets = spin_sys.summarizeRelaxation();
@@ -115,8 +113,8 @@ namespace dnpsoup {
 
       packets.setPropertyValue(ValueName::b0, m.b0);
       offset_packets.setPropertyValue(ValueName::b0, m.b0);
-      auto spin_ids = spin_sys.getSpinIds(SpinType::e);
-      for(const auto &sid : spin_ids){
+      auto e_spin_ids = spin_sys.getSpinIds(SpinType::e);
+      for(const auto &sid : e_spin_ids){
         offset_packets.setPropertyValue(
             InteractionType::Offset, sid, ValueName::offset, g.em_frequency);
         packets.setPropertyValue(
@@ -141,7 +139,6 @@ namespace dnpsoup {
       MatrixCxDbl rho0_relative = genRhoEq(hamiltonian, p.temperature);
       auto rho0_offset = rho0_lab - rho0_relative;
       std::uint64_t cnt = 0;    /// keep track of identical hamiltonians
-      constexpr double eps = std::numeric_limits<double>::epsilon();
       do {
         pulseseq::Component comp;
         std::tie(comp, idx) = seq.next();
@@ -156,7 +153,8 @@ namespace dnpsoup {
               obs_id, ValueName::offset, emr.offset);
         }
         t += inc;
-        if((t - t_prev) > mas_inc && mas_inc > 0){
+        if((t - t_prev) > mas_inc - eps && mas_inc > 0){
+          // active rotation
           mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
           t_prev = t;
         }
@@ -234,7 +232,8 @@ namespace dnpsoup {
         const SpinSys &spin_sys,
         const std::string &pulse_seq_str,
         const SpinType &acq_spin,
-        const std::vector<Euler<>> &spin_sys_eulers) const
+        const std::vector<Euler<>> &spin_sys_eulers,
+        [[maybe_unused]] int ncores) const
     {
       double result = 0.0;
       const double scaling_factor = 1.0 / static_cast<double>(spin_sys_eulers.size());
@@ -265,7 +264,7 @@ namespace dnpsoup {
       }
       auto h_super = commutationSuperOp(hamiltonian);
       auto super_op = complex<double>(0,-1) * h_super + t1_superop + t2_superop;
-      auto d_delta_rho_super = exp(super_op * dt) * delta_rho;
+      auto d_delta_rho_super = exp((2.0 * pi * dt) * super_op) * delta_rho;
 
       auto d_delta_rho = MatrixCxDbl(rho_eq.nrows(), rho_eq.ncols());
       const size_t nrows = d_delta_rho.nrows();

@@ -5,12 +5,12 @@ message(STATUS "Project dnpsoup...")
 
 if(NOT DEFINED CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 17)
-  message(STATUS "cpp standard - ${CMAKE_CXX_STANDARD}")
+  message(STATUS "[dnpsoup] cpp standard - ${CMAKE_CXX_STANDARD}")
 endif()
 
 if(APPLE)
-  set(CMAKE_CXX_COMPILER /usr/bin/clang++)
-  message(STATUS "compiler - ${CMAKE_CXX_COMPILER}")
+  #set(CMAKE_CXX_COMPILER /usr/bin/clang++)
+  #message(STATUS "[dnpsoup] compiler - ${CMAKE_CXX_COMPILER}")
 endif()
 
 if(NOT DEFINED CMAKE_CXX_STANDARD_REQUIRED)
@@ -24,6 +24,7 @@ endif()
 
 add_subdirectory("matrix/matrix_impl")
 add_subdirectory("dnpsoup_impl")
+add_subdirectory("dnpsoup_cli")
 option(BUILD_TESTS "build unittests as well for dnpsoup" ON)
 if(BUILD_TESTS)
   enable_testing()

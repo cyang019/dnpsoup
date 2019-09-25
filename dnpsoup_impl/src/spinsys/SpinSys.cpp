@@ -501,6 +501,12 @@ namespace dnpsoup {
   {
     json j;
     is >> j;
+    if(j.find("spins") == j.end()){
+      throw NameNotFoundInInput("cannot find 'spins' in input stream.");
+    }
+    if(j.find("euler") == j.end()){
+      throw NameNotFoundInInput("cannot find 'euler' in input stream.");
+    }
     for(auto &[sid_js, spin_js] : j["spins"].items()){
       auto t = toSpinType(spin_js["type"]);
       auto x = spin_js["x"].get<double>();
