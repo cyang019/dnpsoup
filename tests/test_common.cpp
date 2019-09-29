@@ -21,5 +21,14 @@ namespace {
       res = dnpsoup::commute(z, x);
       ASSERT_TRUE(dnpsoup::allclose(res, cxdbl(0,1) * y, 1e-14));
     }
+
+    TEST(TestDnpsoup, ArcTan){
+      double val1 = dnpsoup::atan(0.0, 0.0);
+      double val2 = dnpsoup::atan(0.5, 0.5);
+      double val3 = dnpsoup::atan(-0.5, 0.5);
+      ASSERT_DOUBLE_EQ(0.0, val1);
+      ASSERT_DOUBLE_EQ(dnpsoup::pi * 0.25, val2);
+      ASSERT_DOUBLE_EQ(dnpsoup::pi * 1.75, val3);
+    }
 }
 

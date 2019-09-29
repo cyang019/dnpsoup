@@ -4,6 +4,7 @@
 #include "dnpsoup_core/spin_physics_components/rotation/RotationType.h"
 #include "dnpsoup_core/spin_physics_components/rotation/Quaternion.h"
 #include <type_traits>
+#include <iostream>
 
 
 namespace dnpsoup {
@@ -42,6 +43,9 @@ namespace dnpsoup {
 
   template<typename R>
   Quaternion toQuaternion(const Euler<R> &);
+
+  template<typename T>
+  std::ostream& operator<<(std::ostream &os, const Euler<T> &euler);
 } // namespace dnpsoup
 
 

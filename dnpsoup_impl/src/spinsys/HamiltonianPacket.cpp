@@ -148,6 +148,15 @@ namespace dnpsoup {
     return res;
   }
 
+  std::vector<ObservableId> PacketCollection::getObservableIds() const
+  {
+    std::vector<ObservableId> result;
+    for(const auto &obs : m_packets){
+      result.push_back(obs.first);
+    }
+    return result;
+  }
+
   std::size_t PacketCollection::getNumOfPackets() const
   {
     return m_packets.size();

@@ -4,6 +4,9 @@
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
+#include <chrono>
+#include <iomanip>
+#include <limits>
 
 using namespace std;
 using namespace dnpsoup;
@@ -14,6 +17,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 								  const std::string &experiment_filename,
 									const std::string &result_filename)
 {
+  auto start_time = chrono::high_resolution_clock::now();
   std::ifstream spinsys_stream;
 	spinsys_stream.exceptions(std::ios::failbit | std::ios::badbit);
 	spinsys_stream.open(spinsys_filename.c_str());
@@ -81,6 +85,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);
 	  result_stream.open(result_filename.c_str());
 		result_stream << "Eigen Values:\n";
+    result_stream << setprecision(numeric_limits<double>::max_digits10);
 		for(const auto &row : result){
 			for(size_t i = 0; i+1 < row.size(); ++i){
 				result_stream << row[i] << ", ";
@@ -89,11 +94,15 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 				result_stream << row.back() << "\n";
 			}
 		}
+    auto end_time = chrono::high_resolution_clock::now();
+	  cout << "Total time: " 
+         << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
+         << " seconds." << endl;
 		return;
 	}
 
 	SpinType acq_t = toSpinType(j["acq"].get<string>());
-	if(task_str == "Intensity"){
+	if(task_str == "Intensity" || task_str == "BuildUp"){
 		auto magnet = Magnet(j);
 		cout << "Magnet loaded..." << endl;
 		auto gyrotron = Gyrotron(j);
@@ -112,14 +121,39 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 			cout << "Euler angle loaded..." << endl;
 		}
 
-		auto result = runner.calcIntensity(magnet, gyrotron, probe,
-			spinsys, pulse_seq_str, acq_t, euler);
+    if(task_str == "Intensity"){
+		  auto result = runner.calcIntensity(magnet, gyrotron, probe,
+		  	spinsys, pulse_seq_str, acq_t, euler);
 
-    std::ofstream result_stream;
-	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);
-	  result_stream.open(result_filename.c_str());
-		result_stream << "Intensity: " << result;
-		return;
+      std::ofstream result_stream;
+	    result_stream.exceptions(std::ios::failbit | std::ios::badbit);
+	    result_stream.open(result_filename.c_str());
+      result_stream << setprecision(numeric_limits<double>::max_digits10);
+		  result_stream << "Intensity: " << result;
+      auto end_time = chrono::high_resolution_clock::now();
+	    cout << "Total time: " 
+           << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
+           << " seconds." << endl;
+		  return;
+    } else {
+		  auto results = runner.calcBuildUp(magnet, gyrotron, probe,
+		  	spinsys, pulse_seq_str, acq_t, euler);
+
+      std::ofstream result_stream;
+	    result_stream.exceptions(std::ios::failbit | std::ios::badbit);
+	    result_stream.open(result_filename.c_str());
+		  result_stream << "BuildUp:\n";
+		  result_stream << "time,\tintensity\n";
+      result_stream << setprecision(numeric_limits<double>::max_digits10);
+      for(const auto &val_pair : results){
+        result_stream << val_pair.first << ",\t" << val_pair.second << "\n";
+      }
+      auto end_time = chrono::high_resolution_clock::now();
+	    cout << "Total time: " 
+           << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
+           << " seconds." << endl;
+		  return;
+    }
 	}
 
 	auto eulers = vector<Euler<>>();
@@ -161,7 +195,12 @@ void dnpsoup_exec(const std::string &spinsys_filename,
     std::ofstream result_stream;
 	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);
 	  result_stream.open(result_filename.c_str());
+    result_stream << setprecision(numeric_limits<double>::max_digits10);
 		result_stream << "PowderIntensity: " << result;
+    auto end_time = chrono::high_resolution_clock::now();
+	  cout << "Total time: " 
+         << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
+         << " seconds." << endl;
 		return;
 	}
 
@@ -194,15 +233,20 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);
 	  result_stream.open(result_filename.c_str());
 		result_stream << "Field Profile:\n";
+    result_stream << setprecision(numeric_limits<double>::max_digits10);
 		for(size_t i = 0; i + 1 < result.size(); ++i){
 			result_stream << result[i] << ", ";
 		}
 		if(result.size() > 0){
 			result_stream << result.back() << "\n";
 		}
+    auto end_time = chrono::high_resolution_clock::now();
+	  cout << "Total time: " 
+         << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
+         << " seconds." << endl;
 		return;
 	}
 
-	throw runtime_error("Accepted tasks: 'EigenValues', 'Intensity', 'PowderIntensity', 'FieldProfile'");
+	throw runtime_error("Accepted tasks: 'EigenValues', 'Intensity', 'PowderIntensity', 'FieldProfile', 'BuildUp'.");
 	return;
 }

@@ -74,6 +74,8 @@ namespace dnpsoup {
     MatrixCxDbl genMatrix(const Euler<> &e) const;
 
     std::size_t getNumOfPackets() const;
+    std::vector<ObservableId> getObservableIds() const;
+    const HamiltonianPacket& getPacket(const ObservableId &oid) const { return m_packets.at(oid); }
   private:
     std::map<ObservableId, HamiltonianPacket> m_packets;
   };

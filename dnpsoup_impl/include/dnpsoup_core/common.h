@@ -78,7 +78,7 @@ namespace dnpsoup {
   { return matrix::projectionNorm<T>(m1, m2); }
 
   template<typename T>
-  constexpr bool approxEqual(const T &v1, const T&v2, double eps)
+  constexpr bool approxEqual(const T &v1, const T &v2, double eps)
   {
     return matrix::approxEqual<T>(v1, v2, eps);
   }
@@ -95,19 +95,43 @@ namespace dnpsoup {
   using std::sqrt;
 
   /// arctan val1/val2
-  /// range between 0 and pi
+  /// val1: y, val2: x
   inline double atan(double val1, double val2)
   {
-    if(std::abs(val2) < eps){
-      if((val1 > eps && val2 < 0) || (val1 < -eps && val2 > 0)){
-        return -0.5 * pi;
-      } else {
+    if(std::abs(val2) <= eps){
+      if(std::abs(val1) <= eps){
+        return 0.0;
+      }
+      else if(val1 > eps) {
         return 0.5 * pi;
+      }
+      else if(val1 < -eps) {
+        return 1.5 * pi;
       }
     } else {
       double res = std::atan(val1/val2);
-      return res;
+      if(val1 > eps && val2 > eps){
+        return res;
+      }
+      else if(val1 > eps && val2 < -eps){
+        return pi + res;
+      }
+      else if(val1 < -eps && val2 > eps){
+        return 2.0*pi + res;
+      }
+      else if(val1 < -eps && val2 < -eps){
+        return pi + res;
+      }
+      else {  /// -eps <= val1 <= eps
+        if(val2 > 0){
+          return 0.0;
+        }
+        else {
+          return pi;
+        }
+      }
     }
+    return 0.0;
   }
 
   std::int64_t genUniqueInt(std::int64_t val1, std::int64_t val2);

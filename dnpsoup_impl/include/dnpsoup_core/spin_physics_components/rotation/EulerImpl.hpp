@@ -44,19 +44,19 @@ namespace dnpsoup {
   
       double alpha, beta, gamma;
       if constexpr(std::is_same<R, ActiveRotation>::value){
-        alpha = dnpsoup::atan(mat02,mat12);
-        beta = dnpsoup::atan(std::sqrt(1.0 - mat22),mat22);
-        gamma = dnpsoup::atan(mat21,-mat20);
+        alpha = dnpsoup::atan(mat12, mat02);
+        beta = dnpsoup::atan(std::sqrt(1.0 - mat22 * mat22), mat22);
+        gamma = dnpsoup::atan(mat21, -mat20);
       } else {
-        gamma = -dnpsoup::atan(mat02,mat12);
-        beta = -dnpsoup::atan(std::sqrt(1.0 - mat22),mat22);
-        alpha = -dnpsoup::atan(mat21,-mat20);
+        gamma = -dnpsoup::atan(mat12, mat02);
+        beta = -dnpsoup::atan(std::sqrt(1.0 - mat22 * mat22), mat22);
+        alpha = -dnpsoup::atan(mat21, -mat20);
       }
 
       /// range 0 ~ pi
-      alpha = alpha > -eps ? alpha : -alpha;
-      beta = beta > -eps ? beta : -beta;
-      gamma = gamma > -eps ? gamma : -gamma;
+      //alpha = alpha > -eps ? alpha : -alpha;
+      //beta = beta > -eps ? beta : -beta;
+      //gamma = gamma > -eps ? gamma : -gamma;
       return Euler(alpha, beta, gamma);
   }
 
@@ -89,6 +89,14 @@ namespace dnpsoup {
     Quaternion q2 = toQuaternion(e2);
     Quaternion res = q1 * q2;
     return toEuler<T>(res);
+  }
+
+  template<typename T>
+  inline
+  std::ostream& operator<<(std::ostream &os, const Euler<T> &euler)
+  {
+    os << euler.alpha() << ", " << euler.beta() << ", " << euler.gamma();
+    return os;
   }
 } // namespace dnpsoup
 
