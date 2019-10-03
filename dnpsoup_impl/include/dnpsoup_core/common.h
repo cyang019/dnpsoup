@@ -34,11 +34,12 @@ namespace dnpsoup {
   using matrix::allclose;
   using matrix::eps;
 
-  //template<typename T>
-  //constexpr matrix::Matrix<T> exp(const matrix::Matrix<T> &m)
-  //{
-  //  return matrix::exp<T>(m);
-  //}
+  template<typename T>
+  constexpr matrix::Matrix<T> exp(const matrix::Matrix<T> &m)
+  {
+    return matrix::exp<T>(m);
+  }
+
   template<typename T>
   constexpr matrix::Matrix<T> flatten(const matrix::Matrix<T> &mat, char c)
   { return matrix::flatten<T>(mat, c); }

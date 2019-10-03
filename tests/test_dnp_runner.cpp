@@ -41,9 +41,9 @@ namespace {
 
       auto magnet = dnpsoup::Magnet(9.402);
       // Hz
-      auto gyrotron = dnpsoup::Gyrotron(263.46e9);
+      auto gyrotron = dnpsoup::Gyrotron(263.00e9);
       // MAS, Temperature
-      auto probe = dnpsoup::Probe(12.5e3, 77.0);
+      auto probe = dnpsoup::Probe(8e3, 77.0);
 
       dnpsoup::DnpRunner runner;
       auto res = runner.calcEigenValues(
@@ -64,10 +64,14 @@ namespace {
     TEST(TestDnpsoup, SEXtal){
       auto spins = SpinSys();
       spins.addSpin(1, SpinType::e, 0.0, 0.0, 0.0);
-      spins.addSpin(2, SpinType::H, 2.0, 0.0, 0.0);
+      spins.addSpin(2, SpinType::H, 0.7, 0.7, 1.0);
       spins.irradiateOn(SpinType::e);
       spins.acquireOn(SpinType::H);
       spins.setShielding(dnpsoup::SpinId(1), 2.02, 2.06, 2.09, dnpsoup::Euler<>(0.0,0.0,0.0));
+      spins.setT1(dnpsoup::SpinId(1), 1.0e-3);
+      spins.setT2(dnpsoup::SpinId(1), 2.0e-6);
+      spins.setT1(dnpsoup::SpinId(2), 1.0);
+      spins.setT2(dnpsoup::SpinId(2), 4.0e-3);
 
       dnpsoup::PulseSequence p;
       dnpsoup::pulseseq::EMRadiation emr(1.0e6, 0.0, 0.0e6);
@@ -81,7 +85,7 @@ namespace {
       std::ostringstream buffer;
       buffer << p;
 
-      auto magnet = dnpsoup::Magnet(9.4);
+      auto magnet = dnpsoup::Magnet(9.36932070693522);
       auto gyrotron = dnpsoup::Gyrotron(263.0e9);
       auto probe = dnpsoup::Probe(0.0, 77.0);
 
@@ -105,13 +109,17 @@ namespace {
     TEST(TestDnpsoup, SEPowder){
       auto spins = SpinSys();
       spins.addSpin(1, SpinType::e, 0.0, 0.0, 0.0);
-      spins.addSpin(2, SpinType::H, 2.0, 0.0, 0.0);
+      spins.addSpin(2, SpinType::H, 0.7, 0.7, 1.0);
       spins.irradiateOn(SpinType::e);
       spins.acquireOn(SpinType::H);
       spins.setShielding(dnpsoup::SpinId(1), 2.02, 2.06, 2.09, dnpsoup::Euler<>(0.0,0.0,0.0));
+      spins.setT1(dnpsoup::SpinId(1), 1.0e-3);
+      spins.setT2(dnpsoup::SpinId(1), 2.0e-6);
+      spins.setT1(dnpsoup::SpinId(2), 1.0);
+      spins.setT2(dnpsoup::SpinId(2), 4.0e-3);
 
       dnpsoup::PulseSequence p;
-      dnpsoup::pulseseq::EMRadiation emr(1.0e6, 0.0, 0.0e6);
+      dnpsoup::pulseseq::EMRadiation emr(1.0e6, 0.0, 0.0);
       dnpsoup::pulseseq::Component c;
       c.insert({SpinType::e, emr});
       p.set("emr", c);
@@ -122,7 +130,7 @@ namespace {
       std::ostringstream buffer;
       buffer << p;
 
-      auto magnet = dnpsoup::Magnet(9.4);
+      auto magnet = dnpsoup::Magnet(9.36932070693522);
       auto gyrotron = dnpsoup::Gyrotron(263.0e9);
       auto probe = dnpsoup::Probe(0.0, 77.0);
 

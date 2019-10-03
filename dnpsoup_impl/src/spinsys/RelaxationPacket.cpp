@@ -1,6 +1,9 @@
 #include "dnpsoup_core/spinsys/RelaxationPacket.h"
 #include "dnpsoup_core/errors.h"
 #include "dnpsoup_core/constants.h"
+#include <limits>
+
+using namespace std;
 
 
 namespace dnpsoup {
@@ -17,15 +20,22 @@ namespace dnpsoup {
 
     MatrixCxDbl RelaxationPacket::genSuperOpT1(const MatrixCxDbl &eigenvec) const
     {
-      return t1SuperOp(1.0/m_t1, eigenvec, m_x, m_y);
+      double t1_inv = 0.0;
+      if(m_t1 < numeric_limits<double>::max()){
+        t1_inv = 1.0/m_t1;
+      }
+      return t1SuperOp(t1_inv, eigenvec, m_x, m_y);
     }
 
     MatrixCxDbl RelaxationPacket::genSuperOpT2(const MatrixCxDbl &eigenvec) const
     {
       if(m_t2 >= 2 * m_t1 - eps){
-        throw RelaxationValueError("T2 cannot be smaller than 2T1");
+        throw RelaxationValueError("T2 cannot be larger than 2T1");
       }
-      double t2_prime_inv = 1.0/m_t2 - 0.5/m_t1;
+      double t2_prime_inv = 0;
+      if(m_t2 < numeric_limits<double>::max() && m_t1 < numeric_limits<double>::max()){
+        t2_prime_inv = 1.0/m_t2 - 0.5/m_t1;
+      }
       return t2SuperOp(t2_prime_inv, eigenvec, m_z);
     }
 } // namespace dnpsoup

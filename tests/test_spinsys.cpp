@@ -31,7 +31,7 @@ namespace {
       spins.irradiateOn(SpinType::e);
       spins.acquireOn(SpinType::H);
 
-      std::cout << spins << std::endl;
+      //std::cout << spins << std::endl;
       std::ostringstream oss;
       oss << spins;
       std::istringstream iss(oss.str());
@@ -45,8 +45,8 @@ namespace {
       auto spins = SpinSys();
       spins.addSpin(1, SpinType::e, 0.0, 0.0, 0.0, true);
       spins.addSpin(2, SpinType::H, 0.7, 0.0, 0.7, true);
-      //auto euler = dnpsoup::Euler<>(0.0, 0.0, 0.0);
-      //spins.setShielding(dnpsoup::SpinId(1), 2.00252, 2.00252, 2.00252, euler);
+      auto euler = dnpsoup::Euler<>(0.0, 0.0, 0.0);
+      spins.setShielding(dnpsoup::SpinId(1), 2.00252, 2.00252, 2.00252, euler);
       //spins.setCsa(dnpsoup::SpinId(2), 0.0, 0.0, 0.0, euler);
 
       auto collection = spins.summarize<dnpsoup::DnpExperiment>();

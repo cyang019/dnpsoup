@@ -13,16 +13,17 @@ namespace dnpsoup {
     }
 #endif
 
-    const double n1 = matrix::norm1(hamiltonian);
     const double prefix = -dnpsoup::h / (dnpsoup::kb * temperature);
+    auto energy_mat = hamiltonian * prefix;
+    const double n1 = matrix::norm1(energy_mat);
     if(n1 > 1.0 - dnpsoup::eps){
-      MatrixCxDbl rho_pre = exp(prefix * hamiltonian);
+      MatrixCxDbl rho_pre = ::dnpsoup::exp(energy_mat);
       return rho_pre * (1.0 / trace(rho_pre));
     }
 
     // trace(Identity) = n
-    MatrixCxDbl rho_pre = expMinusIdentity(prefix * hamiltonian);
-    const double n = static_cast<double>(hamiltonian.nrows());
+    MatrixCxDbl rho_pre = expMinusIdentity(energy_mat);
+    const double n = static_cast<double>(energy_mat.nrows());
     return rho_pre * (1.0 / (n + trace(rho_pre)));
   }
 

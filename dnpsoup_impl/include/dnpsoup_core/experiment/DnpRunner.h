@@ -82,6 +82,9 @@ namespace dnpsoup {
     MatrixCxDbl evolve(
         const MatrixCxDbl &rho_prev, 
         const MatrixCxDbl &hamiltonian,
+        const MatrixCxDbl &hamiltonian_lab,
+        const MatrixCxDbl &rotate_mat_super,
+        const MatrixCxDbl &rotate_mat_super_inv,
         const std::vector<RelaxationPacket> &rpackets,
         double dt, double temperature) const;
   };

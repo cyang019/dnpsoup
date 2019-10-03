@@ -13,6 +13,7 @@
 #include "dnpsoup_core/spin_physics_components/relaxation.h"
 #include "dnpsoup_core/spin_physics_components/hamiltonian/irreducible_tensor_op.h"
 #include "dnpsoup_core/spin_physics_components/hamiltonian/interactions/interactions.h"
+#include "dnpsoup_core/spin_physics_components/hamiltonian/rho_eq.h"
 #include "dnpsoup_core/spinsys/SpinSys.h"
 #include "dnpsoup_core/spinsys/Observable.h"
 #include "dnpsoup_core/spinsys/SpinEntity.h"
