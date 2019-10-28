@@ -40,6 +40,9 @@ namespace dnpsoup {
     return matrix::exp<T>(m);
   }
 
+  MatrixCxDbl diag_exp(const MatrixCxDbl &mat);
+  MatrixDbl diag_exp(const MatrixDbl &mat);
+
   template<typename T>
   constexpr matrix::Matrix<T> flatten(const matrix::Matrix<T> &mat, char c)
   { return matrix::flatten<T>(mat, c); }
@@ -138,23 +141,23 @@ namespace dnpsoup {
   std::int64_t genUniqueInt(std::int64_t val1, std::int64_t val2);
 
   template<typename T>
-    inline
+  inline
   matrix::Matrix<T> expandMatrix(const matrix::Matrix<T> &mat, 
       std::size_t nbefore, std::size_t nafter)
-    {
-      if(nbefore == 0 && nafter == 0) return mat;
-      auto mat_before = identity<T>(nbefore);
-      auto mat_after = identity<T>(nafter);
-      if(nbefore == 0) return kron(mat, mat_after);
-      if(nafter == 0) return kron(mat_before, mat);
+  {
+    if(nbefore == 0 && nafter == 0) return mat;
+    auto mat_before = identity<T>(nbefore);
+    auto mat_after = identity<T>(nafter);
+    if(nbefore == 0) return kron(mat, mat_after);
+    if(nafter == 0) return kron(mat_before, mat);
 
-      return kron(mat_before, kron(mat, mat_after));
-    }
+    return kron(mat_before, kron(mat, mat_after));
+  }
 
-    inline matrix::Matrix<double> eigenVal(const matrix::Matrix<cxdbl> &mat)
-    {
-      return ::matrix::eigenVal<::matrix::EigenMethod::zheevd>(mat);
-    }
+  inline matrix::Matrix<double> eigenVal(const matrix::Matrix<cxdbl> &mat)
+  {
+    return ::matrix::eigenVal<::matrix::EigenMethod::zheevd>(mat);
+  }
 } // namespace dnpsoup
 
 #endif

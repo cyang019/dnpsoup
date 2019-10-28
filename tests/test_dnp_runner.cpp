@@ -30,7 +30,7 @@ namespace {
       spins.setT2(2, 1.0e-3);
       spins.setT2(3, 2.0e-6);
 
-      dnpsoup::PulseSequence p(1.0e-7);
+      dnpsoup::PulseSequence p(1.0e-8);
       // [number] x increment duration
       auto uptr_sec = std::make_unique<dnpsoup::pulseseq::Delay>(800);
       p.set("delay", std::move(uptr_sec));
@@ -108,8 +108,8 @@ namespace {
 
     TEST(TestDnpsoup, SEPowder){
       auto spins = SpinSys();
-      spins.addSpin(1, SpinType::e, 0.0, 0.0, 0.0);
-      spins.addSpin(2, SpinType::H, 0.7, 0.7, 1.0);
+      spins.addSpin(1, SpinType::e, 0.0, 0.0, 0.0, true);
+      spins.addSpin(2, SpinType::H, 0.7, 0.7, 1.0, true);
       spins.irradiateOn(SpinType::e);
       spins.acquireOn(SpinType::H);
       spins.setShielding(dnpsoup::SpinId(1), 2.02, 2.06, 2.09, dnpsoup::Euler<>(0.0,0.0,0.0));
@@ -119,11 +119,12 @@ namespace {
       spins.setT2(dnpsoup::SpinId(2), 4.0e-3);
 
       dnpsoup::PulseSequence p;
+      p.setIncrement(5.0e-9);
       dnpsoup::pulseseq::EMRadiation emr(1.0e6, 0.0, 0.0);
       dnpsoup::pulseseq::Component c;
       c.insert({SpinType::e, emr});
       p.set("emr", c);
-      auto uptr_sec = std::make_unique<dnpsoup::pulseseq::Pulse>(200, "emr");
+      auto uptr_sec = std::make_unique<dnpsoup::pulseseq::Pulse>(10, "emr");
       p.set("cw", std::move(uptr_sec));
       std::vector<std::string> seq_names = { "cw" };
       p.set(seq_names);
@@ -135,7 +136,7 @@ namespace {
       auto probe = dnpsoup::Probe(0.0, 77.0);
 
       dnpsoup::DnpRunner runner;
-      auto eulers = dnpsoup::getZCWAngles(4);  // 144 angles
+      auto eulers = dnpsoup::getZCWAngles(2);
       auto res = runner.calcPowderIntensity(
           magnet, gyrotron, probe, spins, 
           buffer.str(), 
@@ -160,20 +161,19 @@ namespace {
       spins.irradiateOn(SpinType::e);
       spins.acquireOn(SpinType::H);
       spins.setShielding(dnpsoup::SpinId(1), 2.00263, 2.00259, 2.00234, 
-          dnpsoup::Euler<>(0.0,0.0,0.0));
       spins.setT1(1, 1.0e-3);
       spins.setT1(2, 2.0);
       spins.setT2(1, 2.0e-6);
       spins.setT2(2, 1.0e-3);
-      spins.setScalar(1, 2, 2.5e6);
+      spins.setScalar(1, 2, 2.0e6);
 
-      dnpsoup::PulseSequence p(1.0e-9);
+      dnpsoup::PulseSequence p(5.0e-9);
       dnpsoup::pulseseq::EMRadiation emr(0.85e6, 0.0, 0.0);
       dnpsoup::pulseseq::Component c;
       c.insert({SpinType::e, emr});
       p.set("emr", c);
       // [number] x increment duration
-      auto uptr_sec = std::make_unique<dnpsoup::pulseseq::Pulse>(1000, "emr");
+      auto uptr_sec = std::make_unique<dnpsoup::pulseseq::Pulse>(10, "emr");
       p.set("cw", std::move(uptr_sec));
       std::vector<std::string> seq_names = { "cw" };
       p.set(seq_names);

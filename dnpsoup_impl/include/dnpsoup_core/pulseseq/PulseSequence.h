@@ -46,6 +46,7 @@ namespace dnpsoup {
       std::size_t size() const { return m_sections_in_order.size(); }
 
       double getIncrement() const { return m_inc; }
+      void setIncrement(double dt) { m_inc = dt; }
 
       Name name;
     private:

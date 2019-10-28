@@ -132,8 +132,8 @@ namespace dnpsoup {
       const double inc = seq.getIncrement();
       uint64_t idx = 0;
 
-      MatrixCxDbl hamiltonian = packets.genMatrix(spin_sys_euler);
-      MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(spin_sys_euler);
+      MatrixCxDbl hamiltonian = packets.genMatrix(spin_sys_euler * mas_angle);
+      MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(spin_sys_euler * mas_angle);
       auto hamiltonian_lab = hamiltonian + hamiltonian_offset;
       MatrixCxDbl rho0_lab = genRhoEq(hamiltonian_lab, p.temperature);
       auto rho0_evolve = rho0_lab;
@@ -176,17 +176,12 @@ namespace dnpsoup {
           ++cnt;
           continue;
         }
-        //auto hamiltonian_temp = packets.genMatrix(spin_sys_euler * mas_angle);
-        //if(allclose(hamiltonian_temp, hamiltonian, eps)){
-        //  ++cnt;
-        //  continue;
-        //} else {
         else {
           auto hamiltonian_temp = packets.genMatrix(spin_sys_euler * mas_angle);
           if(cnt > 0){
             const double dt = inc * static_cast<double>(cnt);
-            MatrixCxDbl rotate_mat = dnpsoup::exp((cxdbl(0,-1) * dt) * hamiltonian_offset);
-            MatrixCxDbl rotate_mat_inv = dnpsoup::exp((cxdbl(0, 1) * dt) * hamiltonian_offset);
+            MatrixCxDbl rotate_mat = dnpsoup::exp((cxdbl(0,-2) * dt * pi) * hamiltonian_offset);
+            MatrixCxDbl rotate_mat_inv = dnpsoup::exp((cxdbl(0, 2) * dt * pi) * hamiltonian_offset);
             MatrixCxDbl rotate_mat_super = rotationSuperOp(rotate_mat);
             MatrixCxDbl rotate_mat_super_inv = rotationSuperOp(rotate_mat_inv);
             rho0_evolve = evolve(rho0_evolve, 
@@ -201,9 +196,9 @@ namespace dnpsoup {
       if(cnt > 0){
         const double dt = inc * static_cast<double>(cnt);
         MatrixCxDbl rotate_mat 
-          = dnpsoup::exp((cxdbl(0,-1) * dt) * hamiltonian_offset);
+          = dnpsoup::exp((cxdbl(0,-2) * dt * pi) * hamiltonian_offset);
         MatrixCxDbl rotate_mat_inv 
-          = dnpsoup::exp((cxdbl(0, 1) * dt) * hamiltonian_offset);
+          = dnpsoup::exp((cxdbl(0, 2) * dt * pi) * hamiltonian_offset);
         MatrixCxDbl rotate_mat_super = rotationSuperOp(rotate_mat);
         MatrixCxDbl rotate_mat_super_inv = rotationSuperOp(rotate_mat_inv);
         rho0_evolve = evolve(rho0_evolve, 
@@ -212,7 +207,7 @@ namespace dnpsoup {
             rpackets, dt, p.temperature);
       }
 
-      double result = ::dnpsoup::projectionNorm(acq_mat, rho0_evolve).real();
+      double result = ::dnpsoup::projectionNorm(rho0_evolve, acq_mat).real();
       return result;
     }
 
@@ -264,18 +259,18 @@ namespace dnpsoup {
       const double inc = seq.getIncrement();
       uint64_t idx = 0;
 
-      MatrixCxDbl hamiltonian = packets.genMatrix(spin_sys_euler);
-      MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(spin_sys_euler);
+      MatrixCxDbl hamiltonian = packets.genMatrix(spin_sys_euler * mas_angle);
+      MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(spin_sys_euler * mas_angle);
       MatrixCxDbl rotate_mat 
-        = dnpsoup::exp((cxdbl(0,-1) * inc) * hamiltonian_offset);
+        = dnpsoup::exp((cxdbl(0,-2.0) * inc * pi) * hamiltonian_offset);
       MatrixCxDbl rotate_mat_inv 
-        = dnpsoup::exp((cxdbl(0, 1) * inc) * hamiltonian_offset);
+        = dnpsoup::exp((cxdbl(0, 2.0) * inc * pi) * hamiltonian_offset);
       MatrixCxDbl rotate_mat_super = rotationSuperOp(rotate_mat);
       MatrixCxDbl rotate_mat_super_inv = rotationSuperOp(rotate_mat_inv);
       auto hamiltonian_lab = hamiltonian + hamiltonian_offset;
       MatrixCxDbl rho0_lab = genRhoEq(hamiltonian_lab, p.temperature);
       auto rho0_evolve = rho0_lab;
-      double result = ::dnpsoup::projectionNorm(acq_mat, rho0_evolve).real();
+      double result = ::dnpsoup::projectionNorm(rho0_evolve, acq_mat).real();
       results.push_back(make_pair(t, result));
       pulseseq::Component comp;
       std::tie(comp, idx) = seq.next();
@@ -297,7 +292,7 @@ namespace dnpsoup {
             hamiltonian, hamiltonian + hamiltonian_offset,
             rotate_mat_super, rotate_mat_super_inv,
             rpackets, inc, p.temperature);
-        result = ::dnpsoup::projectionNorm(acq_mat, rho0_evolve).real();
+        result = ::dnpsoup::projectionNorm(rho0_evolve, acq_mat).real();
         results.push_back(make_pair(t, result));
         std::tie(comp, idx) = seq.next();
       }
@@ -394,18 +389,19 @@ namespace dnpsoup {
       auto gamma_super = t1_superop + t2_superop;
       auto gamma_super_int = rotate_mat_super * gamma_super * rotate_mat_super_inv;
       auto h_super = commutationSuperOp(hamiltonian);
-      auto super_op = complex<double>(0,-1) * h_super - gamma_super_int;
-      delta_rho_int_super = dnpsoup::exp((2.0 * pi * dt) * super_op) * delta_rho_int_super;
+      auto super_op = complex<double>(0,1.0) * h_super + gamma_super_int;
+      delta_rho_int_super = dnpsoup::exp((-2.0 * pi * dt) * super_op) * delta_rho_int_super;
       delta_rho_super = rotate_mat_super_inv * delta_rho_int_super;
 
-      auto d_delta_rho = MatrixCxDbl(rho_eq.nrows(), rho_eq.ncols());
-      const auto nrows = d_delta_rho.nrows();
-      const auto ncols = d_delta_rho.ncols();
+      //auto d_delta_rho = MatrixCxDbl(rho_eq.nrows(), rho_eq.ncols());
+      const auto nrows = delta_rho.nrows();
+      const auto ncols = delta_rho.ncols();
       for(size_t i = 0; i < nrows; ++i){
         for(size_t j = 0; j < ncols; ++j){
-          d_delta_rho(i, j) = delta_rho_super(j + i * ncols, 0);
+          rho_eq(i, j) += delta_rho_super(j + i * ncols, 0);
         }
       }
-      return d_delta_rho + rho_eq;
+      //return d_delta_rho + rho_eq;
+      return rho_eq;
     }
 } // namespace dnpsoup

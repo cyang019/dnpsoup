@@ -32,7 +32,7 @@ namespace {
       p.set("cw", std::move(uptr_sec));
       std::vector<std::string> seq_names = { "cw" };
       p.set(seq_names);
-      std::cout << "CW Pulse Sequence:\n" << p << std::endl;
+      //std::cout << "CW Pulse Sequence:\n" << p << std::endl;
       std::ostringstream oss;
       oss << p;
       std::istringstream iss(oss.str());
