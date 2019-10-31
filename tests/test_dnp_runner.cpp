@@ -67,27 +67,29 @@ namespace {
       spins.addSpin(2, SpinType::H, 0.7, 0.7, 1.0);
       spins.irradiateOn(SpinType::e);
       spins.acquireOn(SpinType::H);
-      spins.setShielding(dnpsoup::SpinId(1), 2.02, 2.06, 2.09, dnpsoup::Euler<>(0.0,0.0,0.0));
+      spins.setShielding(dnpsoup::SpinId(1), 2.00263, 2.00259, 2.00234, dnpsoup::Euler<>(0.0,0.0,0.0));
       spins.setT1(dnpsoup::SpinId(1), 1.0e-3);
       spins.setT2(dnpsoup::SpinId(1), 2.0e-6);
       spins.setT1(dnpsoup::SpinId(2), 1.0);
       spins.setT2(dnpsoup::SpinId(2), 4.0e-3);
 
+      auto magnet = dnpsoup::Magnet(9.36932070693522);
+      auto gyrotron = dnpsoup::Gyrotron(263.0e9);
+      auto probe = dnpsoup::Probe(0.0, 100.0);
+
       dnpsoup::PulseSequence p;
+      p.setIncrement(1.0/gyrotron.em_frequency * 250.0);
       dnpsoup::pulseseq::EMRadiation emr(1.0e6, 0.0, 0.0e6);
       dnpsoup::pulseseq::Component c;
       c.insert({SpinType::e, emr});
       p.set("emr", c);
-      auto uptr_sec = std::make_unique<dnpsoup::pulseseq::Pulse>(200, "emr");
+      // CW irradiation only has one component
+      auto uptr_sec = std::make_unique<dnpsoup::pulseseq::Pulse>(2e3, "emr");
       p.set("cw", std::move(uptr_sec));
       std::vector<std::string> seq_names = { "cw" };
       p.set(seq_names);
       std::ostringstream buffer;
       buffer << p;
-
-      auto magnet = dnpsoup::Magnet(9.36932070693522);
-      auto gyrotron = dnpsoup::Gyrotron(263.0e9);
-      auto probe = dnpsoup::Probe(0.0, 77.0);
 
       dnpsoup::DnpRunner runner;
       auto res = runner.calcIntensity(
@@ -112,28 +114,28 @@ namespace {
       spins.addSpin(2, SpinType::H, 0.7, 0.7, 1.0, true);
       spins.irradiateOn(SpinType::e);
       spins.acquireOn(SpinType::H);
-      spins.setShielding(dnpsoup::SpinId(1), 2.02, 2.06, 2.09, dnpsoup::Euler<>(0.0,0.0,0.0));
+      spins.setShielding(dnpsoup::SpinId(1), 2.00263, 2.00259, 2.00234, dnpsoup::Euler<>(0.0,0.0,0.0));
       spins.setT1(dnpsoup::SpinId(1), 1.0e-3);
       spins.setT2(dnpsoup::SpinId(1), 2.0e-6);
       spins.setT1(dnpsoup::SpinId(2), 1.0);
       spins.setT2(dnpsoup::SpinId(2), 4.0e-3);
 
+      auto magnet = dnpsoup::Magnet(9.36932070693522);
+      auto gyrotron = dnpsoup::Gyrotron(263.0e9);
+      auto probe = dnpsoup::Probe(0.0, 77.0);
+
       dnpsoup::PulseSequence p;
-      p.setIncrement(5.0e-9);
+      p.setIncrement(1.0/gyrotron.em_frequency * 250.0);
       dnpsoup::pulseseq::EMRadiation emr(1.0e6, 0.0, 0.0);
       dnpsoup::pulseseq::Component c;
       c.insert({SpinType::e, emr});
       p.set("emr", c);
-      auto uptr_sec = std::make_unique<dnpsoup::pulseseq::Pulse>(10, "emr");
+      auto uptr_sec = std::make_unique<dnpsoup::pulseseq::Pulse>(2e6, "emr");
       p.set("cw", std::move(uptr_sec));
       std::vector<std::string> seq_names = { "cw" };
       p.set(seq_names);
       std::ostringstream buffer;
       buffer << p;
-
-      auto magnet = dnpsoup::Magnet(9.36932070693522);
-      auto gyrotron = dnpsoup::Gyrotron(263.0e9);
-      auto probe = dnpsoup::Probe(0.0, 77.0);
 
       dnpsoup::DnpRunner runner;
       auto eulers = dnpsoup::getZCWAngles(2);
@@ -219,8 +221,8 @@ namespace {
     TEST(TestDnpsoup, CWCrossEffectXtal){
       auto spins = SpinSys();
       spins.addSpin(1, SpinType::e, 0.0, 0.0, 0.0);
-      spins.addSpin(2, SpinType::H, 2.5, 0.0, 0.0);
-      spins.addSpin(3, SpinType::H, 0.0, 2.0, 1.0);
+      spins.addSpin(2, SpinType::e, 6.0, 0.0, 0.0);
+      spins.addSpin(3, SpinType::H, 0.0, -2.0, 1.0);
       spins.setShielding(dnpsoup::SpinId(1), 2.02, 2.06, 2.09, dnpsoup::Euler<>(0.0,0.0,0.0));
       spins.irradiateOn(SpinType::e);
       std::vector<dnpsoup::SpinId> acq_spins;
