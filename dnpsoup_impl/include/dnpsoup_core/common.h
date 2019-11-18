@@ -35,6 +35,12 @@ namespace dnpsoup {
   using matrix::eps;
 
   template<typename T>
+  constexpr matrix::Matrix<T> pow(const matrix::Matrix<T> &m, std::uint64_t n)
+  {
+    return matrix::pow(m, n);
+  }
+
+  template<typename T>
   constexpr matrix::Matrix<T> exp(const matrix::Matrix<T> &m)
   {
     return matrix::exp<T>(m);

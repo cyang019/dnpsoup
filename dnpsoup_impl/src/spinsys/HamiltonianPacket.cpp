@@ -1,4 +1,5 @@
 #include "dnpsoup_core/spinsys/HamiltonianPacket.h"
+#include "dnpsoup_core/common.h"
 
 
 namespace dnpsoup {
@@ -146,6 +147,35 @@ namespace dnpsoup {
       }
     }
     return res;
+  }
+
+  bool PacketCollection::hasPulseSeqComponent(const pulseseq::Component &comp) const
+  {
+    for(const auto &[spin_t, emr] : comp){
+      auto obs_id = ObservableId(InteractionType::EMR, spin_t);
+      double prev_freq = this->getPropertyValue(obs_id, ValueName::freq);
+      double prev_phase = this->getPropertyValue(obs_id, ValueName::phase);
+      double prev_offset = this->getPropertyValue(obs_id, ValueName::offset);
+      if(!approxEqual<double>(prev_freq, emr.freq, eps)
+          || !approxEqual<double>(prev_phase, emr.phase, eps)
+          || !approxEqual<double>(prev_offset, emr.offset, eps)){
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void PacketCollection::updatePulseSeqComponent(const pulseseq::Component &comp)
+  {
+    for(const auto &[spin_t, emr] : comp){
+      auto obs_id = ObservableId(InteractionType::EMR, spin_t);
+      this->setPropertyValue(
+          obs_id, ValueName::freq, emr.freq);
+      this->setPropertyValue(
+          obs_id, ValueName::phase, emr.phase);
+      this->setPropertyValue(
+          obs_id, ValueName::offset, emr.offset);
+    }
   }
 
   std::vector<ObservableId> PacketCollection::getObservableIds() const

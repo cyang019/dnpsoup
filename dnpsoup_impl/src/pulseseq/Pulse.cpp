@@ -18,20 +18,19 @@ namespace dnpsoup {
       : SubSequenceInterface(sz), m_component_name(component_name)
     {}
 
-    std::pair<Component, std::uint64_t> Pulse::next(
+    std::tuple<Component, std::uint64_t, std::uint64_t> Pulse::next(
         std::map<Name, Component> *components,
         [[maybe_unused]] std::map<Name, std::unique_ptr<SubSequenceInterface>> *sections
         )
     {
       if(m_idx >= m_sz){
         m_idx = 0;
-        return make_pair(Component(), m_sz);
+        return make_tuple(Component(), 0, m_sz);
       }
 
       if(components->find(this->m_component_name) != components->end()){
-        auto idx = m_idx;
-        ++m_idx;
-        return make_pair(components->at(m_component_name), idx);
+        m_idx = m_sz;
+        return make_tuple(components->at(m_component_name), m_sz, 0);
       }
       else{
         const string err_str = "Inside " + this->name + ": " + m_component_name + " not found.";

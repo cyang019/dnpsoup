@@ -42,7 +42,7 @@ namespace dnpsoup {
       // reset sequence index to 0
       PulseSequence& remove(const Name &name);
 
-      std::pair<Component, std::uint64_t> next();
+      std::tuple<Component, std::uint64_t, std::uint64_t> next();
       std::size_t size() const { return m_sections_in_order.size(); }
 
       double getIncrement() const { return m_inc; }

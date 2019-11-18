@@ -102,13 +102,15 @@ namespace {
       std::vector<dnpsoup::pulseseq::Component> emrs;
       dnpsoup::pulseseq::Component temp;
       std::uint64_t idx = 0;
+      std::uint64_t sz = 0;
       while(idx < top_dnp_seq.size()){
-        std::tie(temp, idx) = top_dnp_seq.next();
+        std::tie(temp, sz, idx) = top_dnp_seq.next();
         if(idx >= top_dnp_seq.size()) break;
         emrs.push_back(temp);
       }
 
-      std::size_t desired = ((50 + 65) * 5 + 100) * 3;
+      //std::size_t desired = ((50 + 65) * 5 + 100) * 3;
+      std::size_t desired = ((1 + 1) * 5 + 1) * 3;
       ASSERT_EQ(desired, emrs.size());
       //std::cout << "Print EMRadiations: " << std::endl;
       //for(const auto &emr : emrs){

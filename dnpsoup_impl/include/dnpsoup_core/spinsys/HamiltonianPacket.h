@@ -7,6 +7,7 @@
 #include "dnpsoup_core/spin_physics_components/hamiltonian/Property.h"
 #include "dnpsoup_core/spinsys/SpinId.h"
 #include "dnpsoup_core/spinsys/Observable.h"
+#include "dnpsoup_core/pulseseq/seq_common.h"
 #include <vector>
 #include <tuple>
 #include <memory>   // unique_ptr
@@ -72,6 +73,10 @@ namespace dnpsoup {
 
     MatrixCxDbl genMatrix() const;
     MatrixCxDbl genMatrix(const Euler<> &e) const;
+
+    bool hasPulseSeqComponent(const pulseseq::Component &comp) const;
+
+    void updatePulseSeqComponent(const pulseseq::Component &comp);
 
     std::size_t getNumOfPackets() const;
     std::vector<ObservableId> getObservableIds() const;

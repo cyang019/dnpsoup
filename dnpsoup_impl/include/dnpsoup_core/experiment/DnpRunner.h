@@ -40,14 +40,6 @@ namespace dnpsoup {
         const std::string &pulse_seq_str,
         const SpinType &acq_spin,
         const Euler<> &spin_sys_euler) const;
-    //std::vector<double> calcIntensityBuildUp(
-    //    const Magnet &m, 
-    //    const Gyrotron &g,
-    //    const Probe &p,
-    //    const SpinSys &spin_sys,
-    //    const std::string &pulse_seq_str,
-    //    const SpinType &acq_spin,
-    //    const Euler<> &spin_sys_euler) const;
 
     std::vector<double> calcFieldProfile(
         const std::vector<Magnet> &m, 
@@ -86,7 +78,19 @@ namespace dnpsoup {
         const MatrixCxDbl &rotate_mat_super,
         const MatrixCxDbl &rotate_mat_super_inv,
         const std::vector<RelaxationPacket> &rpackets,
-        double dt, double temperature) const;
+        double dt, std::uint64_t cnt, double temperature) const;
+
+    MatrixCxDbl evolve(
+        const MatrixCxDbl &rho_prev, 
+        const PacketCollection &packets,
+        const MatrixCxDbl &hamiltonian_offset,
+        const std::vector<RelaxationPacket> &rpackets,
+        const Gyrotron &g,
+        const Euler<> &euler,
+        double dt,
+        std::uint64_t cnt,
+        double temperature
+        ) const;
   };
 
 } // namespace dnpsoup

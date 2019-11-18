@@ -13,19 +13,18 @@ namespace dnpsoup {
       : SubSequenceInterface(sz)
     {}
 
-    std::pair<Component, std::uint64_t> Delay::next(
+    std::tuple<Component, std::uint64_t, std::uint64_t> Delay::next(
         [[maybe_unused]] std::map<Name, Component> *components,
         [[maybe_unused]] std::map<Name, std::unique_ptr<SubSequenceInterface>> *sections
         )
     {
       if(m_idx >= m_sz){
         m_idx = 0;
-        return make_pair(Component(), m_sz);
+        return make_tuple(Component(), 0, m_sz);
       }
       else {
-        auto idx = m_idx;
-        ++m_idx;
-        return make_pair(Component(), idx);
+        m_idx = m_sz;
+        return make_tuple(Component(), m_sz, 0);
       }
     }
 

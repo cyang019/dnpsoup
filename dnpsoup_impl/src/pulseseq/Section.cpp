@@ -24,21 +24,24 @@ namespace dnpsoup {
       m_idx = 0;
     }
 
-    std::pair<Component, std::uint64_t> Section::next(
+    std::tuple<Component, std::uint64_t, std::uint64_t> Section::next(
         std::map<Name, Component> *components,
         std::map<Name, std::unique_ptr<SubSequenceInterface>> *sections
         )
     {
-      if(m_idx >= m_sz){    // parent protected member
+      /// to track iterations
+      if(m_idx >= m_sz){    // protected members of SubSequenceInterface (parent)
         m_idx = 0;
         m_names_idx = 0;
         //cout << "[Termination] section " << this->name << ": " << " m_idx: " << m_idx << " " << " m_names_idx: " << m_names_idx << endl;
-        return make_pair(Component(), m_sz);
+        return make_tuple(Component(), 0, m_sz);
       }
 
       while(m_idx < m_sz){
+        // per iteration
         if(m_names_idx >= m_names.size()){
           ++m_idx;
+          // next iteration, reset all indices
           m_names_idx = 0;
           for(const auto &name : m_names){
             (sections->at(name))->resetIndex();
@@ -46,6 +49,7 @@ namespace dnpsoup {
           continue;
         }
 
+        // within the iteration
         std::uint64_t component_idx = 0;
         Component p;
         while(m_names_idx < m_names.size()){
@@ -55,27 +59,38 @@ namespace dnpsoup {
             throw PulseSequenceError(error_str);
           }
 
-          std::tie(p, component_idx) = (sections->at(sub_name))->next(components, sections);
-          if(component_idx >= (sections->at(sub_name)->size())){
+          // if pulse or delay, get the entire section
+          if((sections->at(sub_name))->type() == SequenceType::PulseType
+              || (sections->at(sub_name))->type() == SequenceType::DelayType)
+          {
             ++m_names_idx;
+            auto comp_name = (sections->at(sub_name))->getNames()[0];
+            p = components->at(comp_name);
+            return make_tuple(p, (sections->at(sub_name))->size(), m_idx);
           }
-          else{
-            break;
+          else if ((sections->at(sub_name))->type() == SequenceType::DefaultType)
+          {
+            throw NotImplementedError("cannot get default sub sequence type.");
           }
-        }
-        //cout << "[Normal] section " << this->name << ": " << " m_idx: " << m_idx << " " << " m_names_idx: " << m_names_idx << endl;
-        if(m_names_idx >= m_names.size()){
-          continue;
-        }
-
-        return make_pair(p, m_idx);
-      }
+          else {
+            uint64_t comp_size = 0;
+            std::tie(p, comp_size, component_idx) = (sections->at(sub_name))->next(components, sections);
+            if(component_idx >= (sections->at(sub_name)->size())){
+              ++m_names_idx;
+              // go to the next loop to return result
+            }
+            else {
+              return make_tuple(p, 1, m_idx);
+            }
+          }
+        } // inner while loop
+      } // outer while loop for iteration
 
       // finished iteration
       m_idx = 0;
       m_names_idx = 0;
       //cout << "[Termination] section " << this->name << ": " << " m_idx: " << m_idx << " " << " m_names_idx: " << m_names_idx << endl;
-      return make_pair(Component(), m_sz);
+      return make_tuple(Component(), 0, m_sz);
     }
 
     SequenceType Section::type() const 

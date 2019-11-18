@@ -88,23 +88,23 @@ namespace pulseseq{
     return *this;
   }
 
-  std::pair<Component, std::uint64_t> PulseSequence::next()
+  std::tuple<Component, std::uint64_t, std::uint64_t> PulseSequence::next()
   {
     if (m_idx >= m_sections_in_order.size()){
       m_idx = m_sections_in_order.size();
-      return std::make_pair(Component(), m_sections_in_order.size());
+      return std::make_tuple(Component(), 0, m_sections_in_order.size());
     }
 
     auto name = m_sections_in_order[m_idx];
-    auto [comp, idx] = m_sections[name]->next(&m_components, &m_sections);
+    auto [comp, comp_size, idx] = m_sections[name]->next(&m_components, &m_sections);
     while(idx == m_sections[name]->size()){
       ++m_idx;
       if(m_idx == m_sections_in_order.size()) break;
       name = m_sections_in_order[m_idx];
-      std::tie(comp, idx) = m_sections[name]->next(&m_components, &m_sections);
+      std::tie(comp, comp_size, idx) = m_sections[name]->next(&m_components, &m_sections);
     }
 
-    return std::make_pair(comp, m_idx);
+    return std::make_tuple(comp, comp_size, m_idx);
   }
 
   std::istream& operator>>(std::istream &is, PulseSequence &pseq)

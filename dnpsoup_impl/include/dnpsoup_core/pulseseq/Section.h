@@ -18,7 +18,7 @@ namespace dnpsoup {
       virtual ~Section() {};
 
       /// names in components should not overlap with names in sections
-      virtual std::pair<Component, std::uint64_t> next(
+      virtual std::tuple<Component, std::uint64_t, std::uint64_t> next(
           std::map<Name, Component> *components,
           std::map<Name, std::unique_ptr<SubSequenceInterface>> *sections
           ) override;
@@ -29,7 +29,7 @@ namespace dnpsoup {
     private:
       /// names in sections
       std::vector<Name> m_names;
-      std::uint64_t m_names_idx;
+      std::uint64_t m_names_idx;  ///< current index in m_names
     };
   } // namespace pulseseq
 } // namespace dnpsoup

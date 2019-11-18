@@ -16,7 +16,7 @@ namespace dnpsoup {
       Pulse& operator=(Pulse &&) noexcept = default;
       virtual ~Pulse() {};
 
-      virtual std::pair<Component, std::uint64_t> next(
+      virtual std::tuple<Component, std::uint64_t, std::uint64_t> next(
           std::map<Name, Component> *components,
           std::map<Name, std::unique_ptr<SubSequenceInterface>> *m_sections
           ) override;
