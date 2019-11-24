@@ -19,9 +19,9 @@ namespace dnpsoup {
 
       EMRadiation& reset();
 
-      double freq;    // in Hz
-      double phase;       // in rad
-      double offset;      // in Hz
+      double freq;    ///< in Hz  (gamma B1)
+      double phase;   ///< in rad (phase)
+      double offset;  ///< in Hz  (carrier)
     };  // class EMRadiation
 
     std::istream& operator>>(std::istream&, EMRadiation &);

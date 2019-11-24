@@ -59,29 +59,26 @@ namespace dnpsoup {
             throw PulseSequenceError(error_str);
           }
 
-          // if pulse or delay, get the entire section
-          if((sections->at(sub_name))->type() == SequenceType::PulseType
-              || (sections->at(sub_name))->type() == SequenceType::DelayType)
-          {
-            ++m_names_idx;
-            auto comp_name = (sections->at(sub_name))->getNames()[0];
-            p = components->at(comp_name);
-            return make_tuple(p, (sections->at(sub_name))->size(), m_idx);
-          }
-          else if ((sections->at(sub_name))->type() == SequenceType::DefaultType)
+          if ((sections->at(sub_name))->type() == SequenceType::DefaultType)
           {
             throw NotImplementedError("cannot get default sub sequence type.");
           }
+          uint64_t comp_size = 0;
+          std::tie(p, comp_size, component_idx) = (sections->at(sub_name))->next(components, sections);
+          if(component_idx >= sections->at(sub_name)->size()){
+            ++m_names_idx;
+            // go to the next loop to return result
+            continue;
+          }
           else {
-            uint64_t comp_size = 0;
-            std::tie(p, comp_size, component_idx) = (sections->at(sub_name))->next(components, sections);
-            if(component_idx >= (sections->at(sub_name)->size())){
+            if((sections->at(sub_name))->type() == SequenceType::PulseType
+                || (sections->at(sub_name))->type() == SequenceType::DelayType)
+            {
+              // the entire Pulse or Delay section is returned.
               ++m_names_idx;
-              // go to the next loop to return result
             }
-            else {
-              return make_tuple(p, 1, m_idx);
-            }
+
+            return make_tuple(p, comp_size, m_idx);
           }
         } // inner while loop
       } // outer while loop for iteration

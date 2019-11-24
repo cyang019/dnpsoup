@@ -23,7 +23,7 @@ namespace dnpsoup {
         return make_tuple(Component(), 0, m_sz);
       }
       else {
-        m_idx = m_sz;
+        m_idx = 0;
         return make_tuple(Component(), m_sz, 0);
       }
     }

@@ -1,4 +1,9 @@
 file(GLOB SRCS *.cpp)
+
+message("tests to run: ${SRCS}")
+
+list(FILTER SRCS EXCLUDE REGEX ".*test_dnp_runner.cpp$")
+
 add_executable(test_dnpsoup_core ${SRCS})
 
 set(USE_COVERAGE OFF)

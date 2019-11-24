@@ -84,7 +84,7 @@ namespace {
       c.insert({SpinType::e, emr});
       p.set("emr", c);
       // CW irradiation only has one component
-      auto uptr_sec = std::make_unique<dnpsoup::pulseseq::Pulse>(2e3, "emr");
+      auto uptr_sec = std::make_unique<dnpsoup::pulseseq::Pulse>(200, "emr");
       p.set("cw", std::move(uptr_sec));
       std::vector<std::string> seq_names = { "cw" };
       p.set(seq_names);
@@ -130,7 +130,7 @@ namespace {
       dnpsoup::pulseseq::Component c;
       c.insert({SpinType::e, emr});
       p.set("emr", c);
-      auto uptr_sec = std::make_unique<dnpsoup::pulseseq::Pulse>(2e6, "emr");
+      auto uptr_sec = std::make_unique<dnpsoup::pulseseq::Pulse>(200, "emr");
       p.set("cw", std::move(uptr_sec));
       std::vector<std::string> seq_names = { "cw" };
       p.set(seq_names);
