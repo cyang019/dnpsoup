@@ -52,7 +52,7 @@ namespace dnpsoup {
         // within the iteration
         std::uint64_t component_idx = 0;
         Component p;
-        while(m_names_idx < m_names.size()){
+        while(m_names_idx < m_names.size()){  // iterate through a vector
           auto sub_name = m_names[m_names_idx];
           if(sections->find(sub_name) == sections->end()){
             const std::string error_str = "cannot find section " + sub_name + ".";
@@ -71,13 +71,6 @@ namespace dnpsoup {
             continue;
           }
           else {
-            if((sections->at(sub_name))->type() == SequenceType::PulseType
-                || (sections->at(sub_name))->type() == SequenceType::DelayType)
-            {
-              // the entire Pulse or Delay section is returned.
-              ++m_names_idx;
-            }
-
             return make_tuple(p, comp_size, m_idx);
           }
         } // inner while loop

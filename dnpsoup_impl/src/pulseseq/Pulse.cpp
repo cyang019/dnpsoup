@@ -29,7 +29,7 @@ namespace dnpsoup {
       }
 
       if(components->find(this->m_component_name) != components->end()){
-        m_idx = 0;
+        m_idx += m_sz;
         return make_tuple(components->at(m_component_name), m_sz, 0);
       }
       else{

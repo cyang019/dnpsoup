@@ -30,12 +30,12 @@ if(BUILD_TESTS)
   enable_testing()
   message(STATUS "build unittests for dnpsoup...")
   add_subdirectory(tests)
-endif()
 
-include(cmake/googletest.cmake)
-include(cmake/CodeCoverage.cmake)
-fetch_googletest(
-  ${PROJECT_SOURCE_DIR}/cmake
-  ${PROJECT_BINARY_DIR}/googletest
-  )
+  include(cmake/googletest.cmake)
+  include(cmake/CodeCoverage.cmake)
+  fetch_googletest(
+    ${PROJECT_SOURCE_DIR}/cmake
+    ${PROJECT_BINARY_DIR}/googletest
+    )
+endif()
 

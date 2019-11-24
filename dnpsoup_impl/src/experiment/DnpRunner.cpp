@@ -24,12 +24,30 @@ namespace dnpsoup {
         const Euler<> &spin_sys_euler
         ) const
     {
+      PulseSequence seq;
+      istringstream iss(pulse_seq_str);
+      try{
+        iss >> seq;
+      }
+      catch(const exception &e){
+        throw PulseSequenceError(e.what());
+      }
+
+      const double inc = seq.getIncrement();
       vector<vector<double>> results;
       auto packets = spin_sys.summarize<DnpExperiment>();
       auto offset_packets = spin_sys.summarizeOffset<DnpExperiment>();
 
       double t = 0.0;
       Euler<> mas_angle = p.magic_angle;
+      double t_inc = p.mas_increment;
+      if(t_inc < eps && t_inc < inc){
+        t_inc = inc;
+      }
+      if(t_inc < eps){
+        throw PulseSequenceError("Incrementation too small.");
+      }
+      const uint64_t n_inc = static_cast<uint64_t>(std::round(t_inc/inc));
 
       packets.setPropertyValue(ValueName::b0, m.b0);
       offset_packets.setPropertyValue(ValueName::b0, m.b0);
@@ -41,15 +59,6 @@ namespace dnpsoup {
             InteractionType::Offset, sid, ValueName::offset, g.em_frequency);
       }
 
-      PulseSequence seq;
-      istringstream iss(pulse_seq_str);
-      try{
-        iss >> seq;
-      }
-      catch(const exception &e){
-        throw PulseSequenceError(e.what());
-      }
-      const double inc = seq.getIncrement();
       uint64_t comp_size;
       uint64_t idx = 0;
 
@@ -59,19 +68,24 @@ namespace dnpsoup {
         if(idx == seq.size()) break;
         packets.updatePulseSeqComponent(comp);
 
-        mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
+        while(comp_size > 0){
+          uint64_t step_sz = std::min(comp_size, n_inc);
 
-        MatrixCxDbl hamiltonian = packets.genMatrix(spin_sys_euler * mas_angle);
-        MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(spin_sys_euler * mas_angle);
-        //auto eigen_values = ::dnpsoup::eigenVal(hamiltonian);
-        auto eigen_values = ::dnpsoup::eigenVal(hamiltonian + hamiltonian_offset);
-        vector<double> eigen_values_temp;
-        for(size_t i = 0; i < eigen_values.nelements(); ++i){
-          eigen_values_temp.push_back(eigen_values(i, 0));
+          mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
+
+          MatrixCxDbl hamiltonian = packets.genMatrix(spin_sys_euler * mas_angle);
+          MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(spin_sys_euler * mas_angle);
+          //auto eigen_values = ::dnpsoup::eigenVal(hamiltonian);
+          auto eigen_values = ::dnpsoup::eigenVal(hamiltonian + hamiltonian_offset);
+          vector<double> eigen_values_temp;
+          for(size_t i = 0; i < eigen_values.nelements(); ++i){
+            eigen_values_temp.push_back(eigen_values(i, 0));
+          }
+          results.push_back(eigen_values_temp);
+
+          comp_size -= step_sz;
+          t += static_cast<double>(step_sz) * inc;
         }
-        results.push_back(eigen_values_temp);
-
-        t = t + inc;
       } while(idx < seq.size());
 
       return results;

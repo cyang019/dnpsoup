@@ -2,6 +2,7 @@
 #include "json.hpp"
 #include "gtest/gtest.h"
 #include <limits>
+#include <stdexcept>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -12,7 +13,7 @@
 namespace {
     using PulseSeq = dnpsoup::PulseSequence;
 
-    TEST(TestDnpsoup, EmptyPulseSeq){
+    TEST(TestPulseSeq, EmptyPulseSeq){
       auto p = PulseSeq();
       std::ostringstream oss;
       oss << p;
@@ -21,7 +22,34 @@ namespace {
       iss >> p2;
       ASSERT_EQ(0u, p2.size());
     }
-    TEST(TestDnpsoup, PulseSeqCW){
+
+    TEST(TestPulseSeq, DelayOnly){
+      dnpsoup::PulseSequence seq(1.0e-8);
+      // [number] x increment duration
+      auto uptr_sec = std::make_unique<dnpsoup::pulseseq::Delay>(800);
+      seq.set("delay", std::move(uptr_sec));
+      std::vector<std::string> seq_names = { "delay" };
+      seq.set(seq_names);
+
+      std::vector<dnpsoup::pulseseq::Component> iterations;
+      std::uint64_t sz = 0;
+      size_t cnt = 0;
+      while(sz < seq.size()){
+        auto [comp, comp_sz, idx] = seq.next();
+        if(comp_sz > 0){
+          iterations.push_back(comp);
+          ASSERT_EQ(800, comp_sz);
+        }
+        sz = idx;
+        if (cnt > 100) {
+          throw std::runtime_error("infinite loop.");
+        }
+        ++cnt;
+      }
+      ASSERT_EQ(1, iterations.size());
+    }
+
+    TEST(TestPulseSeq, PulseSeqCW){
       dnpsoup::PulseSequence p;
       dnpsoup::pulseseq::EMRadiation emr(1.0e6, 0.0, 0.0);
       dnpsoup::pulseseq::Component c;
@@ -42,7 +70,7 @@ namespace {
       std::cout << "CW Pulse Sequence:\n" << p2 << std::endl;
     }
 
-    TEST(TestDnpsoup, PulseSeqTopDnp){
+    TEST(TestPulseSeq, PulseSeqTopDnp){
       // Tan, Kong Ooi, Chen Yang, Ralph T. Weber, Guinevere Mathies, and Robert G. Griffin. "Time-optimized pulsed dynamic nuclear polarization." Science advances 5, no. 1 (2019): eaav6909.
       const std::string pulse_seq_str = 
         "{\n"
