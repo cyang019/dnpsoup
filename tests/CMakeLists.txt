@@ -14,7 +14,13 @@ target_link_libraries(
   gtest_main
   )
 
+if(${CMAKE_BUILD_TYPE} EQUAL Release)
+  set(USE_COVERAGE OFF)
+endif()
+
 if(USE_COVERAGE)
+  include(cmake/CodeCoverage.cmake)
+
   if(APPLE)
     message("APPLE coverage...")
     target_compile_options(test_dnpsoup_core PUBLIC

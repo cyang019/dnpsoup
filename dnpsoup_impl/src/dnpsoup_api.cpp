@@ -210,7 +210,7 @@ extern "C" {
 
       unsigned idx = 0;
       for(const auto &val : results){
-        values[idx++] = val;
+        values[idx++] = val.second;
       }
     }
     else if(j.find("em_frequencies") != j.end()){
@@ -226,7 +226,7 @@ extern "C" {
           t_acq, eulers, ncores);
       unsigned idx = 0;
       for(const auto &val : results){
-        values[idx++] = val;
+        values[idx++] = val.second;
       }
     }
 

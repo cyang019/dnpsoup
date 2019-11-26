@@ -32,7 +32,6 @@ if(BUILD_TESTS)
   add_subdirectory(tests)
 
   include(cmake/googletest.cmake)
-  include(cmake/CodeCoverage.cmake)
   fetch_googletest(
     ${PROJECT_SOURCE_DIR}/cmake
     ${PROJECT_BINARY_DIR}/googletest

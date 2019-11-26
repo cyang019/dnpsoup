@@ -7,6 +7,8 @@
 #include "dnpsoup_core/common.h"
 #include "dnpsoup_core/constants.h"
 #include <complex>
+#include <vector>
+#include <utility>
 #include <sstream>
 #include <string>
 #include <cmath>
@@ -78,6 +80,7 @@ namespace dnpsoup {
           //auto eigen_values = ::dnpsoup::eigenVal(hamiltonian);
           auto eigen_values = ::dnpsoup::eigenVal(hamiltonian + hamiltonian_offset);
           vector<double> eigen_values_temp;
+          eigen_values_temp.push_back(t);
           for(size_t i = 0; i < eigen_values.nelements(); ++i){
             eigen_values_temp.push_back(eigen_values(i, 0));
           }
@@ -313,7 +316,7 @@ namespace dnpsoup {
       return results;
     }
 
-    std::vector<double> DnpRunner::calcFieldProfile(
+    std::vector<std::pair<double, double>> DnpRunner::calcFieldProfile(
         const std::vector<Magnet> &fields, 
         const Gyrotron &g,
         const Probe &p,
@@ -323,11 +326,11 @@ namespace dnpsoup {
         const std::vector<Euler<>> &spin_sys_eulers,
         [[maybe_unused]] int ncores) const
     {
-      std::vector<double> result;
+      std::vector<std::pair<double, double>> result;
       for(const auto field : fields){
         const double res = this->calcPowderIntensity(
             field, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers);
-        result.push_back(res);
+        result.push_back(std::make_pair(field.b0, res));
 #ifndef NDEBUG
         std::cout << "." << std::flush;
 #endif
@@ -338,7 +341,7 @@ namespace dnpsoup {
       return result;
     }
 
-    std::vector<double> DnpRunner::calcFieldProfile(
+    std::vector<std::pair<double, double>> DnpRunner::calcFieldProfile(
         const Magnet &m, 
         const std::vector<Gyrotron> &emrs,
         const Probe &p,
@@ -348,11 +351,11 @@ namespace dnpsoup {
         const std::vector<Euler<>> &spin_sys_eulers,
         [[maybe_unused]] int ncores) const
     {
-      std::vector<double> result;
+      std::vector<std::pair<double, double>> result;
       for(const auto g : emrs) {
         const double res = this->calcPowderIntensity(
             m, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers);
-        result.push_back(res);
+        result.emplace_back(make_pair(g.em_frequency, res));
       }
       return result;
     }

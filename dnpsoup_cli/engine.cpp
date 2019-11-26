@@ -85,7 +85,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
     std::ofstream result_stream;
 	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);
 	  result_stream.open(result_filename.c_str());
-		result_stream << "Eigen Values:\n";
+		result_stream << "# Eigen Values:\n";
     result_stream << setprecision(numeric_limits<double>::max_digits10);
 		for(const auto &row : result){
 			for(size_t i = 0; i+1 < row.size(); ++i){
@@ -130,7 +130,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 	    result_stream.exceptions(std::ios::failbit | std::ios::badbit);
 	    result_stream.open(result_filename.c_str());
       result_stream << setprecision(numeric_limits<double>::max_digits10);
-		  result_stream << "Intensity: " << result;
+		  result_stream << "# Intensity: " << result;
       auto end_time = chrono::high_resolution_clock::now();
 	    cout << "Total time: " 
            << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
@@ -143,7 +143,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
       std::ofstream result_stream;
 	    result_stream.exceptions(std::ios::failbit | std::ios::badbit);
 	    result_stream.open(result_filename.c_str());
-		  result_stream << "BuildUp:\n";
+		  result_stream << "# BuildUp:\n";
 		  result_stream << "time,\tintensity\n";
       result_stream << setprecision(numeric_limits<double>::max_digits10);
       for(const auto &val_pair : results){
@@ -197,7 +197,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);
 	  result_stream.open(result_filename.c_str());
     result_stream << setprecision(numeric_limits<double>::max_digits10);
-		result_stream << "PowderIntensity: " << result;
+		result_stream << "# PowderIntensity: " << result;
     auto end_time = chrono::high_resolution_clock::now();
 	  cout << "Total time: " 
          << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
@@ -206,7 +206,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 	}
 
 	if(task_str == "FieldProfile"){
-		std::vector<double> result;
+		std::vector<std::pair<double, double>> result;
 		if(j.find("fields") != j.end()){
 			vector<Magnet> magnets;
 			for(const auto &f_val : j["fields"]) {
@@ -233,13 +233,10 @@ void dnpsoup_exec(const std::string &spinsys_filename,
     std::ofstream result_stream;
 	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);
 	  result_stream.open(result_filename.c_str());
-		result_stream << "Field Profile:\n";
+		result_stream << "# Field Profile:\n";
     result_stream << setprecision(numeric_limits<double>::max_digits10);
-		for(size_t i = 0; i + 1 < result.size(); ++i){
-			result_stream << result[i] << ", ";
-		}
-		if(result.size() > 0){
-			result_stream << result.back() << "\n";
+		for(size_t i = 0; i < result.size(); ++i){
+			result_stream << result[i].first << ", " << result[i].second << "\n";
 		}
     auto end_time = chrono::high_resolution_clock::now();
 	  cout << "Total time: " 

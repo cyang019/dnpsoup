@@ -41,7 +41,7 @@ namespace dnpsoup {
         const SpinType &acq_spin,
         const Euler<> &spin_sys_euler) const;
 
-    std::vector<double> calcFieldProfile(
+    std::vector<std::pair<double, double>> calcFieldProfile(
         const std::vector<Magnet> &m, 
         const Gyrotron &g,
         const Probe &p,
@@ -51,7 +51,7 @@ namespace dnpsoup {
         const std::vector<Euler<>> &spin_sys_eulers,
         int ncores=1) const;
 
-    std::vector<double> calcFieldProfile(
+    std::vector<std::pair<double, double>> calcFieldProfile(
         const Magnet &fields, 
         const std::vector<Gyrotron> &emrs,
         const Probe &p,
