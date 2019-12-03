@@ -1,17 +1,19 @@
 cmake_minimum_required (VERSION 3.14)
-project (dnpsoup CXX)
+project (dnpsoup 
+  LANGUAGES CXX
+  VERSION 0.1)
 
 message(STATUS "Project dnpsoup...")
 
-if(NOT DEFINED CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 17)
-  message(STATUS "[dnpsoup] cpp standard - ${CMAKE_CXX_STANDARD}")
-endif()
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+# if(NOT DEFINED CMAKE_CXX_STANDARD)
+#   set(CMAKE_CXX_STANDARD 17)
+#   message(STATUS "[dnpsoup] cpp standard - ${CMAKE_CXX_STANDARD}")
+# endif()
 
-if(APPLE)
-  #set(CMAKE_CXX_COMPILER /usr/bin/clang++)
-  #message(STATUS "[dnpsoup] compiler - ${CMAKE_CXX_COMPILER}")
-endif()
+# set(CMAKE_CXX_COMPILER /usr/bin/clang++)
+# message(STATUS "[dnpsoup] compiler - ${CMAKE_CXX_COMPILER}")
 
 if(NOT DEFINED CMAKE_CXX_STANDARD_REQUIRED)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)

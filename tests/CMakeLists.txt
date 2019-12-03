@@ -1,6 +1,6 @@
 file(GLOB SRCS *.cpp)
 
-message("tests to run: ${SRCS}")
+# message("tests to run: ${SRCS}")
 
 #list(FILTER SRCS EXCLUDE REGEX ".*test_dnp_runner.cpp$")
 
