@@ -6,5 +6,6 @@ def Settings( **kwargs ):
               '-Wc++17-extensions',
               '-I./dnpsoup_impl/include', '-I./matrix/matrix_impl/include',
               '-I./dnpsoup_impl',
+              '-I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers',
               '-I./build/googletest/googletest-src/googletest/include'],
   }
