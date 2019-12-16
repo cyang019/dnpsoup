@@ -1,0 +1,29 @@
+{
+  "pulse_sequence": {
+    "components": {
+        "emr": {
+            "e": {
+                "frequency": 1.0e6,
+                "offset": 0.0,
+                "phase": 0.0
+            }
+        }
+    },
+    "increment": 1e-9,
+    "sections": {
+        "cw": {
+            "names": [
+                "emr"
+            ],
+            "params": {},
+            "size": 1e8,
+            "type": "Pulse"
+        }
+    },
+    "sequence": [
+        "cw"
+    ]
+  }
+}
+
+

@@ -143,6 +143,9 @@ namespace dnpsoup {
       if (mas_inc > 0){
         mas_inc_cnt = static_cast<uint64_t>(round(mas_inc/inc));
       }
+#ifndef NDEBUG
+      std::cout << "mas_inc_cnt: " << mas_inc_cnt << "\n";
+#endif
       uint64_t idx = 0;
 
       MatrixCxDbl hamiltonian = packets.genMatrix(spin_sys_euler * mas_angle);
@@ -158,6 +161,9 @@ namespace dnpsoup {
         if(idx < seq.size()){
           std::tie(comp, comp_size, idx) = seq.next();
         }
+#ifndef NDEBUG
+        std::cout << "comp_size: " << comp_size << " \tidx: " << idx << std::endl;
+#endif
 
         bool same_comp = packets.hasPulseSeqComponent(comp);
         if(idx >= seq.size()){    // end of sequence
@@ -372,11 +378,20 @@ namespace dnpsoup {
     {
       double result = 0.0;
       const double scaling_factor = 1.0 / static_cast<double>(spin_sys_eulers.size());
+#ifndef NDEBUG
+      std::cout << "\n";
+#endif
       for(const auto &e : spin_sys_eulers){
+#ifndef NDEBUG
+        std::cout << ".";
+#endif
         auto xtal_intensity = 
           this->calcIntensity(m, g, p, spin_sys, pulse_seq_str, acq_spin, e);
         result += xtal_intensity * std::sin(e.beta());
       }
+#ifndef NDEBUG
+      std::cout << std::endl;
+#endif
       result = result * scaling_factor / pi * 4.0;
       return result;
     }
@@ -414,7 +429,13 @@ namespace dnpsoup {
       }
       auto h_super = commutationSuperOp(hamiltonian);
       auto super_op = complex<double>(0,1.0) * h_super + gamma_super_int;
+#ifndef NDEBUG
+      cout << "[evolve] " << "super_op calculated..." << "\n";
+#endif
       auto [rho_eq_super, status] = matrix::lstsq(super_op, gamma_super_int * rho_ss_super);
+#ifndef NDEBUG
+      cout << "[evolve] " << "lstsq() calculated..." << endl;
+#endif
       auto rho_prev_super = ::dnpsoup::flatten(rho_prev, 'c');
       if(rotate_mat_super.nrows() != 0 && rotate_mat_super_inv.nrows() != 0){
         rho_prev_super = rotate_mat_super * rho_prev_super;
@@ -422,7 +443,13 @@ namespace dnpsoup {
 
       auto c1 = rho_prev_super - rho_eq_super;
       auto scaling_factor = ::dnpsoup::exp(cxdbl(-1.0 * dt, 0) * super_op);
+#ifndef NDEBUG
+      cout << "[evolve] " << "exp(-Lambda * dt) calculated..." << endl;
+#endif
       scaling_factor = ::dnpsoup::pow(scaling_factor, cnt);
+#ifndef NDEBUG
+      cout << "[evolve] " << "exp(-Lambda * dt * cnt) calculated..." << endl;
+#endif
       auto rho_super = scaling_factor * c1 + rho_eq_super;
       if(rotate_mat_super.nrows() != 0 && rotate_mat_super_inv.nrows() != 0){
         rho_super = rotate_mat_super * rho_super;
