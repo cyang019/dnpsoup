@@ -17,6 +17,10 @@ def plot_data(datafile):
         return
 
     print('columns: {}'.format(df.columns))
+    print('columns:')
+    for col in df.columns:
+        print(str(col), end=' ')
+    print()
     print('number of points: {}'.format(df.shape[0]))
 
     x = df.iloc[:, 0]

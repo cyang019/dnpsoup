@@ -7,6 +7,8 @@
   "euler_scheme":{
     "zcw": 4
   },
+
+  "ncores": 4,
   
   "acq": "H",
   "fields": [
@@ -27,7 +29,7 @@
     "em_frequency": 263.0e9
   },
   "Probe": {
-      "mas_frequency": 8000.0,
+      "mas_frequency": 0.0,
       "temperature": 100.0,
       "mas_increment": 1.0e-3
   },

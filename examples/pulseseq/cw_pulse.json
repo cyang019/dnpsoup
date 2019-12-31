@@ -16,7 +16,7 @@
                 "emr"
             ],
             "params": {},
-            "size": 1e8,
+            "size": 5e9,
             "type": "Pulse"
         }
     },
