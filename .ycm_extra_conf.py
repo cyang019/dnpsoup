@@ -6,5 +6,7 @@ def Settings( **kwargs ):
               '-Wc++17-extensions',
               '-I./dnpsoup_impl/include', '-I./matrix/matrix_impl/include',
               '-I./dnpsoup_impl',
-              '-I./build/googletest/googletest-src/googletest/include'],
+              '-I./build/googletest/googletest-src/googletest/include',
+              '-I./build'
+              ]
   }
