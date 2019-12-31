@@ -86,6 +86,11 @@ namespace lean {
 							m_cv.notify_one();
 							break;
 						}
+            
+            if(m_job_q.empty()){
+              m_cv.notify_one();
+              continue;
+            }
 
 						std::function<T()> task = std::move(m_job_q.front());
 						m_job_q.pop();
