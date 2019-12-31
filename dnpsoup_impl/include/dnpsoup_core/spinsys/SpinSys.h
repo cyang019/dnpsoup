@@ -45,7 +45,9 @@ namespace dnpsoup {
     SpinSys& addSpin(int, const SpinEntity &, bool t_auto_add=true); 
     SpinSys& addSpin(int, SpinType, double x, double y, double z, bool t_auto_add=true);
     SpinSys& setT1(const SpinId &, double);
+    double getT1(const SpinId &) const;
     SpinSys& setT2(const SpinId &, double);
+    double getT2(const SpinId &) const;
 
     const std::map<SpinId, SpinEntity>& getSpins() const { return m_spins; }
 
@@ -97,6 +99,9 @@ namespace dnpsoup {
 
     std::vector<SpinType> getSpinTypes() const;
     std::vector<SpinId> getSpinIds(const SpinType &) const;
+    std::size_t spinCount() const;
+    std::size_t typeCount() const;
+    std::size_t observableCount() const;
   private:
     std::map<SpinId, SpinEntity> m_spins;
     std::unordered_map<SpinType, std::vector<SpinId>> m_spin_types;

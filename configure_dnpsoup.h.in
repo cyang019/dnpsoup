@@ -1,0 +1,7 @@
+#ifndef DNPSOUP_CONFIGURE_H
+#define DNPSOUP_CONFIGURE_H
+
+#define EXAMPLE_DIR "@PROJECT_SOURCE_DIR@/examples"
+
+#endif
+

@@ -128,10 +128,20 @@ namespace dnpsoup {
     return *this;
   }
 
+  double SpinSys::getT1(const SpinId &sid) const
+  {
+    return m_spins.at(sid).getT1();
+  }
+
   SpinSys& SpinSys::setT2(const SpinId &sid, double t)
   {
     m_spins[sid].setT2(t);
     return *this;
+  }
+
+  double SpinSys::getT2(const SpinId &sid) const
+  {
+    return m_spins.at(sid).getT2();
   }
 
   SpinSys& SpinSys::removeSpin(const SpinId &sid)
@@ -377,6 +387,21 @@ namespace dnpsoup {
     return m_spin_types.at(t);
   }
 
+  std::size_t SpinSys::spinCount() const
+  {
+    return m_spins.size();
+  }
+
+  std::size_t SpinSys::typeCount() const
+  {
+    return m_spin_types.size();
+  }
+
+  std::size_t SpinSys::observableCount() const
+  {
+    return m_observables.size();
+  }
+
   std::ostream& operator<<(std::ostream &os, const SpinSys &spin_sys)
   {
     json j;
@@ -516,8 +541,15 @@ namespace dnpsoup {
       if(spin_js.find("T1") != spin_js.end()){
         spin_entity.setT1(spin_js["T1"].get<double>());
       }
+      else if(spin_js.find("t1") != spin_js.end()){
+        spin_entity.setT1(spin_js["t1"].get<double>());
+      }
+
       if(spin_js.find("T2") != spin_js.end()){
         spin_entity.setT2(spin_js["T2"].get<double>());
+      }
+      else if(spin_js.find("t2") != spin_js.end()){
+        spin_entity.setT2(spin_js["t2"].get<double>());
       }
 
       SpinId sid(stoi(sid_js));

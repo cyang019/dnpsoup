@@ -12,8 +12,7 @@
 #include <utility>
 
 namespace dnpsoup {
-  class DnpRunner {
-  public:
+  namespace DnpRunner {
     std::vector<std::vector<double>> calcEigenValues(
         const Magnet &m,
         const Gyrotron &g,
@@ -21,7 +20,7 @@ namespace dnpsoup {
         const SpinSys &spin_sys,
         const std::string &pulse_seq_str,
         const Euler<> &spin_sys_euler
-        ) const;
+        );
 
     double calcIntensity(
         const Magnet &m, 
@@ -30,7 +29,7 @@ namespace dnpsoup {
         const SpinSys &spin_sys,
         const std::string &pulse_seq_str,
         const SpinType &acq_spin,
-        const Euler<> &spin_sys_euler) const;
+        const Euler<> &spin_sys_euler);
 
     std::vector<std::pair<double, double>> calcBuildUp(
         const Magnet &m, 
@@ -39,7 +38,7 @@ namespace dnpsoup {
         const SpinSys &spin_sys,
         const std::string &pulse_seq_str,
         const SpinType &acq_spin,
-        const Euler<> &spin_sys_euler) const;
+        const Euler<> &spin_sys_euler);
 
     std::vector<std::pair<double, double>> calcFieldProfile(
         const std::vector<Magnet> &m, 
@@ -49,7 +48,7 @@ namespace dnpsoup {
         const std::string &pulse_seq_str,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
-        int ncores=1) const;
+        int ncores=1);
 
     std::vector<std::pair<double, double>> calcFieldProfile(
         const Magnet &fields, 
@@ -59,7 +58,7 @@ namespace dnpsoup {
         const std::string &pulse_seq_str,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
-        int ncores=1) const;
+        int ncores=1);
 
     double calcPowderIntensity(
         const Magnet &m, 
@@ -69,7 +68,7 @@ namespace dnpsoup {
         const std::string &pulse_seq_str,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
-        int ncores=1) const;
+        int ncores=1);
 
     MatrixCxDbl evolve(
         const MatrixCxDbl &rho_prev, 
@@ -78,7 +77,7 @@ namespace dnpsoup {
         const MatrixCxDbl &rotate_mat_super,
         const MatrixCxDbl &rotate_mat_super_inv,
         const std::vector<RelaxationPacket> &rpackets,
-        double dt, std::uint64_t cnt, double temperature) const;
+        double dt, std::uint64_t cnt, double temperature);
 
     MatrixCxDbl evolve(
         const MatrixCxDbl &rho_prev, 
@@ -90,7 +89,7 @@ namespace dnpsoup {
         double dt,
         std::uint64_t cnt,
         double temperature
-        ) const;
+        );
   };
 
 } // namespace dnpsoup

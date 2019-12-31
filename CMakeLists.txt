@@ -23,6 +23,9 @@ if(NOT DEFINED CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_EXTENSIONS OFF)
 endif()
 
+configure_file(${CMAKE_CURRENT_LIST_DIR}/configure_dnpsoup.h.in ${PROJECT_BINARY_DIR}/configure_dnpsoup.h)
+message( STATUS "configure_dnpsoup.h => ${PROJECT_BINARY_DIR}" )
+include_directories(${PROJECT_BINARY_DIR})
 
 add_subdirectory("matrix/matrix_impl")
 add_subdirectory("dnpsoup_impl")

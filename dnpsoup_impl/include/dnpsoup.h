@@ -1,6 +1,7 @@
 #ifndef DNPSOUP_HEADERS_H
 #define DNPSOUP_HEADERS_H
 
+#include "configure_dnpsoup.h"
 #include "dnpsoup_core/constants.h"
 #include "dnpsoup_core/common.h"
 #include "dnpsoup_core/errors.h"

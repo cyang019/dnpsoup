@@ -59,7 +59,6 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 	}
 	cout << "Probe loaded..." << endl;
 	
-	DnpRunner runner;
 	if(task_str == "EigenValues") {
 		auto magnet = Magnet(j);
 		cout << "Magnet loaded..." << endl;
@@ -79,7 +78,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 			cout << "Euler angle loaded..." << endl;
 		}
 
-		auto result = runner.calcEigenValues(magnet, gyrotron, probe,
+		auto result = DnpRunner::calcEigenValues(magnet, gyrotron, probe,
 			spinsys, pulse_seq_str, euler);
 
     std::ofstream result_stream;
@@ -123,7 +122,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 		}
 
     if(task_str == "Intensity"){
-		  auto result = runner.calcIntensity(magnet, gyrotron, probe,
+		  auto result = DnpRunner::calcIntensity(magnet, gyrotron, probe,
 		  	spinsys, pulse_seq_str, acq_t, euler);
 
       std::ofstream result_stream;
@@ -137,7 +136,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
            << " seconds." << endl;
 		  return;
     } else {
-		  auto results = runner.calcBuildUp(magnet, gyrotron, probe,
+		  auto results = DnpRunner::calcBuildUp(magnet, gyrotron, probe,
 		  	spinsys, pulse_seq_str, acq_t, euler);
 
       std::ofstream result_stream;
@@ -190,7 +189,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 	if(task_str == "PowderIntensity"){
 		auto magnet = Magnet(j);		
 		auto gyrotron = Gyrotron(j);
-		auto result = runner.calcPowderIntensity(magnet, gyrotron, probe,
+		auto result = DnpRunner::calcPowderIntensity(magnet, gyrotron, probe,
 			spinsys, pulse_seq_str, acq_t, eulers, ncores);
 
     std::ofstream result_stream;
@@ -214,7 +213,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 				magnets.push_back(Magnet(temp_val));
 			}
 			auto gyrotron = Gyrotron(j);
-		  result = runner.calcFieldProfile(magnets, gyrotron, probe,
+		  result = DnpRunner::calcFieldProfile(magnets, gyrotron, probe,
 		  	spinsys, pulse_seq_str, acq_t, eulers, ncores);
 		}
 		else if(j.find("emrs") != j.end()){
@@ -224,7 +223,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 				emrs.push_back(Gyrotron(temp_val));
 			}
 			auto magnet = Magnet(j);
-		  result = runner.calcFieldProfile(magnet, emrs, probe,
+		  result = DnpRunner::calcFieldProfile(magnet, emrs, probe,
 		  	spinsys, pulse_seq_str, acq_t, eulers, ncores);
 		}
 		else {

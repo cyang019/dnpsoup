@@ -45,8 +45,7 @@ namespace {
       // MAS, Temperature
       auto probe = dnpsoup::Probe(8e3, 77.0);
 
-      dnpsoup::DnpRunner runner;
-      auto res = runner.calcEigenValues(
+      auto res = dnpsoup::DnpRunner::calcEigenValues(
           magnet, gyrotron, probe, spins,
           buffer.str(), ::dnpsoup::Euler<>(320.0/180.0*pi, 141.0/180.0*pi, 80.0/180.0*pi));
 
@@ -91,8 +90,7 @@ namespace {
       std::ostringstream buffer;
       buffer << p;
 
-      dnpsoup::DnpRunner runner;
-      auto res = runner.calcIntensity(
+      auto res = dnpsoup::DnpRunner::calcIntensity(
           magnet, gyrotron, probe, spins, 
           buffer.str(), 
           SpinType::H, dnpsoup::Euler<>(0.0,0.0,0.0));
@@ -102,7 +100,7 @@ namespace {
       p.set("emr", c);
       std::ostringstream buffer2;
       buffer2 << p;
-      auto res2 = runner.calcIntensity(
+      auto res2 = dnpsoup::DnpRunner::calcIntensity(
           magnet, gyrotron, probe, spins, buffer2.str(),
           SpinType::H, dnpsoup::Euler<>(0.0,0.0,0.0));
       std::cout << "Intensity without radiation: " << res2 << std::endl;
@@ -137,19 +135,24 @@ namespace {
       std::ostringstream buffer;
       buffer << p;
 
-      dnpsoup::DnpRunner runner;
       auto eulers = dnpsoup::getZCWAngles(2);
-      auto res = runner.calcPowderIntensity(
+      auto res = dnpsoup::DnpRunner::calcPowderIntensity(
           magnet, gyrotron, probe, spins, 
           buffer.str(), 
           SpinType::H, eulers);
+      auto res_concurrent = dnpsoup::DnpRunner::calcPowderIntensity(
+          magnet, gyrotron, probe, spins, 
+          buffer.str(), 
+          SpinType::H, eulers, 4);
+      ASSERT_DOUBLE_EQ(res, res_concurrent);
+
       std::cout << "Intensity with DNP: " << res << std::endl;
 
       c[SpinType::e].freq = 0.0;
       p.set("emr", c);
       std::ostringstream buffer2;
       buffer2 << p;
-      auto res2 = runner.calcPowderIntensity(
+      auto res2 = dnpsoup::DnpRunner::calcPowderIntensity(
           magnet, gyrotron, probe, spins, buffer2.str(),
           SpinType::H, eulers);
       std::cout << "Intensity without radiation: " << res2 << std::endl;
@@ -191,9 +194,8 @@ namespace {
       // MAS, Temperature
       auto probe = dnpsoup::Probe(8000.0, 77.0);
 
-      dnpsoup::DnpRunner runner;
       auto eulers = dnpsoup::getZCWAngles(2); 
-      auto res = runner.calcFieldProfile(
+      auto res = dnpsoup::DnpRunner::calcFieldProfile(
           fields, gyrotron, probe, spins, 
           buffer.str(), 
           SpinType::H, eulers);
@@ -207,7 +209,7 @@ namespace {
       p.set("emr", c);
       std::ostringstream buffer2;
       buffer2 << p;
-      auto res2 = runner.calcFieldProfile(
+      auto res2 = dnpsoup::DnpRunner::calcFieldProfile(
           fields, gyrotron, probe, spins, buffer2.str(),
           SpinType::H, eulers);
       std::cout << "Field Profile without radiation: ";
@@ -246,8 +248,7 @@ namespace {
       auto gyrotron = dnpsoup::Gyrotron(300.0e9);
       auto probe = dnpsoup::Probe(0.0, 77.0);
 
-      dnpsoup::DnpRunner runner;
-      auto res = runner.calcIntensity(
+      auto res = dnpsoup::DnpRunner::calcIntensity(
           magnet, gyrotron, probe, spins, 
           buffer.str(), 
           SpinType::H, dnpsoup::Euler<>(0.0,0.0,0.0));
@@ -257,7 +258,7 @@ namespace {
       p.set("emr", c);
       std::ostringstream buffer2;
       buffer2 << p;
-      auto res2 = runner.calcIntensity(
+      auto res2 = dnpsoup::DnpRunner::calcIntensity(
           magnet, gyrotron, probe, spins, buffer2.str(),
           SpinType::H, dnpsoup::Euler<>(0.0,0.0,0.0));
       std::cout << "Intensity without radiation: " << res2 << std::endl;

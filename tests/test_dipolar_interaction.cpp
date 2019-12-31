@@ -18,7 +18,7 @@ namespace {
           dnpsoup::gamma_H1, dnpsoup::gamma_H1, 2, 2);
 
       auto p = dnpsoup::genDipoleProperty(1.0);
-      auto e = dnpsoup::Euler(0,0,0);
+      auto e = dnpsoup::Euler<>(0,0,0);
       auto matRR = dipoleRR.genMatrix(p, e);
       std::cout << "matRR:\n" << matRR << std::endl;
       auto matRL = dipoleRL.genMatrix(p, e);
@@ -29,7 +29,7 @@ namespace {
           dnpsoup::beta_e, dnpsoup::gamma_H1, 2, 2);
 
       auto p = dnpsoup::genDipoleProperty(2.0);
-      auto e = dnpsoup::Euler(0,0,0);
+      auto e = dnpsoup::Euler<>(0,0,0);
       auto mat = dipole.genMatrix(p, e);
       std::cout << "mat_e_H:\n" << mat << std::endl;
     }

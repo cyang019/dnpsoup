@@ -8,6 +8,7 @@
 #include "dnpsoup_core/spin_physics_components/hamiltonian/InteractionInterface.h"
 #include "dnpsoup_core/spin_physics_components/rotation/FrameType.h"
 #include <type_traits>
+#include <iostream>
 
 
 namespace dnpsoup {

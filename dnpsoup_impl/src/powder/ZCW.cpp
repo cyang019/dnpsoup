@@ -20,6 +20,9 @@ namespace dnpsoup {
       result.push_back(Euler<>(alpha, beta, 0.0));
     }
     //double scaling_factor = 1.0/static_cast<double>(N_M);
+#ifndef NDEBUG
+    std::cout << "ZCW " << m << " gives " << result.size() << " powder angles." << std::endl;
+#endif
 
     return result;
   }

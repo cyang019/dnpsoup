@@ -3,6 +3,7 @@
 
 #include "matrix.h"
 #include "dnpsoup_core/constants.h"
+#include "configure_dnpsoup.h"
 #include <cmath>
 #include <complex>
 #include <functional>     // hash

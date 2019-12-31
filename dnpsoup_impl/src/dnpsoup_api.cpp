@@ -11,7 +11,6 @@ extern "C" {
   void eigenValues(const char *json_str, 
       double *values)
   {
-    dnpsoup::DnpRunner runner;
     dnpsoup::json j;
     istringstream iss(json_str);
     iss >> j;
@@ -43,7 +42,7 @@ extern "C" {
       }
     }
 
-    auto results = runner.calcEigenValues(
+    auto results = dnpsoup::DnpRunner::calcEigenValues(
         magnet, gyrotron, probe, spins, pulse_seq_str,
         euler);
 
@@ -60,7 +59,6 @@ extern "C" {
 
   double calculateIntensity(const char *json_str)
   {
-    dnpsoup::DnpRunner runner;
     dnpsoup::json j;
     istringstream iss(json_str);
     iss >> j;
@@ -97,7 +95,7 @@ extern "C" {
     }
     dnpsoup::SpinType t_acq = dnpsoup::toSpinType(j["acq"].get<string>());
 
-    double result = runner.calcIntensity(
+    double result = dnpsoup::DnpRunner::calcIntensity(
         magnet, gyrotron, probe, spins, pulse_seq_str,
         t_acq, euler);
 
@@ -107,7 +105,6 @@ extern "C" {
   double powderIntensity(const char *json_str,
       int ncores)
   {
-    dnpsoup::DnpRunner runner;
     dnpsoup::json j;
     istringstream iss(json_str);
     iss >> j;
@@ -147,7 +144,7 @@ extern "C" {
     }
     dnpsoup::SpinType t_acq = dnpsoup::toSpinType(j["acq"].get<string>());
 
-    double result = runner.calcPowderIntensity(
+    double result = dnpsoup::DnpRunner::calcPowderIntensity(
         magnet, gyrotron, probe, spins, pulse_seq_str,
         t_acq, eulers, ncores);
 
@@ -157,7 +154,6 @@ extern "C" {
   void fieldProfile(const char *json_str, double *values, 
       int ncores)
   {
-    dnpsoup::DnpRunner runner;
     dnpsoup::json j;
     istringstream iss(json_str);
     iss >> j;
@@ -204,7 +200,7 @@ extern "C" {
       }
       auto gyrotron = dnpsoup::Gyrotron(j);
 
-      auto results = runner.calcFieldProfile(
+      auto results = dnpsoup::DnpRunner::calcFieldProfile(
           fields, gyrotron, probe, spins, pulse_seq_str, 
           t_acq, eulers, ncores);
 
@@ -221,7 +217,7 @@ extern "C" {
         ems.emplace_back(em_val);
       }
 
-      auto results = runner.calcFieldProfile(
+      auto results = dnpsoup::DnpRunner::calcFieldProfile(
           magnet, ems, probe, spins, pulse_seq_str,
           t_acq, eulers, ncores);
       unsigned idx = 0;

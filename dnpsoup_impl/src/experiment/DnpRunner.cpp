@@ -6,6 +6,7 @@
 #include "dnpsoup_core/errors.h"
 #include "dnpsoup_core/common.h"
 #include "dnpsoup_core/constants.h"
+#include "lean/threadpool.h"
 #include <complex>
 #include <vector>
 #include <utility>
@@ -17,14 +18,15 @@ using namespace std;
 
 
 namespace dnpsoup {
-    std::vector<std::vector<double>> DnpRunner::calcEigenValues(
+namespace DnpRunner {
+    std::vector<std::vector<double>> calcEigenValues(
         const Magnet &m,
         const Gyrotron &g,
         const Probe &p,
         const SpinSys &spin_sys,
         const std::string &pulse_seq_str,
         const Euler<> &spin_sys_euler
-        ) const
+        )
     {
       PulseSequence seq;
       istringstream iss(pulse_seq_str);
@@ -43,6 +45,13 @@ namespace dnpsoup {
       double t = 0.0;
       Euler<> mas_angle = p.magic_angle;
       double t_inc = p.mas_increment;
+      if(p.mas_frequency > 1.0){
+        double t_inc_limit = 1.0/p.mas_frequency * 0.02; ///< override mas_inc
+        if(t_inc_limit < t_inc){
+          t_inc = t_inc_limit;
+          cout << "Overriding existing mac_increment with " << t_inc_limit << endl;
+        }
+      }
       if(t_inc < eps && t_inc < inc){
         t_inc = inc;
       }
@@ -50,6 +59,9 @@ namespace dnpsoup {
         throw PulseSequenceError("Incrementation too small.");
       }
       const uint64_t n_inc = static_cast<uint64_t>(std::round(t_inc/inc));
+#ifndef NDEBUG
+      cout << "n_inc = t_inc/inc = " << n_inc << endl;
+#endif
 
       packets.setPropertyValue(ValueName::b0, m.b0);
       offset_packets.setPropertyValue(ValueName::b0, m.b0);
@@ -74,6 +86,12 @@ namespace dnpsoup {
           uint64_t step_sz = std::min(comp_size, n_inc);
 
           mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
+// #ifndef NDEBUG
+//           cout << "[mas] t: " << t << " \t" << "mas_angle:"
+//                << " a: " << mas_angle.alpha() 
+//                << " b: " << mas_angle.beta()
+//                << " g: " << mas_angle.gamma() << endl;
+// #endif
 
           MatrixCxDbl hamiltonian = packets.genMatrix(spin_sys_euler * mas_angle);
           MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(spin_sys_euler * mas_angle);
@@ -94,14 +112,14 @@ namespace dnpsoup {
       return results;
     }
 
-    double DnpRunner::calcIntensity(
+    double calcIntensity(
         const Magnet &m, 
         const Gyrotron &g,
         const Probe &p,
         const SpinSys &spin_sys,
         const std::string &pulse_seq_str,
         const SpinType &acq_spin,
-        const Euler<> &spin_sys_euler) const
+        const Euler<> &spin_sys_euler)
     {
       constexpr double eps = std::numeric_limits<double>::epsilon();
       auto packets = spin_sys.summarize<DnpExperiment>();
@@ -143,6 +161,9 @@ namespace dnpsoup {
       if (mas_inc > 0){
         mas_inc_cnt = static_cast<uint64_t>(round(mas_inc/inc));
       }
+//#ifndef NDEBUG
+//      std::cout << "mas_inc_cnt: " << mas_inc_cnt << "\n";
+//#endif
       uint64_t idx = 0;
 
       MatrixCxDbl hamiltonian = packets.genMatrix(spin_sys_euler * mas_angle);
@@ -158,6 +179,9 @@ namespace dnpsoup {
         if(idx < seq.size()){
           std::tie(comp, comp_size, idx) = seq.next();
         }
+//#ifndef NDEBUG
+//        std::cout << "comp_size: " << comp_size << " \tidx: " << idx << std::endl;
+//#endif
 
         bool same_comp = packets.hasPulseSeqComponent(comp);
         if(idx >= seq.size()){    // end of sequence
@@ -211,14 +235,14 @@ namespace dnpsoup {
       return result;
     }
 
-    std::vector<pair<double, double>> DnpRunner::calcBuildUp(
+    std::vector<pair<double, double>> calcBuildUp(
         const Magnet &m, 
         const Gyrotron &g,
         const Probe &p,
         const SpinSys &spin_sys,
         const std::string &pulse_seq_str,
         const SpinType &acq_spin,
-        const Euler<> &spin_sys_euler) const
+        const Euler<> &spin_sys_euler)
     {
       constexpr double eps = std::numeric_limits<double>::epsilon();
       PulseSequence seq;
@@ -316,7 +340,7 @@ namespace dnpsoup {
       return results;
     }
 
-    std::vector<std::pair<double, double>> DnpRunner::calcFieldProfile(
+    std::vector<std::pair<double, double>> calcFieldProfile(
         const std::vector<Magnet> &fields, 
         const Gyrotron &g,
         const Probe &p,
@@ -324,15 +348,15 @@ namespace dnpsoup {
         const std::string &pulse_seq_str,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
-        [[maybe_unused]] int ncores) const
+        [[maybe_unused]] int ncores)
     {
       std::vector<std::pair<double, double>> result;
-      for(const auto field : fields){
-        const double res = this->calcPowderIntensity(
-            field, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers);
-        result.push_back(std::make_pair(field.b0, res));
+      for(const auto &field : fields){
+          const double res = calcPowderIntensity(
+              field, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers, ncores);
+          result.push_back(std::make_pair(field.b0, res));
 #ifndef NDEBUG
-        std::cout << "." << std::flush;
+          std::cout << "." << std::flush;
 #endif
       }
 #ifndef NDEBUG
@@ -341,7 +365,7 @@ namespace dnpsoup {
       return result;
     }
 
-    std::vector<std::pair<double, double>> DnpRunner::calcFieldProfile(
+    std::vector<std::pair<double, double>> calcFieldProfile(
         const Magnet &m, 
         const std::vector<Gyrotron> &emrs,
         const Probe &p,
@@ -349,18 +373,18 @@ namespace dnpsoup {
         const std::string &pulse_seq_str,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
-        [[maybe_unused]] int ncores) const
+        [[maybe_unused]] int ncores)
     {
       std::vector<std::pair<double, double>> result;
       for(const auto g : emrs) {
-        const double res = this->calcPowderIntensity(
-            m, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers);
+        const double res = calcPowderIntensity(
+            m, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers, ncores);
         result.emplace_back(make_pair(g.em_frequency, res));
       }
       return result;
     }
 
-    double DnpRunner::calcPowderIntensity(
+    double calcPowderIntensity(
         const Magnet &m, 
         const Gyrotron &g,
         const Probe &p,
@@ -368,27 +392,45 @@ namespace dnpsoup {
         const std::string &pulse_seq_str,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
-        [[maybe_unused]] int ncores) const
+        [[maybe_unused]] int ncores)
     {
       double result = 0.0;
       const double scaling_factor = 1.0 / static_cast<double>(spin_sys_eulers.size());
-      for(const auto &e : spin_sys_eulers){
-        auto xtal_intensity = 
-          this->calcIntensity(m, g, p, spin_sys, pulse_seq_str, acq_spin, e);
-        result += xtal_intensity * std::sin(e.beta());
+      if(ncores == 1) {
+        for(const auto &e : spin_sys_eulers){
+          auto xtal_intensity = 
+            calcIntensity(m, g, p, spin_sys, pulse_seq_str, acq_spin, e);
+          result += xtal_intensity * std::sin(e.beta());
+        }
+      }
+      else {
+        ::lean::ThreadPool<double> tpool(ncores);
+        for(const auto &e : spin_sys_eulers){
+          auto task = [=](){
+            auto xtal_intensity = 
+              calcIntensity(m, g, p, spin_sys, pulse_seq_str, acq_spin, e);
+            return xtal_intensity * std::sin(e.beta());
+          };
+          tpool.add_task(std::move(task));
+        }
+        tpool.run();
+        auto intensities = tpool.get_results();
+        for(auto &intensity : intensities){
+          result += intensity;
+        }
       }
       result = result * scaling_factor / pi * 4.0;
       return result;
     }
 
-    MatrixCxDbl DnpRunner::evolve(
+    MatrixCxDbl evolve(
         const MatrixCxDbl &rho_prev, 
         const MatrixCxDbl &hamiltonian,
         const MatrixCxDbl &hamiltonian_lab,
         const MatrixCxDbl &rotate_mat_super,
         const MatrixCxDbl &rotate_mat_super_inv,
         const std::vector<RelaxationPacket> &rpackets,
-        double dt, std::uint64_t cnt, double temperature) const
+        double dt, std::uint64_t cnt, double temperature)
     {
       // static state thermo equilibrium
       auto rho_ss = genRhoEq(hamiltonian_lab, temperature);
@@ -414,7 +456,13 @@ namespace dnpsoup {
       }
       auto h_super = commutationSuperOp(hamiltonian);
       auto super_op = complex<double>(0,1.0) * h_super + gamma_super_int;
+//#ifndef NDEBUG
+//      cout << "[evolve] " << "super_op calculated..." << "\n";
+//#endif
       auto [rho_eq_super, status] = matrix::lstsq(super_op, gamma_super_int * rho_ss_super);
+//#ifndef NDEBUG
+//      cout << "[evolve] " << "lstsq() calculated..." << endl;
+//#endif
       auto rho_prev_super = ::dnpsoup::flatten(rho_prev, 'c');
       if(rotate_mat_super.nrows() != 0 && rotate_mat_super_inv.nrows() != 0){
         rho_prev_super = rotate_mat_super * rho_prev_super;
@@ -422,7 +470,13 @@ namespace dnpsoup {
 
       auto c1 = rho_prev_super - rho_eq_super;
       auto scaling_factor = ::dnpsoup::exp(cxdbl(-1.0 * dt, 0) * super_op);
+//#ifndef NDEBUG
+//      cout << "[evolve] " << "exp(-Lambda * dt) calculated..." << endl;
+//#endif
       scaling_factor = ::dnpsoup::pow(scaling_factor, cnt);
+//#ifndef NDEBUG
+//      cout << "[evolve] " << "exp(-Lambda * dt * cnt) calculated..." << endl;
+//#endif
       auto rho_super = scaling_factor * c1 + rho_eq_super;
       if(rotate_mat_super.nrows() != 0 && rotate_mat_super_inv.nrows() != 0){
         rho_super = rotate_mat_super * rho_super;
@@ -439,7 +493,7 @@ namespace dnpsoup {
       return rho_post;
     }
 
-    MatrixCxDbl DnpRunner::evolve(
+    MatrixCxDbl evolve(
         const MatrixCxDbl &rho_prev, 
         const PacketCollection &packets,
         const MatrixCxDbl &hamiltonian_offset,
@@ -449,7 +503,7 @@ namespace dnpsoup {
         double dt,
         std::uint64_t cnt,
         double temperature
-        ) const
+        )
     {
         MatrixCxDbl hamiltonian = packets.genMatrix(euler);
         const double cycle = dt * static_cast<double>(cnt) * g.em_frequency;
@@ -475,4 +529,5 @@ namespace dnpsoup {
           return rho0_evolve;
         }
     }
+} // namespace DnpRunner
 } // namespace dnpsoup
