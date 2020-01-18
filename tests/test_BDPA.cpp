@@ -14,7 +14,8 @@ namespace {
     using cxdbl = dnpsoup::cxdbl;
 
     TEST(TestDnpsoup, BDPA){
-      std::string bdpa_js_file = std::string(EXAMPLE_DIR) + "/BDPA_spinsys.json";
+      std::string bdpa_js_file = 
+        std::string(EXAMPLE_DIR) + "/spinsys/BDPA_spinsys.json";
       std::ifstream spinsys_stream;
 	    spinsys_stream.exceptions(std::ios::failbit | std::ios::badbit);
 	    spinsys_stream.open(bdpa_js_file.c_str());
