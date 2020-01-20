@@ -26,8 +26,6 @@ def plot_data(datafile):
     x = df.iloc[:, 0]
     ys = df.iloc[:, 1:]
     ncols = ys.shape[1]
-    print(x)
-    print(ys)
     fig, axes = plt.subplots(ncols, 1, sharex=True)
     if x.shape[0] > UPPER_LIMIT:
         step_size = x.shape[0]//UPPER_LIMIT

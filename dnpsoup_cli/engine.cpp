@@ -143,7 +143,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 	    result_stream.exceptions(std::ios::failbit | std::ios::badbit);
 	    result_stream.open(result_filename.c_str());
 		  result_stream << "# BuildUp:\n";
-		  result_stream << "time,intensity\n";
+		  result_stream << "# time,intensity\n";
       result_stream << setprecision(numeric_limits<double>::max_digits10);
       for(const auto &val_pair : results){
         result_stream << val_pair.first << "," << val_pair.second << "\n";
