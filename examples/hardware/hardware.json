@@ -33,6 +33,6 @@
       "temperature": 100.0,
       "mas_increment": 1.0e-3
   },
-  "task": "FieldProfile"
+  "task": "BuildUp"
 }
 

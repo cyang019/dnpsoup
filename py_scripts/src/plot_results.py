@@ -26,12 +26,15 @@ def plot_data(datafile):
     x = df.iloc[:, 0]
     ys = df.iloc[:, 1:]
     ncols = ys.shape[1]
+    print(x)
+    print(ys)
     fig, axes = plt.subplots(ncols, 1, sharex=True)
     if x.shape[0] > UPPER_LIMIT:
-        x = x[:UPPER_LIMIT]
-        ys = ys.iloc[:UPPER_LIMIT, :]
+        step_size = x.shape[0]//UPPER_LIMIT
+        x = x[::step_size]
+        ys = ys.iloc[::step_size, :]
     if ncols == 1:
-        axes.plot(x, ys[df.columns[1]], '.-', label=str(df.columns[1]).strip())
+        axes.plot(x, ys[df.columns[1]], 'b.-', label=str(df.columns[1]).strip())
     else:
         for i, colname in enumerate(df.columns[1:]):
             y = ys[colname]

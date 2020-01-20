@@ -88,7 +88,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
     result_stream << setprecision(numeric_limits<double>::max_digits10);
 		for(const auto &row : result){
 			for(size_t i = 0; i+1 < row.size(); ++i){
-				result_stream << row[i] << ", ";
+				result_stream << row[i] << ",";
 			}
 			if(row.size() > 0){
 				result_stream << row.back() << "\n";
@@ -143,10 +143,10 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 	    result_stream.exceptions(std::ios::failbit | std::ios::badbit);
 	    result_stream.open(result_filename.c_str());
 		  result_stream << "# BuildUp:\n";
-		  result_stream << "time,\tintensity\n";
+		  result_stream << "time,intensity\n";
       result_stream << setprecision(numeric_limits<double>::max_digits10);
       for(const auto &val_pair : results){
-        result_stream << val_pair.first << ",\t" << val_pair.second << "\n";
+        result_stream << val_pair.first << "," << val_pair.second << "\n";
       }
       auto end_time = chrono::high_resolution_clock::now();
 	    cout << "Total time: " 
@@ -235,7 +235,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 		result_stream << "# Field Profile:\n";
     result_stream << setprecision(numeric_limits<double>::max_digits10);
 		for(size_t i = 0; i < result.size(); ++i){
-			result_stream << result[i].first << ", " << result[i].second << "\n";
+			result_stream << result[i].first << "," << result[i].second << "\n";
 		}
     auto end_time = chrono::high_resolution_clock::now();
 	  cout << "Total time: " 

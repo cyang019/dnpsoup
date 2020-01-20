@@ -34,10 +34,6 @@ int main(int argc, char **argv)
       std::cout << "cannot find " << argv[3] << std::endl;
       return 1;
     }
-    if(!fileExists(argv[4])){
-      std::cout << "cannot find " << argv[4] << std::endl;
-      return 1;
-    }
     
 		dnpsoup_exec(argv[1], argv[2], argv[3], argv[4]);
 	}
