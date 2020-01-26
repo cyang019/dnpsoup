@@ -11,7 +11,7 @@ namespace dnpsoup {
     {}
 
     Pulse::Pulse(const Name &component_name)
-      : SubSequenceInterface(), m_component_name(component_name)
+      : SubSequenceInterface(1), m_component_name(component_name)
     {}
 
     Pulse::Pulse(std::uint64_t sz, const Name &component_name)

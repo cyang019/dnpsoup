@@ -9,6 +9,8 @@
 #include <iomanip>
 #include <memory>
 #include <iostream>
+#include <limits>
+#include <cstdint>
 #include "json.hpp"
 
 using namespace std;
@@ -111,6 +113,10 @@ namespace pulseseq{
   {
     json j;
     is >> j;
+    if(j.empty()){
+      pseq = PulseSequence();
+      return is;
+    }
     if(j.find("pulse_sequence") != j.end()){
       j = j["pulse_sequence"];
     }
@@ -158,14 +164,17 @@ namespace pulseseq{
         }
 #endif
         const std::string seq_type_str = section_info_js["type"].get<std::string>();
-        const std::uint64_t sz = section_info_js["size"].get<unsigned>();
+        const std::uint64_t sz = section_info_js["size"].get<std::uint64_t>();
         std::vector<std::string> member_names;
         for(string name : section_info_js["names"]){
           member_names.push_back(name);
         }
         std::map<std::string, double> params;
-        for(auto& [key, value_js] : section_info_js["params"].items()){
-          params[key] = value_js.get<double>();
+        if(section_info_js.find("params") != section_info_js.end()
+            && (!section_info_js["params"].empty())){
+          for(auto& [key, value_js] : section_info_js["params"].items()){
+            params[key] = value_js.get<double>();
+          }
         }
         auto seq_type = toSequenceType(seq_type_str);
         unique_ptr<SubSequenceInterface> ptr_member;
@@ -199,6 +208,11 @@ namespace pulseseq{
     } // sections
 
     pseq.m_sections_in_order.clear();
+#ifndef NDEBUG
+    if(j.find("sequence") == j.end()){
+      throw PulseSequenceError("sequence of components missing.");
+    }
+#endif
     for(auto &name : j["sequence"]){
       pseq.m_sections_in_order.push_back(name.get<std::string>());
     }

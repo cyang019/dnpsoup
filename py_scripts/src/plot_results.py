@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import argparse
 
-UPPER_LIMIT = 300
+UPPER_LIMIT = 1000
 
 
 def plot_data(datafile):
@@ -16,7 +16,6 @@ def plot_data(datafile):
                 print(line)
         return
 
-    print('columns: {}'.format(df.columns))
     print('columns:')
     for col in df.columns:
         print(str(col), end=' ')
@@ -29,8 +28,11 @@ def plot_data(datafile):
     fig, axes = plt.subplots(ncols, 1, sharex=True)
     if x.shape[0] > UPPER_LIMIT:
         step_size = x.shape[0]//UPPER_LIMIT
-        x = x[::step_size]
-        ys = ys.iloc[::step_size, :]
+    else:
+        step_size = 1
+    x = x[::step_size]
+    ys = ys.iloc[::step_size, :]
+
     if ncols == 1:
         axes.plot(x, ys[df.columns[1]], 'b.-', label=str(df.columns[1]).strip())
     else:

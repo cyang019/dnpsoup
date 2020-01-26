@@ -1,4 +1,5 @@
 #include "dnpsoup.h"
+#include "configure_dnpsoup.h"
 #include "json.hpp"
 #include "gtest/gtest.h"
 #include <limits>
@@ -6,12 +7,34 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <cmath>
 #include <sstream>
 
 
 namespace {
     using PulseSeq = dnpsoup::PulseSequence;
+
+    TEST(TestPulseSeq, CWFromJs){
+      std::string pulseseq_js_file = 
+        std::string(EXAMPLE_DIR) + "/pulseseq/cw_pulse.json";
+
+      PulseSeq pseq;
+      std::ifstream pseq_ss;
+      pseq_ss.open(pulseseq_js_file.c_str());
+      
+      pseq_ss >> pseq;
+      pseq_ss.close();
+
+      auto [comp, comp_size, idx] = pseq.next();
+      std::cout << "max uint64_t:"
+                << std::numeric_limits<std::uint64_t>::max()
+                << std::endl;
+      
+      ASSERT_EQ(5000000000u, comp_size);
+      ASSERT_EQ(1, comp.size());
+      ASSERT_EQ(0u, idx);
+    }
 
     TEST(TestPulseSeq, EmptyPulseSeq){
       auto p = PulseSeq();

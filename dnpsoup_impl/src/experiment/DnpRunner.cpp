@@ -288,6 +288,10 @@ namespace DnpRunner {
       MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(spin_sys_euler * mas_angle);
       auto hamiltonian_lab = hamiltonian + hamiltonian_offset;
       MatrixCxDbl rho0_lab = genRhoEq(hamiltonian_lab, p.temperature);
+      const double result_ref = ::dnpsoup::projectionNorm(rho0_lab, acq_mat).real();
+#ifndef NDEBUG
+      std::cout << "result_ref: " << result_ref << std::endl;
+#endif
       auto rho0_evolve = rho0_lab;
       std::uint64_t cnt = 0u;    /// keep track of identical hamiltonians
       std::uint64_t comp_size = 0u;
@@ -326,7 +330,8 @@ namespace DnpRunner {
                   g, temp_euler,
                   inc, cnt, p.temperature); 
               double result = ::dnpsoup::projectionNorm(rho0_evolve, acq_mat).real();
-              results.push_back(make_pair(t, result));
+              const double ratio = result/result_ref;
+              results.push_back(make_pair(t, ratio));
               t += static_cast<double>(cnt) * inc;
               cnt = 0;
             }
@@ -352,11 +357,14 @@ namespace DnpRunner {
     {
       std::vector<std::pair<double, double>> result;
       for(const auto &field : fields){
-          const double res = calcPowderIntensity(
-              field, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers, ncores);
-          result.push_back(std::make_pair(field.b0, res));
+        const double ref = calcPowderIntensity(
+            field, g, p, spin_sys, "", acq_spin, spin_sys_eulers, ncores);
+        const double res = calcPowderIntensity(
+            field, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers, ncores);
+        const double ratio = res/ref;
+        result.push_back(std::make_pair(field.b0, ratio));
 #ifndef NDEBUG
-          std::cout << "." << std::flush;
+        std::cout << "." << std::flush;
 #endif
       }
 #ifndef NDEBUG
@@ -377,9 +385,12 @@ namespace DnpRunner {
     {
       std::vector<std::pair<double, double>> result;
       for(const auto g : emrs) {
+        const double ref = calcPowderIntensity(
+            m, g, p, spin_sys, "", acq_spin, spin_sys_eulers, ncores);
         const double res = calcPowderIntensity(
             m, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers, ncores);
-        result.emplace_back(make_pair(g.em_frequency, res));
+        const double ratio = res/ref;
+        result.emplace_back(make_pair(g.em_frequency, ratio));
       }
       return result;
     }
