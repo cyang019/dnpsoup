@@ -357,8 +357,9 @@ namespace DnpRunner {
     {
       std::vector<std::pair<double, double>> result;
       for(const auto &field : fields){
+        //constexpr double ref = 1.0;
         const double ref = calcPowderIntensity(
-            field, g, p, spin_sys, "", acq_spin, spin_sys_eulers, ncores);
+            field, g, p, spin_sys, "{}", acq_spin, spin_sys_eulers, ncores);
         const double res = calcPowderIntensity(
             field, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers, ncores);
         const double ratio = res/ref;
@@ -385,8 +386,9 @@ namespace DnpRunner {
     {
       std::vector<std::pair<double, double>> result;
       for(const auto g : emrs) {
+        //constexpr double ref = 1.0;
         const double ref = calcPowderIntensity(
-            m, g, p, spin_sys, "", acq_spin, spin_sys_eulers, ncores);
+            m, g, p, spin_sys, "{}", acq_spin, spin_sys_eulers, ncores);
         const double res = calcPowderIntensity(
             m, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers, ncores);
         const double ratio = res/ref;

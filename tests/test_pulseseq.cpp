@@ -14,6 +14,18 @@
 
 namespace {
     using PulseSeq = dnpsoup::PulseSequence;
+    TEST(TestDnpsoup, EmptyPulseSeq) {
+      const std::string seq_str = "{}";
+      std::istringstream iss(seq_str);
+      auto seq = PulseSeq();
+      iss >> seq;
+
+      ASSERT_EQ(0u, seq.size());
+      auto [comp, comp_size, idx] = seq.next();
+      ASSERT_EQ(0u, comp_size);
+      ASSERT_EQ(0u, idx);
+      ASSERT_EQ(0u, comp.size());
+    }
 
     TEST(TestPulseSeq, CWFromJs){
       std::string pulseseq_js_file = 

@@ -2,6 +2,8 @@
 #include "gtest/gtest.h"
 #include <limits>
 #include <iostream>
+#include <sstream>
+#include <string>
 #include <cmath>
 
 namespace {
@@ -20,4 +22,5 @@ namespace {
     ASSERT_DOUBLE_EQ(0.0, norm2.real());
     ASSERT_DOUBLE_EQ(0.0, norm2.imag());
   }
+
 }
