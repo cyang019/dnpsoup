@@ -5,7 +5,7 @@
     "gamma": 0.0
   },
   "euler_scheme":{
-    "zcw": 2
+    "zcw": 4
   },
 
   "ncores": 4,
@@ -31,7 +31,7 @@
   "Probe": {
       "mas_frequency": 0.0,
       "temperature": 100.0,
-      "mas_increment": 1.0e-2
+      "mas_increment": 1.0e-3
   },
   "task": "FieldProfile"
 }
