@@ -22,6 +22,10 @@ target_link_libraries(dnpsoup_core PUBLIC matrix)
 #target_link_libraries(dnpsoup_core INTERFACE matrix)
 message(STATUS "dnpsoup_core linked to matrix...")
 
+if (UNIX)
+  target_link_libraries(dnpsoup_core PUBLIC pthread)
+endif (UNIX)
+
 target_include_directories(dnpsoup_core
   PRIVATE
   "${PROJECT_SOURCE_DIR}/matrix/matrix_impl/include"

@@ -7,6 +7,6 @@ namespace dnpsoup {
 
   class NmrExperiment
   {};
-};
+}
 
 #endif

@@ -90,7 +90,7 @@ namespace dnpsoup {
         std::uint64_t cnt,
         double temperature
         );
-  };
+  }
 
 } // namespace dnpsoup
 
