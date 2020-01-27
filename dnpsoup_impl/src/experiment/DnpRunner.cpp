@@ -171,6 +171,10 @@ namespace DnpRunner {
       auto hamiltonian_lab = hamiltonian + hamiltonian_offset;
       MatrixCxDbl rho0_lab = genRhoEq(hamiltonian_lab, p.temperature);
       auto rho0_evolve = rho0_lab;
+      if(seq.size() == 0){
+        double result = ::dnpsoup::projectionNorm(rho0_evolve, acq_mat).real();
+        return result;
+      }
       std::uint64_t cnt = 0u;    /// keep track of identical hamiltonians
       std::uint64_t comp_size = 0u;
       do {
@@ -320,7 +324,8 @@ namespace DnpRunner {
                   g, temp_euler,
                   inc, mas_inc_cnt, p.temperature); 
               double result = ::dnpsoup::projectionNorm(rho0_evolve, acq_mat).real();
-              results.push_back(make_pair(t, result));
+              const double ratio = result/result_ref;
+              results.push_back(make_pair(t, ratio));
               t += static_cast<double>(mas_inc_cnt) * inc;
               cnt -= mas_inc_cnt;
             }
