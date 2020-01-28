@@ -22,9 +22,10 @@ target_link_libraries(dnpsoup_core PUBLIC matrix)
 #target_link_libraries(dnpsoup_core INTERFACE matrix)
 message(STATUS "dnpsoup_core linked to matrix...")
 
-if (UNIX)
+if (UNIX AND NOT APPLE)
+  message(STATUS "link pthread...")
   target_link_libraries(dnpsoup_core PUBLIC pthread)
-endif (UNIX)
+endif ()
 
 target_include_directories(dnpsoup_core
   PRIVATE
