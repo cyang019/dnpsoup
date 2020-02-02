@@ -31,7 +31,7 @@ namespace dnpsoup {
   private:
     matrix::Matrix<cxdbl> m_z;
 
-    [[maybe_unused]] double m_gamma;
+    double m_gamma;
     size_t m_n;
     size_t m_nbefore;
     size_t m_nafter;

@@ -29,4 +29,21 @@ target_include_directories(dnpsoup_exec
   "${PROJECT_SOURCE_DIR}/dnpsoup_cli/include"
   )
 
+set(USE_EMCC OFF)
+if(USE_EMCC)
+  message(STATUS "use emcc...")
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/dist)
+  set(CMAKE_BUILD_TYPE_INIT "Release")
+  set(CMAKE_C_COMPILER "emcc")
+  set(CMAKE_CXX_COMPILER "emcc")
+
+  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
+
+  include_directories(
+    "${PROECT_SOURCE_DIR}/../emsdk/upstream/include"
+    "${PROECT_SOURCE_DIR}/../emsdk/upstream/emscripten/system/include"
+    )
+
+  set_target_properties(dnpsoup_exec PROPERTIES LINK_FLAGS "-o dist/dnpsoup.js")
+endif()
 

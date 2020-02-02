@@ -41,3 +41,4 @@ target_include_directories(dnpsoup_core
 
 include("${PROJECT_SOURCE_DIR}/dnpsoup_impl/include/CMakeLists.txt")
 include("${PROJECT_SOURCE_DIR}/dnpsoup_impl/src/CMakeLists.txt")
+
