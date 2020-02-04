@@ -3,14 +3,14 @@
 
 namespace dnpsoup {
 
-  OffsetInteraction::OffsetInteraction(double gamma, size_t n)
-    : InteractionInterface(), m_gamma(gamma), m_n(n), m_nbefore(0), m_nafter(0)
+  OffsetInteraction::OffsetInteraction([[maybe_unused]] double gamma, size_t n)
+    : InteractionInterface(), m_n(n), m_nbefore(0), m_nafter(0)
   { 
     m_z = spin<Z>(m_n);
   }
 
-  OffsetInteraction::OffsetInteraction(double gamma, size_t n, size_t nbefore, size_t nafter)
-    : InteractionInterface(), m_gamma(gamma), m_n(n), m_nbefore(nbefore), m_nafter(nafter)
+  OffsetInteraction::OffsetInteraction([[maybe_unused]] double gamma, size_t n, size_t nbefore, size_t nafter)
+    : InteractionInterface(), m_n(n), m_nbefore(nbefore), m_nafter(nafter)
   { 
     m_z = kron(kron(identity<cxdbl>(nbefore), spin<Z>(n)), identity<cxdbl>(nafter));
   }

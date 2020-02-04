@@ -1,7 +1,11 @@
-#add_library(dnpsoup_core INTERFACE)
-add_library(dnpsoup_core SHARED "")
+if(NOT DEFINED USE_EMCC)
+  add_library(dnpsoup_core SHARED "")
+  message(STATUS "dnpsoup_core shared library...")
+else()
+  add_library(dnpsoup_core STATIC "")
+  message(STATUS "dnpsoup_core static library...")
+endif()
 
-message(STATUS "dnpsoup_core shared library...")
 
 if(NOT DEFINED USE_DEBUG_MODEL)
   set(USE_DEBUG_MODEL ON)
