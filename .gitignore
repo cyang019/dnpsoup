@@ -15,3 +15,10 @@ tags
 
 **/*.log
 
+**/OpenBLAS/**
+
+# emcc outputs
+**/*.js
+**/*.html
+**/*.wasm
+

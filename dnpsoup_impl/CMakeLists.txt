@@ -1,4 +1,4 @@
-if(NOT DEFINED USE_EMCC)
+if(NOT USE_EMCC)
   add_library(dnpsoup_core SHARED "")
   message(STATUS "dnpsoup_core shared library...")
 else()
@@ -19,11 +19,14 @@ if(NOT DEFINED CMAKE_CXX_FLAGS_RELEASE)
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG")    
 endif()
 
+#if(NOT USE_EMCC)
+#  target_compile_options(dnpsoup_core PUBLIC -Wall -Wextra -Wpedantic -Werror -emit-llvm --target=wasm32-unknown-unknown-elf -S)
+#else()
+#  target_compile_options(dnpsoup_core PUBLIC -Wall -Wextra -Wpedantic -Werror)  
+#endif()
 target_compile_options(dnpsoup_core PUBLIC -Wall -Wextra -Wpedantic -Werror)  
-#target_compile_options(dnpsoup_core INTERFACE -Wall -Wextra -Wpedantic -Werror)  
 
 target_link_libraries(dnpsoup_core PUBLIC matrix)
-#target_link_libraries(dnpsoup_core INTERFACE matrix)
 message(STATUS "dnpsoup_core linked to matrix...")
 
 if (UNIX AND NOT APPLE)
