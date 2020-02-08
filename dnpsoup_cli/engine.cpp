@@ -7,6 +7,7 @@
 #include <chrono>
 #include <iomanip>
 #include <limits>
+#include <cmath>
 
 using namespace std;
 using namespace dnpsoup;
@@ -185,6 +186,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 	int ncores = 1;
 	if(j.find("ncores") != j.end()){
 		ncores = j["ncores"].get<int>();
+    cout << "use " << ncores << " core(s)." << endl;
 	}
 	if(task_str == "PowderIntensity"){
 		auto magnet = Magnet(j);		
@@ -204,6 +206,50 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 		return;
 	}
 
+  if(task_str == "PowderBuildUp"){
+		auto magnet = Magnet(j);		
+		auto gyrotron = Gyrotron(j);
+		auto results = DnpRunner::calcPowderBuildUp(magnet, gyrotron, probe,
+			spinsys, pulse_seq_str, acq_t, eulers, ncores);
+
+    std::ofstream result_stream;
+	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);
+	  result_stream.open(result_filename.c_str());
+		result_stream << "# PowderBuildUp:\n";
+		result_stream << "# time,intensity\n";
+    result_stream << setprecision(numeric_limits<double>::max_digits10);
+    for(const auto &val_pair : results){
+      result_stream << val_pair.first << "," << val_pair.second << "\n";
+    }
+    auto end_time = chrono::high_resolution_clock::now();
+	  cout << "Total time: " 
+         << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
+         << " seconds." << endl;
+    return;
+  }
+
+  if(task_str == "PowderBuildUpEnhancement"){
+		auto magnet = Magnet(j);		
+		auto gyrotron = Gyrotron(j);
+		auto results = DnpRunner::calcPowderBuildUpEnhancement(magnet, gyrotron, probe,
+			spinsys, pulse_seq_str, acq_t, eulers, ncores);
+
+    std::ofstream result_stream;
+	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);
+	  result_stream.open(result_filename.c_str());
+		result_stream << "# PowderBuildUpEnhancement:\n";
+		result_stream << "# time,intensity\n";
+    result_stream << setprecision(numeric_limits<double>::max_digits10);
+    for(const auto &val_pair : results){
+      result_stream << val_pair.first << "," << val_pair.second << "\n";
+    }
+    auto end_time = chrono::high_resolution_clock::now();
+	  cout << "Total time: " 
+         << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
+         << " seconds." << endl;
+    return;
+  }
+
 	if(task_str == "FieldProfile"){
 		std::vector<std::pair<double, double>> result;
 		if(j.find("fields") != j.end()){
@@ -216,6 +262,23 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 		  result = DnpRunner::calcFieldProfile(magnets, gyrotron, probe,
 		  	spinsys, pulse_seq_str, acq_t, eulers, ncores);
 		}
+    else if(j.find("field range") != j.end()){
+      vector<Magnet> magnets;
+      double f_beg = j["field range"]["begin"].get<double>();
+      double f_end = j["field range"]["end"].get<double>();
+      double f_step = j["field range"]["step"].get<double>();
+      if(std::abs(f_step) < eps){
+        f_step = (f_end - f_beg)/99;
+      }
+      double f_temp = f_beg;
+      while(f_temp < f_end + eps){
+        magnets.push_back(Magnet(f_temp));
+        f_temp += f_step;
+      }
+			auto gyrotron = Gyrotron(j);
+		  result = DnpRunner::calcFieldProfile(magnets, gyrotron, probe,
+		  	spinsys, pulse_seq_str, acq_t, eulers, ncores);
+    }
 		else if(j.find("emrs") != j.end()){
 			vector<Gyrotron> emrs;
 			for(const auto &freq_val : j["emrs"]){
@@ -226,6 +289,23 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 		  result = DnpRunner::calcFieldProfile(magnet, emrs, probe,
 		  	spinsys, pulse_seq_str, acq_t, eulers, ncores);
 		}
+    else if(j.find("emr range") != j.end()){
+      vector<Gyrotron> emrs;
+      double emr_beg = j["emr range"]["begin"].get<double>();
+      double emr_end = j["emr range"]["end"].get<double>();
+      double emr_step = j["emr range"]["step"].get<double>();
+      if(std::abs(emr_step) < eps){
+        emr_step = (emr_end - emr_beg)/99;
+      }
+      double emr_temp = emr_beg;
+      while(emr_temp < emr_end + eps){
+        emrs.push_back(Gyrotron(emr_temp)); 
+        emr_temp += emr_step;
+      }
+			auto magnet = Magnet(j);
+		  result = DnpRunner::calcFieldProfile(magnet, emrs, probe,
+		  	spinsys, pulse_seq_str, acq_t, eulers, ncores);
+    }
 		else {
 			throw runtime_error("Neither 'fields' nor 'emrs' was in the input json.");
 		}

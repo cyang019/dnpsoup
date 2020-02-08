@@ -41,7 +41,7 @@ def plot_data(datafile):
             axes[i].plot(x, y, '.-', label=str(colname).strip())
             ymin = np.min(y)
             ymax = np.max(y)
-            if ymax - ymin > 1.0e-14:
+            if np.abs(ymax - ymin) > 1.0e-14:
                 y_range = ymax - ymin
                 y_range_margin = 0.01 * y_range
                 axes[i].set_ylim(ymin - y_range_margin, ymax + y_range_margin)

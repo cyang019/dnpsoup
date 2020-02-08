@@ -9,6 +9,8 @@
 #include "lean/threadpool.h"
 #include <complex>
 #include <vector>
+#include <algorithm>
+#include <iterator>
 #include <utility>
 #include <sstream>
 #include <string>
@@ -239,6 +241,103 @@ namespace DnpRunner {
       return result;
     }
 
+    std::vector<std::pair<double, double>> calcPowderBuildUpEnhancement(
+        const Magnet &m, 
+        const Gyrotron &g,
+        const Probe &p,
+        const SpinSys &spin_sys,
+        const std::string &pulse_seq_str,
+        const SpinType &acq_spin,
+        const std::vector<Euler<>> &spin_sys_eulers,
+        int ncores)
+    {
+      auto raw_results = calcPowderBuildUp(
+          m, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers, ncores);
+      auto ref_results = calcPowderBuildUp(
+          m, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers, ncores);
+      auto res = raw_results;
+      for(size_t i = 0; i < raw_results.size(); ++i){
+        res[i].second /= ref_results[i].second;
+      }
+      return res;
+    }
+
+    std::vector<std::pair<double, double>> calcPowderBuildUp(
+        const Magnet &m, 
+        const Gyrotron &g,
+        const Probe &p,
+        const SpinSys &spin_sys,
+        const std::string &pulse_seq_str,
+        const SpinType &acq_spin,
+        const std::vector<Euler<>> &spin_sys_eulers,
+        int ncores)
+    {
+      std::vector<std::pair<double, double>> results;
+      const double scaling_factor = 1.0 / static_cast<double>(spin_sys_eulers.size());
+      if(ncores == 1) {
+        for(const auto &e : spin_sys_eulers){
+          auto xtal_results = calcBuildUp(m, g, p, spin_sys, pulse_seq_str,
+              acq_spin, e, false);
+          if(results.size() == 0){  // initial crystal point
+            for(const auto &pt_res : xtal_results){
+              const double temp = pt_res.second * std::sin(e.beta());
+              results.push_back(make_pair(pt_res.first, temp));
+            }
+          }
+          else {  // additional points
+#ifndef NDEBUG
+            if(results.size() != xtal_results.size()){
+              throw SizeMismatchError("buildup number of points mismatch."); 
+            }
+#endif
+            for(size_t i = 0; i < results.size(); ++i){
+              const double temp = xtal_results[i].second * std::sin(e.beta());
+              results[i].second += temp;
+            }
+          }
+        }
+        for(auto &pt : results){
+          pt.second *= (scaling_factor/pi * 4.0);
+        }
+      }
+      else {  // multithreading
+        ::lean::ThreadPool<std::vector<std::pair<double, double>>> tpool(ncores);
+        for(const auto &e : spin_sys_eulers){
+          auto task = [=](){
+            auto xtal_results = 
+              calcBuildUp(m, g, p, spin_sys, pulse_seq_str, acq_spin, e, false);
+            const double factor = std::sin(e.beta());
+            for(auto &xtal_result : xtal_results){
+              xtal_result.second *= factor;
+            }
+
+            return xtal_results;
+          };
+          tpool.add_task(std::move(task));
+        }
+        tpool.run();
+        auto intensities = tpool.get_results();
+        for(auto &xtal_results : intensities){
+          if(results.size() == 0) {
+            for(const auto &pt_res : xtal_results) {
+              results.push_back(pt_res);
+            }
+          }
+          else {
+#ifndef NDEBUG
+            if(results.size() != xtal_results.size()){
+              throw SizeMismatchError("buildup number of points mismatch."); 
+            }
+#endif
+            for(size_t i = 0; i < results.size(); ++i){
+              results[i].second += xtal_results[i].second;
+            }
+          }
+        }
+      }
+      return results;
+    }
+
     std::vector<pair<double, double>> calcBuildUp(
         const Magnet &m, 
         const Gyrotron &g,
@@ -246,7 +345,8 @@ namespace DnpRunner {
         const SpinSys &spin_sys,
         const std::string &pulse_seq_str,
         const SpinType &acq_spin,
-        const Euler<> &spin_sys_euler)
+        const Euler<> &spin_sys_euler,
+        bool enhancement)
     {
       constexpr double eps = std::numeric_limits<double>::epsilon();
       PulseSequence seq;
@@ -292,9 +392,11 @@ namespace DnpRunner {
       MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(spin_sys_euler * mas_angle);
       auto hamiltonian_lab = hamiltonian + hamiltonian_offset;
       MatrixCxDbl rho0_lab = genRhoEq(hamiltonian_lab, p.temperature);
-      const double result_ref = ::dnpsoup::projectionNorm(rho0_lab, acq_mat).real();
+      const double result_ref = 
+        enhancement ? ::dnpsoup::projectionNorm(rho0_lab, acq_mat).real() : 1.0;
 #ifndef NDEBUG
-      std::cout << "result_ref: " << result_ref << std::endl;
+      //std::cout << "\nresult_ref: " << result_ref << std::endl;
+      std::cout << "." << std::flush;
 #endif
       auto rho0_evolve = rho0_lab;
       std::uint64_t cnt = 0u;    /// keep track of identical hamiltonians

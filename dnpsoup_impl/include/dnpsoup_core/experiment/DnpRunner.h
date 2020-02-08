@@ -38,7 +38,28 @@ namespace dnpsoup {
         const SpinSys &spin_sys,
         const std::string &pulse_seq_str,
         const SpinType &acq_spin,
-        const Euler<> &spin_sys_euler);
+        const Euler<> &spin_sys_euler,
+        bool enhancement=true);
+
+    std::vector<std::pair<double, double>> calcPowderBuildUp(
+        const Magnet &m, 
+        const Gyrotron &g,
+        const Probe &p,
+        const SpinSys &spin_sys,
+        const std::string &pulse_seq_str,
+        const SpinType &acq_spin,
+        const std::vector<Euler<>> &spin_sys_eulers,
+        int ncores=1);
+
+    std::vector<std::pair<double, double>> calcPowderBuildUpEnhancement(
+        const Magnet &m, 
+        const Gyrotron &g,
+        const Probe &p,
+        const SpinSys &spin_sys,
+        const std::string &pulse_seq_str,
+        const SpinType &acq_spin,
+        const std::vector<Euler<>> &spin_sys_eulers,
+        int ncores=1);
 
     std::vector<std::pair<double, double>> calcFieldProfile(
         const std::vector<Magnet> &m, 

@@ -6,12 +6,10 @@ cd build
 cmake -DUSE_EMCC=1 -DCMAKE_BUILD_TYPE=Debug -GNinja ..
 ninja
 
+# static libs
 cp dnpsoup_impl/libdnpsoup_core.a ../dnpsoup_cli/
 cp matrix/matrix_impl/libmatrix.a ../dnpsoup_cli/
 cp ../matrix/matrix_impl/libopenblasp-r0.3.7.a ../dnpsoup_cli/
-
-#cmake -DCMAKE_BUILD_TYPE=Debug -G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE=../emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake ..
-#cmake -D USE_EMCC=BOOL:ON -DCMAKE_CXX_COMPILER=emcc -DCMAKE_BUILD_TYPE=Debug -GNinja -DCMAKE_TOOLCHAIN_FILE=../../emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake ..
 
 cd ../dnpsoup_cli
 
