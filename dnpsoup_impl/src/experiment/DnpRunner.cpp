@@ -17,6 +17,7 @@
 #include <cmath>
 
 using namespace std;
+//#define TEST_LSTSQ
 
 
 namespace dnpsoup {
@@ -253,11 +254,11 @@ namespace DnpRunner {
     {
       auto raw_results = calcPowderBuildUp(
           m, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers, ncores);
-      auto ref_results = calcPowderBuildUp(
-          m, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers, ncores);
+      const double ref_intensity = calcPowderIntensity(
+            m.b0, g, p, spin_sys, "{}", acq_spin, spin_sys_eulers, ncores);
       auto res = raw_results;
       for(size_t i = 0; i < raw_results.size(); ++i){
-        res[i].second /= ref_results[i].second;
+        res[i].second /= ref_intensity;
       }
       return res;
     }
@@ -296,9 +297,6 @@ namespace DnpRunner {
             }
           }
         }
-        for(auto &pt : results){
-          pt.second *= (scaling_factor/pi * 4.0);
-        }
       }
       else {  // multithreading
         ::lean::ThreadPool<std::vector<std::pair<double, double>>> tpool(ncores);
@@ -334,6 +332,9 @@ namespace DnpRunner {
             }
           }
         }
+      }
+      for(auto &pt : results){
+        pt.second *= (scaling_factor/pi * 4.0);
       }
       return results;
     }
@@ -568,18 +569,45 @@ namespace DnpRunner {
         t2_superop += rpacket.genSuperOpT2(eigenvec);
       }
       auto gamma_super = t1_superop + t2_superop;
+#ifdef TEST_LSTSQ
+      cout << "gamma_super:\n" << gamma_super << endl;
+#endif
       MatrixCxDbl gamma_super_int;
       if(rotate_mat_super.nrows() == 0 || rotate_mat_super_inv.nrows() == 0){
         gamma_super_int = gamma_super;
       } else {
         gamma_super_int = rotate_mat_super * gamma_super * rotate_mat_super_inv;
       }
+#ifdef TEST_LSTSQ
+      cout << "gamma_super_int:\n" << gamma_super_int << endl;
+#endif
       auto h_super = commutationSuperOp(hamiltonian);
       auto super_op = complex<double>(0,1.0) * h_super + gamma_super_int;
 //#ifndef NDEBUG
 //      cout << "[evolve] " << "super_op calculated..." << "\n";
 //#endif
-      auto [rho_eq_super, status] = matrix::lstsq(super_op, gamma_super_int * rho_ss_super);
+#ifdef TEST_LSTSQ
+      cout << "rho_ss_super:\n" << rho_ss_super << endl;
+#endif
+      auto rho_right = gamma_super_int * rho_ss_super;
+#ifdef TEST_LSTSQ
+      cout << "super_op:\n" << super_op << endl;
+      cout << "rho_right:\n" << rho_right << endl;
+#endif
+      auto [rho_eq_super, status] = matrix::lstsq(super_op, rho_right);
+#ifndef NDEBUG
+      if(status != 0){
+        string err_msg = "lstsq error: ";
+        if(status < 0){
+          err_msg = "The " + std::to_string(-status) + "-th argument had an illegal value.";
+        } else {
+          err_msg = "The algorithm for computing the SVD failed to converge;\n";
+          err_msg += std::to_string(status) + "off-diagonal elements of an intermediate"
+            + "bidiagonal form did not converge to zero.";
+        }
+        throw CalculationError(err_msg);
+      }
+#endif
 //#ifndef NDEBUG
 //      cout << "[evolve] " << "lstsq() calculated..." << endl;
 //#endif

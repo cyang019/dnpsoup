@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-SPINFILE=examples/spinsys/BDPA_spinsys.json
-PULSEFILE=examples/pulseseq/cw_pulse.json
-HARDWAREFILE=examples/hardware/hardware.json
+#SPINFILE=examples/spinsys/BDPA_spinsys.json
+SPINFILE=examples/spinsys/TOTAPOL.json
+PULSEFILE=examples/pulseseq/cw_pulse_short.json
+HARDWAREFILE=examples/hardware/400MHz263GHz.json
 OUTPUT=results.log
 rm $OUTPUT
 #python py_scripts/exec_and_run_dnpsoup.py examples/BDPA_spinsys.json examples/cw_pulse.json examples/hardware.json results.log

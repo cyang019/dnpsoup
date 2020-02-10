@@ -1,17 +1,92 @@
 #include "dnpsoup.h"
+#include "configure_dnpsoup.h"
+#include "dnpsoup_core/constants.h"
+#include "dnpsoup_core/experiment/hardware.h"
+#include "dnpsoup_core/pulseseq/pulse_sequence.h"
 #include "gtest/gtest.h"
 #include <limits>
 #include <vector>
 #include <complex>
 #include <iostream>
 #include <sstream>
+#include <fstream>
+#include <string>
 #include <cmath>
 
 namespace {
     using SpinSys = dnpsoup::SpinSys;
     using SpinType = dnpsoup::SpinType;
+    using PulseSeq = dnpsoup::PulseSequence;
+    using dnpsoup::cxdbl;
     using namespace std;
     using namespace dnpsoup;
+
+    TEST(TestDnproup, EvolutionSSI){
+      std::string totapol_js_file = 
+        std::string(EXAMPLE_DIR) + "/spinsys/TOTAPOL.json";
+      std::ifstream spinsys_stream;
+	    spinsys_stream.exceptions(std::ios::failbit | std::ios::badbit);
+	    spinsys_stream.open(totapol_js_file.c_str());
+      dnpsoup::json spinsys_js;
+	    spinsys_stream >> spinsys_js;
+	    if(spinsys_js.find("spinsys") == spinsys_js.end()){
+	    	throw std::runtime_error("Need 'spinsys' entry in the input json file.");
+	    }
+      std::istringstream spinsys_iss(spinsys_js["spinsys"].dump());
+      SpinSys spinsys;
+	    spinsys_iss >> spinsys;
+
+      std::string pulseseq_js_file = 
+        std::string(EXAMPLE_DIR) + "/pulseseq/cw_pulse_short.json";
+
+      PulseSeq pseq;
+      std::ifstream pseq_ss;
+      pseq_ss.open(pulseseq_js_file.c_str());
+      
+      pseq_ss >> pseq;
+      pseq_ss.close();
+
+      auto packets = spinsys.summarize<DnpExperiment>();
+      auto offset_packets = spinsys.summarizeOffset<DnpExperiment>();
+      auto rpackets = spinsys.summarizeRelaxation();
+      constexpr double b0 = 9.3520000000000074;
+      constexpr double em_freq = 263.0e9;
+      packets.setPropertyValue(ValueName::b0, b0);
+      offset_packets.setPropertyValue(ValueName::b0, b0);
+      auto e_spin_ids = spinsys.getSpinIds(SpinType::e);
+      for(const auto &sid : e_spin_ids){
+        offset_packets.setPropertyValue(
+            InteractionType::Offset, sid, ValueName::offset, em_freq);
+        packets.setPropertyValue(
+            InteractionType::Shielding, sid, ValueName::offset, em_freq);
+      }
+
+      auto mas = dnpsoup::Euler<>(0.0, dnpsoup::magic_angle, 0.0);
+      const auto spinsys_euler = dnpsoup::Euler<>(1.2935969750075629, 1.9315090471584213, 0.0);      
+
+      MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(spinsys_euler * mas);
+      auto temp_euler = dnpsoup::Euler<>(1.2935969750075631, 2.8868256652829287, 4.3982297150257113);
+      constexpr double inc = 0.0000000010000000000000001;
+      constexpr size_t cnt = 300000;
+      MatrixCxDbl rho0_evolve = {
+        {cxdbl(-0.0146845,6.1943e-14), cxdbl(1.20867e-08,3.02729e-09), cxdbl(2.03182e-05,-5.63397e-08), cxdbl(1.32193e-10,3.43585e-11), cxdbl(7.76608e-06,-8.25245e-09), cxdbl(-2.87418e-09,-7.14417e-10), cxdbl(1.38251e-09,-5.16038e-12), cxdbl(-5.02045e-13,-1.23254e-13)},
+        {cxdbl(1.20867e-08,-3.02729e-09), cxdbl(-0.0147044,-1.5646e-14), cxdbl(-2.49258e-09,5.99363e-10), cxdbl(2.03135e-05,-5.63281e-08), cxdbl(-7.05009e-09,1.78759e-09), cxdbl(7.80427e-06,-8.33556e-09), cxdbl(-1.80376e-12,4.43273e-13), cxdbl(1.39069e-09,-5.19857e-12)},
+        {cxdbl(2.03182e-05,5.63397e-08), cxdbl(-2.49258e-09,-5.99363e-10), cxdbl(2.86812e-06,7.1262e-14), cxdbl(1.46452e-08,3.67061e-09), cxdbl(-1.16105e-08,2.23107e-12), cxdbl(1.63178e-11,4.10232e-12), cxdbl(8.77511e-06,-9.26167e-09), cxdbl(-3.24467e-09,-8.06542e-10)},
+        {cxdbl(1.32193e-10,-3.43585e-11), cxdbl(2.03135e-05,5.63281e-08), cxdbl(1.46452e-08,-3.67061e-09), cxdbl(-2.06518e-05,-3.18736e-14), cxdbl(9.05255e-11,-2.26838e-11), cxdbl(-1.18308e-08,2.23699e-12), cxdbl(-7.94146e-09,2.01357e-09), cxdbl(8.81922e-06,-9.35611e-09)},
+        {cxdbl(7.76608e-06,8.25245e-09), cxdbl(-7.05009e-09,-1.78759e-09), cxdbl(-1.16105e-08,-2.231e-12), cxdbl(9.05255e-11,2.26838e-11), cxdbl(2.41212e-05,1.12669e-14), cxdbl(-1.47062e-08,-3.67916e-09), cxdbl(2.29339e-05,-6.33163e-08), cxdbl(1.47604e-10,3.83805e-11)},
+        {cxdbl(-2.87418e-09,7.14417e-10), cxdbl(7.80427e-06,8.33556e-09), cxdbl(1.63178e-11,-4.10232e-12), cxdbl(-1.18308e-08,-2.2369e-12), cxdbl(-1.47062e-08,3.67916e-09), cxdbl(7.96011e-07,-1.03428e-13), cxdbl(-3.53136e-09,8.28443e-10), cxdbl(2.29312e-05,-6.33101e-08)},
+        {cxdbl(1.38251e-09,5.16038e-12), cxdbl(-1.80376e-12,-4.4327e-13), cxdbl(8.77511e-06,9.26167e-09), cxdbl(-7.94146e-09,-2.01357e-09), cxdbl(2.29339e-05,6.33163e-08), cxdbl(-3.53136e-09,-8.28443e-10), cxdbl(0.0166806,7.65708e-14), cxdbl(-1.5818e-08,-3.96221e-09)},
+        {cxdbl(-5.02046e-13,1.23253e-13), cxdbl(1.39069e-09,5.19857e-12), cxdbl(-3.24467e-09,8.06542e-10), cxdbl(8.81922e-06,9.35611e-09), cxdbl(1.47604e-10,-3.83805e-11), cxdbl(2.29312e-05,6.33101e-08), cxdbl(-1.5818e-08,3.96221e-09), cxdbl(0.016655,-5.77801e-14)}
+      };
+      rho0_evolve = dnpsoup::DnpRunner::evolve(rho0_evolve,
+          packets, hamiltonian_offset, rpackets,
+          dnpsoup::Gyrotron(em_freq), temp_euler,
+          inc, cnt, 100); 
+    
+      auto acq_mat = spinsys.acquireOn(dnpsoup::SpinType::H);
+      double result = ::dnpsoup::projectionNorm(rho0_evolve, acq_mat).real();
+      std::cout << result << std::endl;
+    }
 
     TEST(TestDnpsoup, EvolutionFromSzToIz){
       auto spins = SpinSys();

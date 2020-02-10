@@ -2,7 +2,10 @@ file(GLOB SRCS *.cpp)
 
 # message("tests to run: ${SRCS}")
 
-#list(FILTER SRCS EXCLUDE REGEX ".*test_dnp_runner.cpp$")
+# list(FILTER SRCS EXCLUDE REGEX ".*test_dnp_runner.cpp$")
+# list(FILTER SRCS EXCLUDE REGEX ".*test_pulseseq.cpp$")
+# list(FILTER SRCS EXCLUDE REGEX ".*test_BDPA.cpp$")
+# list(FILTER SRCS EXCLUDE REGEX ".*test_spinsys.cpp$")
 
 add_executable(test_dnpsoup_core ${SRCS})
 

@@ -130,7 +130,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 	    result_stream.exceptions(std::ios::failbit | std::ios::badbit);
 	    result_stream.open(result_filename.c_str());
       result_stream << setprecision(numeric_limits<double>::max_digits10);
-		  result_stream << "# Intensity: " << result;
+		  result_stream << "# Intensity:\n" << result;
       auto end_time = chrono::high_resolution_clock::now();
 	    cout << "Total time: " 
            << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
@@ -198,7 +198,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);
 	  result_stream.open(result_filename.c_str());
     result_stream << setprecision(numeric_limits<double>::max_digits10);
-		result_stream << "# PowderIntensity: " << result;
+		result_stream << "# PowderIntensity:\n" << result;
     auto end_time = chrono::high_resolution_clock::now();
 	  cout << "Total time: " 
          << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 

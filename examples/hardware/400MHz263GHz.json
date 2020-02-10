@@ -1,32 +1,32 @@
 {
   "euler": {
-    "alpha": 0.0,
-    "beta": 0.0,
+    "alpha": 1.2935969750075629,
+    "beta": 1.9315090471584213,
     "gamma": 0.0
   },
   "euler_scheme":{
-    "zcw": 2
+    "zcw": 1
   },
 
-  "ncores": 4,
+  "ncores": 1,
   
   "acq": "H",
   "field range": {
     "begin": 9.33,
-    "end": 9.41,
+    "end": 9.37,
     "step": 0.002
   },
   "Magnet": {
-    "b0": 9.34
+    "b0": 9.3520000000000074
   },
   "Gyrotron": {
     "em_frequency": 263.0e9
   },
   "Probe": {
-      "mas_frequency": 100.0,
+      "mas_frequency": 1000.0,
       "temperature": 100.0,
-      "mas_increment": 1e-4
+      "mas_increment": 5e-5
   },
-  "task": "BuildUp"
+  "task": "Intensity"
 }
 

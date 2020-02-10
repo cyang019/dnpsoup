@@ -58,6 +58,11 @@ namespace dnpsoup {
   public:
     using std::logic_error::logic_error;
   };
+  
+  class CalculationError : public std::logic_error {
+  public:
+    using std::logic_error::logic_error;
+  };
 } // namespace dnpsoup
 
 #endif
