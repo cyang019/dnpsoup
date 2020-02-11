@@ -186,7 +186,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 	int ncores = 1;
 	if(j.find("ncores") != j.end()){
 		ncores = j["ncores"].get<int>();
-    cout << "use " << ncores << " core(s)." << endl;
+    cout << "uses " << ncores << " core(s)." << endl;
 	}
 	if(task_str == "PowderIntensity"){
 		auto magnet = Magnet(j);		
