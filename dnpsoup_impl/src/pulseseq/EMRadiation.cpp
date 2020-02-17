@@ -1,4 +1,5 @@
 #include "dnpsoup_core/pulseseq/EMRadiation.h"
+#include "dnpsoup_core/common.h"
 #include <string>
 #include <iostream>
 #include <iomanip>
@@ -44,4 +45,11 @@ namespace pulseseq {
     return os;
   }
 } // namespace pulseseq
+  bool sameValue(const pulseseq::EMRadiation &emr1, const pulseseq::EMRadiation &emr2, double eps)
+  {
+    auto res = approxEqual<double>(emr1.freq, emr2.freq, eps) 
+      && approxEqual<double>(emr1.offset, emr2.offset, eps)
+      && approxEqual<double>(emr1.phase, emr2.phase, eps);
+    return res;
+  }
 } // namespace dnpsoup

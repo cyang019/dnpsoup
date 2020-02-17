@@ -26,7 +26,11 @@ namespace dnpsoup {
 
     std::istream& operator>>(std::istream&, EMRadiation &);
     std::ostream& operator<<(std::ostream&, const EMRadiation &);
-  }
+
+  } // namespace pulseseq
+  bool sameValue(const pulseseq::EMRadiation &emr1, 
+      const pulseseq::EMRadiation &emr2, double eps);
+  
 } // namespace dnpsoup
 
 #endif

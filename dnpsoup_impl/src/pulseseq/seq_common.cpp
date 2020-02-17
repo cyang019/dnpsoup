@@ -1,4 +1,5 @@
 #include "dnpsoup_core/pulseseq/seq_common.h"
+#include "dnpsoup_core/pulseseq/EMRadiation.h"
 #include "dnpsoup_core/spin_physics_components/spin.h"
 #include <iostream>
 #include <sstream>
@@ -48,5 +49,29 @@ namespace dnpsoup {
       os << setprecision(ss);
       return os;
     }
+
   }   // namespace pulseseq
+
+  bool sameValue(const pulseseq::Component &comp1, const pulseseq::Component &comp2, double eps)
+  {
+    for(const auto &[spint, emr]: comp1){
+      if(comp2.find(spint) == comp2.end()){
+        if (!::dnpsoup::sameValue(emr, pulseseq::EMRadiation(0.0, 0.0 ,0.0), eps)){
+          return false;
+        }
+      }
+      else{
+        if(!::dnpsoup::sameValue(emr, comp2.at(spint), eps)) return false;
+      }
+    }
+
+    for(const auto &[spint, emr]: comp2){
+      if(comp1.find(spint) == comp1.end()){
+        if (!::dnpsoup::sameValue(emr, pulseseq::EMRadiation(0.0, 0.0 ,0.0), eps)){
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 }
