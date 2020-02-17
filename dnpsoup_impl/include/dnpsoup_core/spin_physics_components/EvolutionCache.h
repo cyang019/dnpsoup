@@ -5,6 +5,7 @@
 #include "dnpsoup_core/spin_physics_components/spin.h"
 #include "dnpsoup_core/pulseseq/seq_common.h"
 #include "dnpsoup_core/common.h"
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 #include <map>
@@ -40,15 +41,18 @@ namespace dnpsoup {
     EvolutionCacheElement getCache(
         const pulseseq::Component &comp,
         std::uint64_t idx) const;
+    /// better performance
+    EvolutionCacheElement getCache(
+        int key, std::uint64_t idx) const;
     EvolutionCache& saveCache(const pulseseq::Component &, EvolutionCacheElement &&);
+    int getCacheIdentity(const pulseseq::Component &) const;
+    std::size_t getLength(int key) const;
   private:
     std::uint64_t m_n_in_rotor_period;
     std::uint64_t m_capacity;
     std::vector<pulseseq::Component> m_cache_identities;
-    std::map<int, std::vector<EvolutionCacheElement>> m_cache;
+    std::vector<std::vector<EvolutionCacheElement>> m_cache;
     int m_key;
-
-    int getCacheIdentity(const pulseseq::Component &) const;
   };
 } // namespace dnpsoup
 

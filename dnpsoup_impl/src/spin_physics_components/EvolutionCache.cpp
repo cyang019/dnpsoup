@@ -1,6 +1,10 @@
 #include "dnpsoup_core/spin_physics_components/EvolutionCache.h"
 #include "dnpsoup_core/pulseseq/seq_common.h"
 #include "dnpsoup_core/errors.h"
+#include <string>
+#include <cstdint>
+
+using namespace std;
 
 namespace dnpsoup {
 
@@ -51,6 +55,8 @@ namespace dnpsoup {
   {
     m_cache_identities = std::vector<pulseseq::Component>(
         m_capacity, pulseseq::Component());
+    m_cache = std::vector<std::vector<EvolutionCacheElement>>(
+        capacity, std::vector<EvolutionCacheElement>());
   }
 
   EvolutionCache::EvolutionCache()
@@ -58,6 +64,8 @@ namespace dnpsoup {
   {
     m_cache_identities = std::vector<pulseseq::Component>(
         m_capacity, pulseseq::Component());
+    m_cache = std::vector<std::vector<EvolutionCacheElement>>(
+        m_capacity, std::vector<EvolutionCacheElement>());
   }
 
   EvolutionCacheElement EvolutionCache::getCache(
@@ -70,7 +78,19 @@ namespace dnpsoup {
     }
 
     idx %= m_n_in_rotor_period;
-    return m_cache.at(key_idx)[idx];
+    return m_cache[key_idx][idx];
+  }
+
+  EvolutionCacheElement EvolutionCache::getCache(
+      int key, std::uint64_t idx) const
+  {
+    if (key < 0 || (std::uint64_t)key >= m_capacity){
+      std::string err_msg = "Cache key not in range: "
+        + to_string(key) + " not in [0, " + to_string(m_capacity) + "].";
+      throw CacheError(err_msg);
+    }
+
+    return m_cache[key][idx];
   }
 
   EvolutionCache& EvolutionCache::saveCache(
@@ -103,6 +123,14 @@ namespace dnpsoup {
       }
     }
     return idx;
+  }
+  
+  std::size_t EvolutionCache::getLength(int key) const
+  {
+    if(key < 0 || (uint64_t)key >= m_capacity){
+      return 0;
+    }
+    return m_cache[key].size();
   }
 }   // namespace dnpsoup
 
