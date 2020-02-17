@@ -12,12 +12,12 @@
   
   "acq": "H",
   "field range": {
-    "begin": 9.36,
+    "begin": 9.32,
     "end": 9.41,
-    "step": 0.0005
+    "step": 0.001
   },
   "Magnet": {
-    "b0": 9.3520000000000074
+    "b0": 9.36
   },
   "Gyrotron": {
     "em_frequency": 263.0e9
@@ -27,6 +27,6 @@
       "temperature": 100.0,
       "mas_increment": 5e-5
   },
-  "task": "FieldProfile"
+  "task": "PowderBuildUp"
 }
 

@@ -91,7 +91,7 @@ namespace dnpsoup {
         const std::vector<Euler<>> &spin_sys_eulers,
         int ncores=1);
 
-    MatrixCxDbl evolve(
+    MatrixCxDbl propagate(
         const MatrixCxDbl &rho_prev, 
         const MatrixCxDbl &hamiltonian,
         const MatrixCxDbl &hamiltonian_lab,
@@ -100,7 +100,7 @@ namespace dnpsoup {
         const std::vector<RelaxationPacket> &rpackets,
         double dt, std::uint64_t cnt, double temperature);
 
-    MatrixCxDbl evolve(
+    MatrixCxDbl propagate(
         const MatrixCxDbl &rho_prev, 
         const PacketCollection &packets,
         const MatrixCxDbl &hamiltonian_offset,

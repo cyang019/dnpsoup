@@ -78,7 +78,7 @@ namespace {
         {cxdbl(1.38251e-09,5.16038e-12), cxdbl(-1.80376e-12,-4.4327e-13), cxdbl(8.77511e-06,9.26167e-09), cxdbl(-7.94146e-09,-2.01357e-09), cxdbl(2.29339e-05,6.33163e-08), cxdbl(-3.53136e-09,-8.28443e-10), cxdbl(0.0166806,7.65708e-14), cxdbl(-1.5818e-08,-3.96221e-09)},
         {cxdbl(-5.02046e-13,1.23253e-13), cxdbl(1.39069e-09,5.19857e-12), cxdbl(-3.24467e-09,8.06542e-10), cxdbl(8.81922e-06,9.35611e-09), cxdbl(1.47604e-10,-3.83805e-11), cxdbl(2.29312e-05,6.33101e-08), cxdbl(-1.5818e-08,3.96221e-09), cxdbl(0.016655,-5.77801e-14)}
       };
-      rho0_evolve = dnpsoup::DnpRunner::evolve(rho0_evolve,
+      rho0_evolve = dnpsoup::DnpRunner::propagate(rho0_evolve,
           packets, hamiltonian_offset, rpackets,
           dnpsoup::Gyrotron(em_freq), temp_euler,
           inc, cnt, 100); 
@@ -189,7 +189,7 @@ namespace {
         results.push_back(result);
         results0.push_back(result0);
 
-        //rho_eq = r.evolve(rho_eq, 
+        //rho_eq = r.propagate(rho_eq, 
         //    hamiltonian, hamiltonian0_offset + hamiltonian,
         //    d_super, d_super_inv,
         //    rpackets, dt, temperature); 

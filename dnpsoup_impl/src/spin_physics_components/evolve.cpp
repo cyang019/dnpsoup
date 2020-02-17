@@ -1,0 +1,134 @@
+#include "dnpsoup_core/spin_physics_components/evolve.h"
+#include "dnpsoup_core/spin_physics_components/super_op.h"
+#include "dnpsoup_core/errors.h"
+#include "dnpsoup_core/spinsys/RelaxationPacket.h"
+#include "dnpsoup_core/common.h"
+#include <complex>
+
+using namespace std;
+
+namespace dnpsoup {
+  MatrixCxDbl calcRhoDynamicEq(
+      const MatrixCxDbl &h_super, 
+      const MatrixCxDbl &gamma_super,
+      const MatrixCxDbl &rho_ss_super)
+  {
+    const auto super_op = complex<double>(0, 1.0) * h_super + gamma_super;
+    const auto rho_right = gamma_super * rho_ss_super;
+    auto [rho_eq_super, status] = matrix::lstsq(super_op, rho_right);
+#ifndef NDEBUG
+      if(status != 0){
+        string err_msg = "lstsq error: ";
+        if(status < 0){
+          err_msg = "The " + std::to_string(-status) + "-th argument had an illegal value.";
+        } else {
+          err_msg = "The algorithm for computing the SVD failed to converge;\n";
+          err_msg += std::to_string(status) + "off-diagonal elements of an intermediate"
+            + "bidiagonal form did not converge to zero.";
+        }
+        throw CalculationError(err_msg);
+      }
+#endif
+    return rho_eq_super;
+  }
+
+
+  MatrixCxDbl calcGammaSuper(
+      const MatrixCxDbl &rho_ss,
+      const std::vector<RelaxationPacket> &rpackets)
+  {
+    auto [eigenvals, eigenvec] = diagonalizeMat(rho_ss);
+    const size_t sz = rho_ss.nrows() * rho_ss.ncols();
+    auto t1_superop = zeros<cxdbl>(sz, sz); ///< sz: 'size'
+    auto t2_superop = zeros<cxdbl>(sz, sz); ///< sz: 'size'
+    for(const auto &rpacket : rpackets){
+      t1_superop += rpacket.genSuperOpT1(eigenvec);
+      t2_superop += rpacket.genSuperOpT2(eigenvec);
+    }
+    auto gamma_super = t1_superop + t2_superop;
+    return gamma_super;
+  }
+
+  std::tuple<MatrixCxDbl, MatrixCxDbl, MatrixCxDbl> calcSuperOpsForMasterEq(
+      const MatrixCxDbl &ham,
+      const MatrixCxDbl &ham_lab,
+      const MatrixCxDbl &rotate_mat_super,
+      const MatrixCxDbl &rotate_mat_super_inv,
+      const std::vector<RelaxationPacket> &rpackets,
+      double temperature)
+  {
+    // static state thermo equilibrium
+      auto rho_ss = genRhoEq(ham_lab, temperature);
+
+      auto rho_ss_super = ::dnpsoup::flatten(rho_ss, 'c');
+      if(rotate_mat_super.nrows() != 0 && rotate_mat_super_inv.nrows() != 0){
+        rho_ss_super = rotate_mat_super * rho_ss_super;
+      }
+      auto gamma_super = calcGammaSuper(rho_ss, rpackets);
+      MatrixCxDbl gamma_super_int;
+      if(rotate_mat_super.nrows() == 0 || rotate_mat_super_inv.nrows() == 0){
+        gamma_super_int = gamma_super;
+      } else {
+        gamma_super_int = rotate_mat_super * gamma_super * rotate_mat_super_inv;
+      }
+      auto h_super = commutationSuperOp(ham);
+      auto super_op = complex<double>(0,1.0) * h_super + gamma_super_int;
+      auto rho_eq_super = calcRhoDynamicEq(h_super, gamma_super_int, rho_ss_super);
+      return std::make_tuple(std::move(h_super), 
+                             std::move(gamma_super_int),
+                             std::move(rho_eq_super));
+  }
+
+  std::pair<MatrixCxDbl, MatrixCxDbl> calcRotationSuperOps(
+      const MatrixCxDbl &ham_offset,
+      const Gyrotron &g,
+      double dt,
+      std::uint64_t cnt
+      )
+  {
+    // to determine if we need rotate_mat
+    const double cycle = dt * static_cast<double>(cnt) * g.em_frequency;
+    double cycle_int_part;
+    double cycle_fraction_part = modf(cycle, &cycle_int_part);
+    if (std::abs(cycle_fraction_part) < eps) {
+      // placeholders
+      MatrixCxDbl rotate_mat_super, rotate_mat_super_inv;
+      return make_pair(rotate_mat_super, rotate_mat_super_inv);
+    } else {
+      MatrixCxDbl rotate_mat = dnpsoup::exp((cxdbl(0,-2) * dt * pi) * ham_offset);
+      MatrixCxDbl rotate_mat_inv = dnpsoup::exp((cxdbl(0, 2) * dt * pi) * ham_offset);
+      MatrixCxDbl rotate_mat_super = rotationSuperOp(rotate_mat);
+      MatrixCxDbl rotate_mat_super_inv = rotationSuperOp(rotate_mat_inv);
+      return make_pair(rotate_mat_super, rotate_mat_super_inv);
+    }
+  }
+
+  MatrixCxDbl evolve(
+      const MatrixCxDbl &rho_prev,
+      const MatrixCxDbl &rho_eq_super,
+      const MatrixCxDbl &scaling_factor,
+      const MatrixCxDbl &rotate_mat_super,
+      const MatrixCxDbl &rotate_mat_super_inv
+      )
+  {
+    auto rho_prev_super = ::dnpsoup::flatten(rho_prev, 'c');
+    if(rotate_mat_super.nrows() != 0 && rotate_mat_super_inv.nrows() != 0){
+      rho_prev_super = rotate_mat_super * rho_prev_super;
+    }
+
+    auto rho_super = evolveRho(rho_prev_super, rho_eq_super, scaling_factor);
+    if(rotate_mat_super.nrows() != 0 && rotate_mat_super_inv.nrows() != 0){
+      rho_super = rotate_mat_super * rho_super;
+    }
+    MatrixCxDbl rho_post(rho_prev.nrows(), rho_prev.ncols());
+
+    const auto nrows = rho_post.nrows();
+    const auto ncols = rho_post.ncols();
+    for(size_t i = 0; i < nrows; ++i){
+      for(size_t j = 0; j < ncols; ++j){
+        rho_post(i, j) = rho_super(j + i * ncols, 0);
+      }
+    }
+    return rho_post;
+  }
+} // namespace dnpsoup
