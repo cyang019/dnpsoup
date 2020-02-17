@@ -16,8 +16,16 @@ namespace dnpsoup {
   /// rho_dt = exp(-L dt) * (rho - rho_inf_eq) + rho_inf_eq
   /// exp(-L dt) --> scaling_factor
   struct EvolutionCacheElement {
-    EvolutionCacheElement(const MatrixCxDbl &factor, const MatrixCxDbl &rho);
-    EvolutionCacheElement(MatrixCxDbl &&factor, const MatrixCxDbl &&rho);
+    EvolutionCacheElement(
+        const MatrixCxDbl &factor, const MatrixCxDbl &rho);
+    EvolutionCacheElement(
+        const MatrixCxDbl &factor, const MatrixCxDbl &rho,
+        const MatrixCxDbl &rotate_mat_super, 
+        const MatrixCxDbl &rotate_mat_super_inv);
+    EvolutionCacheElement(
+        MatrixCxDbl &&factor, const MatrixCxDbl &&rho,
+        MatrixCxDbl &&rotate_mat_super,
+        MatrixCxDbl &&rotate_mat_super_inv);
     EvolutionCacheElement();
     EvolutionCacheElement(const EvolutionCacheElement &);
     EvolutionCacheElement& operator=(const EvolutionCacheElement &);
@@ -27,6 +35,8 @@ namespace dnpsoup {
 
     MatrixCxDbl scaling_factor;
     MatrixCxDbl rho_inf_eq;
+    MatrixCxDbl rotate_mat_super;
+    MatrixCxDbl rotate_mat_super_inv;
   };
 
   /// to store intermediate rho_inf_eq, exp(-L dt)

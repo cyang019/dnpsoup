@@ -4,6 +4,7 @@
 #include "dnpsoup_core/spin_physics_components/hamiltonian/rho_eq.h"
 #include "dnpsoup_core/spin_physics_components/super_op.h"
 #include "dnpsoup_core/spin_physics_components/evolve.h"
+#include "dnpsoup_core/spin_physics_components/EvolutionCache.h"
 #include "dnpsoup_core/errors.h"
 #include "dnpsoup_core/common.h"
 #include "dnpsoup_core/constants.h"
@@ -189,17 +190,17 @@ namespace DnpRunner {
         double result = ::dnpsoup::projectionNorm(rho0_evolve, acq_mat).real();
         return result;
       }
-      std::uint64_t cnt = 0u;    /// keep track of identical hamiltonians
+
+      std::uint64_t cnt = 0u;    ///< keep track of identical hamiltonians
       std::uint64_t comp_size = 0u;
-      do {
+
+      pulseseq::Component prev_comp;
+      do {    /// step-wise consume pulse sequence
         pulseseq::Component comp;
         comp_size = 0u;
         if(idx < seq.size()){
           std::tie(comp, comp_size, idx) = seq.next();
         }
-//#ifndef NDEBUG
-//        std::cout << "comp_size: " << comp_size << " \tidx: " << idx << std::endl;
-//#endif
 
         bool same_comp = packets.hasPulseSeqComponent(comp);
         if(idx >= seq.size()){    // end of sequence
@@ -207,45 +208,20 @@ namespace DnpRunner {
         }
 
         if(same_comp){
-          cnt += comp_size;
+          cnt += comp_size;   ///< not yet finish same component
           continue;
         }
         else {
-          //auto [rotate_mat_super, rotate_mat_super_inv] = 
-          //  calcRotationSuperOps(hamiltonian_offset, g, inc, mas_inc_cnt);
-          if(mas_inc_cnt > 0){  // with MAS
-            // keep track of calculated values within a rotor period
-            uint64_t rotor_cnt = 0u;
-            std::vector<MatrixCxDbl> rho_ss_supers;
-            std::vector<MatrixCxDbl> exp_lambda_supers;
-
-            while(cnt > 0){
-              auto temp_euler = spin_sys_euler * mas_angle;
-              if(cnt >= mas_inc_cnt){
-                if(rotor_cnt < total_rotor_cnt){
-                  auto ham = packets.genMatrix(temp_euler);
-                  auto ham_lab = ham + hamiltonian_offset;
-                }
-                else {
-                }
-
-                rho0_evolve = propagate(rho0_evolve,
-                    packets, hamiltonian_offset, rpackets,
-                    g, temp_euler,
-                    inc, mas_inc_cnt, p.temperature); 
-                t += static_cast<double>(mas_inc_cnt) * inc;
-                cnt -= mas_inc_cnt;
-              }
-              else {
-                rho0_evolve = propagate(rho0_evolve,
-                    packets, hamiltonian_offset, rpackets,
-                    g, temp_euler,
-                    inc, cnt, p.temperature); 
-                t += static_cast<double>(cnt) * inc;
-                cnt = 0;
-              }
-              mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
-            }
+          if(mas_inc_cnt > 0) { ///< with MAS
+            rho0_evolve = evolveMASCnstEmr(
+                rho0_evolve, 
+                p.mas_frequency, prev_comp, 
+                packets, rpackets, hamiltonian_offset,
+                spin_sys_euler, mas_angle, g, 
+                inc, cnt, mas_inc_cnt, total_rotor_cnt, p.temperature);
+            t += inc * static_cast<double>(cnt);
+            cnt = 0;
+            mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
           }
           else {    // no MAS
             if(cnt > 0){
@@ -258,6 +234,7 @@ namespace DnpRunner {
               cnt = 0;
             }
           }
+          prev_comp = comp;
           packets.updatePulseSeqComponent(comp);
           cnt = comp_size;
         }
@@ -620,11 +597,10 @@ namespace DnpRunner {
       auto [rotate_mat_super, rotate_mat_super_inv] = calcRotationSuperOps(
           hamiltonian_offset, g, dt, cnt);
 
-      auto rho_prev_super = ::dnpsoup::flatten(rho_prev, 'c');
-      if(rotate_mat_super.nrows() != 0 && rotate_mat_super_inv.nrows() != 0){
-        rho_prev_super = rotate_mat_super * rho_prev_super;
-      }
-
+      // auto rho_prev_super = ::dnpsoup::flatten(rho_prev, 'c');
+      // if(rotate_mat_super.nrows() != 0 && rotate_mat_super_inv.nrows() != 0){
+      //   rho_prev_super = rotate_mat_super * rho_prev_super;
+      // }
       auto ham = packets.genMatrix(euler);
       auto ham_lab = ham + hamiltonian_offset;
 
@@ -634,7 +610,6 @@ namespace DnpRunner {
 
       // iH + Gamma
       auto super_op = calcLambdaSuper(h_super, gamma_super_int);
-
 
       auto scaling_factor = calcExpEvolve(super_op, dt, cnt);
 

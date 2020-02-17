@@ -1,5 +1,6 @@
 #include "dnpsoup_core/spin_physics_components/evolve.h"
 #include "dnpsoup_core/spin_physics_components/super_op.h"
+#include "dnpsoup_core/spin_physics_components/EvolutionCache.h"
 #include "dnpsoup_core/errors.h"
 #include "dnpsoup_core/spinsys/RelaxationPacket.h"
 #include "dnpsoup_core/common.h"
@@ -130,5 +131,80 @@ namespace dnpsoup {
       }
     }
     return rho_post;
+  }
+
+  MatrixCxDbl evolveMASCnstEmr(
+      const MatrixCxDbl &rho_prev,
+      double mas_frequency,
+      const pulseseq::Component &comp,
+      const PacketCollection &packets,
+      const std::vector<RelaxationPacket> &rpackets,
+      const MatrixCxDbl ham_offset,
+      const Euler<> &spin_sys_euler,
+      Euler<> mas_angle,
+      const Gyrotron &g,
+      double inc, 
+      std::uint64_t cnt,
+      std::uint64_t mas_inc_cnt,
+      std::uint64_t total_rotor_cnt,
+      double temperature)
+  {
+    auto cache = EvolutionCache(total_rotor_cnt, 1);
+    auto [rotate_mat_super, rotate_mat_super_inv] = 
+      calcRotationSuperOps(ham_offset, g, inc, mas_inc_cnt);
+    
+    double t = 0.0;
+    uint64_t rotor_cnt = 0u;
+
+    MatrixCxDbl rho_evolve = rho_prev;
+    
+    while(cnt > 0){
+      auto temp_euler = spin_sys_euler * mas_angle;
+      if(cnt >= mas_inc_cnt){
+        if(rotor_cnt < total_rotor_cnt) { // need to save to cache
+          auto ham = packets.genMatrix(temp_euler);
+          auto ham_lab = ham + ham_offset;
+          auto [h_super, gamma_super_internal, rho_eq_super] =
+            calcSuperOpsForMasterEq(ham, ham_lab, 
+                rotate_mat_super, rotate_mat_super_inv, 
+                rpackets, temperature);
+          auto super_op = calcLambdaSuper(h_super, gamma_super_internal);
+          auto scaling_factor = calcExpEvolve(super_op, inc, mas_inc_cnt);
+          rho_evolve = evolve(rho_evolve, rho_eq_super, 
+              scaling_factor, rotate_mat_super, rotate_mat_super_inv);
+          cache.saveCache(comp, EvolutionCacheElement(scaling_factor, rho_eq_super)); 
+        }
+        else{ // retrieve from cache
+          const auto idx = rotor_cnt % total_rotor_cnt;
+          auto cache_elem = cache.getCache(0, idx);
+          rho_evolve = evolve(rho_evolve, 
+              cache_elem.rho_inf_eq, cache_elem.scaling_factor,
+              rotate_mat_super, rotate_mat_super_inv);
+        }
+        
+        ++rotor_cnt;
+        cnt -= mas_inc_cnt;
+        t += static_cast<double>(mas_inc_cnt) * inc;
+
+        mas_angle.gamma(t * mas_frequency * 2.0 * pi);
+      }
+      else {    /// if pulse length is not a integer multiple of rotor period.
+        auto [rotate_mat_super, rotate_at_super_inv] = 
+          calcRotationSuperOps(ham_offset, g, inc, cnt);
+
+        auto ham = packets.genMatrix(temp_euler);
+        auto ham_lab = ham + ham_offset;
+        auto [h_super, gamma_super_internal, rho_eq_super] =
+          calcSuperOpsForMasterEq(ham, ham_lab, 
+              rotate_mat_super, rotate_mat_super_inv, 
+              rpackets, temperature);
+        auto super_op = calcLambdaSuper(h_super, gamma_super_internal);
+        auto scaling_factor = calcExpEvolve(super_op, inc, cnt);
+        rho_evolve = evolve(rho_evolve, rho_eq_super, 
+            scaling_factor, rotate_mat_super, rotate_mat_super_inv);
+        cnt = 0;
+      }
+    }
+    return rho_evolve;
   }
 } // namespace dnpsoup

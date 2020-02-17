@@ -7,38 +7,62 @@
 using namespace std;
 
 namespace dnpsoup {
-
-  EvolutionCacheElement::EvolutionCacheElement(const MatrixCxDbl &factor, const MatrixCxDbl &rho)
+  EvolutionCacheElement::EvolutionCacheElement(
+      const MatrixCxDbl &factor, const MatrixCxDbl &rho)
     : scaling_factor(factor), rho_inf_eq(rho)
   {}
 
-  EvolutionCacheElement::EvolutionCacheElement(MatrixCxDbl &&factor, const MatrixCxDbl &&rho)
-    : scaling_factor(std::move(factor)), rho_inf_eq(std::move(rho))
+  EvolutionCacheElement::EvolutionCacheElement(
+      const MatrixCxDbl &factor, const MatrixCxDbl &rho,
+      const MatrixCxDbl &rotate_mat_super,
+      const MatrixCxDbl &rotate_mat_super_inv)
+    : scaling_factor(factor), rho_inf_eq(rho), 
+    rotate_mat_super(rotate_mat_super), 
+    rotate_mat_super_inv(rotate_mat_super_inv)
+  {}
+
+  EvolutionCacheElement::EvolutionCacheElement(
+      MatrixCxDbl &&factor, const MatrixCxDbl &&rho,
+      MatrixCxDbl &&rotate_mat_super,
+      MatrixCxDbl &&rotate_mat_super_inv)
+    : scaling_factor(std::move(factor)), rho_inf_eq(std::move(rho)),
+    rotate_mat_super(std::move(rotate_mat_super)),
+    rotate_mat_super_inv(std::move(rotate_mat_super_inv))
   {}
 
   EvolutionCacheElement::EvolutionCacheElement()
-    : scaling_factor(), rho_inf_eq()
+    : scaling_factor(), rho_inf_eq(), rotate_mat_super(), rotate_mat_super_inv()
   {}
 
   EvolutionCacheElement::EvolutionCacheElement(const EvolutionCacheElement &rhs)
-    : scaling_factor(rhs.scaling_factor), rho_inf_eq(rhs.rho_inf_eq)
+    : scaling_factor(rhs.scaling_factor), rho_inf_eq(rhs.rho_inf_eq),
+    rotate_mat_super(rhs.rotate_mat_super),
+    rotate_mat_super_inv(rhs.rotate_mat_super_inv)
   {}
 
   EvolutionCacheElement& EvolutionCacheElement::operator=(const EvolutionCacheElement &rhs)
   {
     scaling_factor = rhs.scaling_factor;
     rho_inf_eq = rhs.rho_inf_eq;
+    rotate_mat_super = rhs.rotate_mat_super;
+    rotate_mat_super_inv = rhs.rotate_mat_super_inv;
     return *this;
   }
 
   EvolutionCacheElement::EvolutionCacheElement(EvolutionCacheElement &&rhs) noexcept
-    : scaling_factor(std::move(rhs.scaling_factor)), rho_inf_eq(std::move(rhs.rho_inf_eq))
+    : scaling_factor(std::move(rhs.scaling_factor)),
+    rho_inf_eq(std::move(rhs.rho_inf_eq)),
+    rotate_mat_super(std::move(rhs.rotate_mat_super)),
+    rotate_mat_super_inv(std::move(rhs.rotate_mat_super_inv))
   {}
 
-  EvolutionCacheElement& EvolutionCacheElement::operator=(EvolutionCacheElement &&rhs) noexcept
+  EvolutionCacheElement& EvolutionCacheElement::operator=(
+      EvolutionCacheElement &&rhs) noexcept
   {
     scaling_factor = std::move(rhs.scaling_factor);
     rho_inf_eq = std::move(rhs.rho_inf_eq);
+    rotate_mat_super = std::move(rhs.rotate_mat_super);
+    rotate_mat_super_inv = std::move(rhs.rotate_mat_super_inv);
     return *this;
   }
 
