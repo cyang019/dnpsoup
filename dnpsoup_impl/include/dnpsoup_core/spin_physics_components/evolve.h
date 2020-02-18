@@ -91,6 +91,25 @@ namespace dnpsoup {
       std::uint64_t total_rotor_cnt,
       double temperature);
 
+  std::vector<std::pair<double, double>> evolveMASCnstEmr(
+      const MatrixCxDbl &rho_prev,
+      const MatrixCxDbl &detect_op,
+      double t0,
+      double result_ref,
+      double mas_frequency,
+      const pulseseq::Component &comp,
+      const PacketCollection &packets,
+      const std::vector<RelaxationPacket> &rpackets,
+      const MatrixCxDbl ham_offset,
+      const Euler<> &spin_sys_euler,
+      Euler<> magic_angle,
+      const Gyrotron &g,
+      double inc, 
+      std::uint64_t cnt,
+      std::uint64_t mas_cnt,
+      std::uint64_t total_rotor_cnt,
+      double temperature);
+
 } // namespace dnpsoup
 
 #endif

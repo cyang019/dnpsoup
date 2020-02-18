@@ -145,9 +145,9 @@ namespace DnpRunner {
           mas_inc = rotor_period / static_cast<double>(total_rotor_cnt);
         }
         else {
-          total_rotor_cnt = 1000;
+          total_rotor_cnt = 100;
           mas_inc = rotor_period / static_cast<double>(total_rotor_cnt);
-          ///< 0.1% of MAS
+          ///< 1% of MAS
         }
       }
       double t = 0.0;
@@ -220,7 +220,6 @@ namespace DnpRunner {
                 spin_sys_euler, mas_angle, g, 
                 inc, cnt, mas_inc_cnt, total_rotor_cnt, p.temperature);
             t += inc * static_cast<double>(cnt);
-            cnt = 0;
             mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
           }
           else {    // no MAS
@@ -231,7 +230,6 @@ namespace DnpRunner {
                   g, temp_euler,
                   inc, cnt, p.temperature); 
               t += static_cast<double>(cnt) * inc;
-              cnt = 0;
             }
           }
           prev_comp = comp;
@@ -372,6 +370,24 @@ namespace DnpRunner {
         throw InputError("For BuildUp, MAS increment is needed. (>= inc of a pulse sequence)");
       }
 
+      double rotor_period = 0.0;
+      uint64_t total_rotor_cnt = 0u;
+      if(p.mas_frequency > eps){
+        rotor_period = 1.0 / p.mas_frequency;
+        if(p.mas_increment > eps){
+          total_rotor_cnt = static_cast<uint64_t>(
+              round(rotor_period/p.mas_increment));
+          // total_rotor_cnt >= 1
+          total_rotor_cnt += (total_rotor_cnt == 0u);
+          mas_inc = rotor_period / static_cast<double>(total_rotor_cnt);
+        }
+        else {
+          total_rotor_cnt = 100;
+          mas_inc = rotor_period / static_cast<double>(total_rotor_cnt);
+          ///< 1% of MAS
+        }
+      }
+
       double t = 0.0;
       auto mas_angle = p.magic_angle;
 
@@ -397,13 +413,14 @@ namespace DnpRunner {
       MatrixCxDbl rho0_lab = genRhoEq(hamiltonian_lab, p.temperature);
       const double result_ref = 
         enhancement ? ::dnpsoup::projectionNorm(rho0_lab, acq_mat).real() : 1.0;
-#ifndef NDEBUG
-      //std::cout << "\nresult_ref: " << result_ref << std::endl;
-      std::cout << "." << std::flush;
-#endif
+
+//      std::cout << "." << std::flush;
+
       auto rho0_evolve = rho0_lab;
       std::uint64_t cnt = 0u;    /// keep track of identical hamiltonians
       std::uint64_t comp_size = 0u;
+
+      pulseseq::Component prev_comp;
       do {
         pulseseq::Component comp;
         comp_size = 0u;
@@ -420,7 +437,7 @@ namespace DnpRunner {
           cnt += comp_size;
           continue;
         }
-        else {
+        else if (p.mas_frequency < 1.0 - eps) {
           while(cnt > 0){
             auto temp_euler = spin_sys_euler * mas_angle;
             if(cnt >= mas_inc_cnt){
@@ -447,8 +464,23 @@ namespace DnpRunner {
             }
             mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
           }
+          prev_comp = comp;
           packets.updatePulseSeqComponent(comp);
           cnt = comp_size;
+        } else {
+          auto temp_results = evolveMASCnstEmr(
+                rho0_evolve, acq_mat, t, result_ref,
+                p.mas_frequency, prev_comp, 
+                packets, rpackets, hamiltonian_offset,
+                spin_sys_euler, mas_angle, g, 
+                inc, cnt, mas_inc_cnt, total_rotor_cnt, p.temperature);
+          prev_comp = comp;
+          packets.updatePulseSeqComponent(comp);
+          t += inc * static_cast<double>(cnt);
+          cnt = comp_size;
+          mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
+          std::copy(temp_results.begin(), temp_results.end(), 
+              std::back_inserter(results));
         }
       } while(idx < seq.size() || cnt > 0);
 
@@ -474,13 +506,9 @@ namespace DnpRunner {
             field, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers, ncores);
         const double ratio = res/ref;
         result.push_back(std::make_pair(field.b0, ratio));
-#ifndef NDEBUG
         std::cout << "." << std::flush;
-#endif
       }
-#ifndef NDEBUG
-        std::cout << std::endl;
-#endif
+      std::cout << std::endl;
       return result;
     }
 
@@ -503,7 +531,9 @@ namespace DnpRunner {
             m, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers, ncores);
         const double ratio = res/ref;
         result.emplace_back(make_pair(g.em_frequency, ratio));
+        std::cout << "." << std::flush;
       }
+      std::cout << std::endl;
       return result;
     }
 
