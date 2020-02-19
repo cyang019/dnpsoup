@@ -25,7 +25,7 @@
   "Probe": {
       "mas_frequency": 1000.0,
       "temperature": 100.0,
-      "mas_increment": 5e-5
+      "mas_increment": 1e-6
   },
   "task": "PowderBuildUpEnhancement"
 }

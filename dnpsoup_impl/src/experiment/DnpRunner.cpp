@@ -336,6 +336,7 @@ namespace DnpRunner {
       for(auto &pt : results){
         pt.second *= (scaling_factor/pi * 4.0);
       }
+      std::cout << std::endl;
       return results;
     }
 
@@ -416,8 +417,6 @@ namespace DnpRunner {
       const double result_ref = 
         enhancement ? ::dnpsoup::projectionNorm(rho0_lab, acq_mat).real() : 1.0;
 
-//      std::cout << "." << std::flush;
-
       auto rho0_evolve = rho0_lab;
       std::uint64_t cnt = 0u;    /// keep track of identical hamiltonians
       std::uint64_t comp_size = 0u;
@@ -454,6 +453,7 @@ namespace DnpRunner {
               std::back_inserter(results));
         }
       } while(idx < seq.size() || cnt > 0);
+      std::cout << "." << std::flush;
 
       return results;
     }
@@ -477,7 +477,6 @@ namespace DnpRunner {
             field, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers, ncores);
         const double ratio = res/ref;
         result.push_back(std::make_pair(field.b0, ratio));
-        std::cout << "." << std::flush;
       }
       std::cout << std::endl;
       return result;
@@ -502,7 +501,6 @@ namespace DnpRunner {
             m, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers, ncores);
         const double ratio = res/ref;
         result.emplace_back(make_pair(g.em_frequency, ratio));
-        std::cout << "." << std::flush;
       }
       std::cout << std::endl;
       return result;
@@ -544,6 +542,8 @@ namespace DnpRunner {
         }
       }
       result = result * scaling_factor / pi * 4.0;
+      std::cout << "." << std::flush;
+
       return result;
     }
 
