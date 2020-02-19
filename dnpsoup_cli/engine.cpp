@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <limits>
 #include <cmath>
+#include <thread>
 
 using namespace std;
 using namespace dnpsoup;
@@ -185,8 +186,12 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 	}
 	int ncores = 1;
 	if(j.find("ncores") != j.end()){
+    cout << std::thread::hardware_concurrency() << " cores detected on the current machine." << endl;
 		ncores = j["ncores"].get<int>();
-    cout << "uses " << ncores << " core(s)." << endl;
+    if (ncores > (int)std::thread::hardware_concurrency()){
+      ncores = std::thread::hardware_concurrency();
+    }
+    cout << "use " << ncores << " core(s)." << endl;
 	}
 	if(task_str == "PowderIntensity"){
 		auto magnet = Magnet(j);		
