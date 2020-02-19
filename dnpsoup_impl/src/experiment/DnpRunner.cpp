@@ -386,6 +386,8 @@ namespace DnpRunner {
           mas_inc = rotor_period / static_cast<double>(total_rotor_cnt);
           ///< 1% of MAS
         }
+      } else {  // static
+        total_rotor_cnt = 1;
       }
 
       double t = 0.0;
@@ -436,37 +438,6 @@ namespace DnpRunner {
         if(same_comp){
           cnt += comp_size;
           continue;
-        }
-        else if (p.mas_frequency < 1.0 - eps) {
-          while(cnt > 0){
-            auto temp_euler = spin_sys_euler * mas_angle;
-            if(cnt >= mas_inc_cnt){
-              rho0_evolve = propagate(rho0_evolve,
-                  packets, hamiltonian_offset, rpackets,
-                  g, temp_euler,
-                  inc, mas_inc_cnt, p.temperature); 
-              double result = ::dnpsoup::projectionNorm(rho0_evolve, acq_mat).real();
-              const double ratio = result/result_ref;
-              results.push_back(make_pair(t, ratio));
-              t += static_cast<double>(mas_inc_cnt) * inc;
-              cnt -= mas_inc_cnt;
-            }
-            else {
-              rho0_evolve = propagate(rho0_evolve,
-                  packets, hamiltonian_offset, rpackets,
-                  g, temp_euler,
-                  inc, cnt, p.temperature); 
-              double result = ::dnpsoup::projectionNorm(rho0_evolve, acq_mat).real();
-              const double ratio = result/result_ref;
-              results.push_back(make_pair(t, ratio));
-              t += static_cast<double>(cnt) * inc;
-              cnt = 0;
-            }
-            mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
-          }
-          prev_comp = comp;
-          packets.updatePulseSeqComponent(comp);
-          cnt = comp_size;
         } else {
           auto temp_results = evolveMASCnstEmr(
                 rho0_evolve, acq_mat, t, result_ref,

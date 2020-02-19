@@ -5,14 +5,14 @@
     "gamma": 0.0
   },
   "euler_scheme":{
-    "zcw": 1
+    "zcw": 4
   },
 
-  "ncores": 6,
+  "ncores": 4,
   
   "acq": "H",
   "field range": {
-    "begin": 9.32,
+    "begin": 9.33,
     "end": 9.41,
     "step": 0.001
   },
@@ -27,6 +27,6 @@
       "temperature": 100.0,
       "mas_increment": 5e-5
   },
-  "task": "FieldProfile"
+  "task": "PowderBuildUpEnhancement"
 }
 
