@@ -14,7 +14,7 @@
   "field range": {
     "begin": 0.342,
     "end": 0.35,
-    "step": 0.0001
+    "step": 0.0002
   },
   "Magnet": {
     "b0": 0.35

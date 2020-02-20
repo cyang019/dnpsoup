@@ -39,7 +39,7 @@
      "d2":
      {
        "type": "Delay",
-       "size": 1e6,
+       "size": 1000000,
        "names": [],
        "params": {}
      }

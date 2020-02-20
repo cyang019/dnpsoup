@@ -17,6 +17,7 @@
 #include <sstream>
 #include <string>
 #include <cmath>
+#include <memory>
 
 using namespace std;
 //#define TEST_LSTSQ
@@ -171,6 +172,7 @@ namespace DnpRunner {
       catch(const exception &e){
         throw PulseSequenceError(e.what());
       }
+      unique_ptr<EvolutionCache> uptr_cache = nullptr;
       const double inc = seq.getIncrement();
       uint64_t mas_inc_cnt = 0;
       if (mas_inc > 0){
@@ -223,6 +225,7 @@ namespace DnpRunner {
             mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
           }
           else {    // no MAS
+
             if(cnt > 0){
               auto temp_euler = spin_sys_euler * mas_angle;
               rho0_evolve = propagate(rho0_evolve,
