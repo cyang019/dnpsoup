@@ -1,12 +1,21 @@
 #!/usr/bin/env bash
 
 #SPINFILE=examples/spinsys/BDPA_spinsys.json
-SPINFILE=examples/spinsys/TOTAPOL.json
-PULSEFILE=examples/pulseseq/cw_pulse_short.json
+#SPINFILE=examples/spinsys/TOTAPOL.json
+SPINFILE=examples/spinsys/trityl.json
+
+#PULSEFILE=examples/pulseseq/cw_pulse_short.json
 #PULSEFILE=examples/pulseseq/cw_pulse.json
-HARDWAREFILE=examples/hardware/400MHz263GHz.json
+PULSEFILE=examples/pulseseq/topdnp.json
+
+#HARDWAREFILE=examples/hardware/400MHz263GHz.json
+HARDWAREFILE=examples/hardware/14pt7MHz9pt7GHz0p35T.json
+
 OUTPUT=results.log
-rm $OUTPUT
+if [ -f $OUTPUT ]; then
+  rm $OUTPUT
+fi
+
 #python py_scripts/exec_and_run_dnpsoup.py examples/BDPA_spinsys.json examples/cw_pulse.json examples/hardware.json results.log
 #./build/dnpsoup_cli/dnpsoup_exec examples/spinsys/TOTAPOL.json examples/pulseseq/cw_pulse.json examples/hardware/hardware.json results.log
 ./build/dnpsoup_cli/dnpsoup_exec $SPINFILE $PULSEFILE $HARDWAREFILE $OUTPUT
