@@ -5,6 +5,7 @@
 #include "dnpsoup_core/spin_physics_components/super_op.h"
 #include "dnpsoup_core/spin_physics_components/evolve.h"
 #include "dnpsoup_core/spin_physics_components/EvolutionCache.h"
+#include "dnpsoup_core/spin_physics_components/EvolutionCacheStatic.h"
 #include "dnpsoup_core/errors.h"
 #include "dnpsoup_core/common.h"
 #include "dnpsoup_core/constants.h"
@@ -193,7 +194,6 @@ namespace DnpRunner {
         return result;
       }
 
-      std::uint64_t cnt = 0u;    ///< keep track of identical hamiltonians
       std::uint64_t comp_size = 0u;
 
       pulseseq::Component prev_comp;
@@ -204,42 +204,36 @@ namespace DnpRunner {
           std::tie(comp, comp_size, idx) = seq.next();
         }
 
-        bool same_comp = packets.hasPulseSeqComponent(comp);
-        if(idx >= seq.size()){    // end of sequence
-          same_comp = false;
+        if(mas_inc_cnt > 0) { ///< with MAS
+          rho0_evolve = evolveMASCnstEmr(
+              rho0_evolve, 
+              p.mas_frequency, prev_comp, 
+              packets, rpackets, hamiltonian_offset,
+              spin_sys_euler, mas_angle, g, 
+              inc, comp_size, mas_inc_cnt, total_rotor_cnt, p.temperature);
+          t += inc * static_cast<double>(comp_size);
+          mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
         }
-
-        if(same_comp){
-          cnt += comp_size;   ///< not yet finish same component
-          continue;
-        }
-        else {
-          if(mas_inc_cnt > 0) { ///< with MAS
-            rho0_evolve = evolveMASCnstEmr(
-                rho0_evolve, 
-                p.mas_frequency, prev_comp, 
-                packets, rpackets, hamiltonian_offset,
-                spin_sys_euler, mas_angle, g, 
-                inc, cnt, mas_inc_cnt, total_rotor_cnt, p.temperature);
-            t += inc * static_cast<double>(cnt);
-            mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
+        else {    // no MAS
+          int idx = uptr_cache->getCacheIdentity(comp);
+          if(idx < 0){
           }
-          else {    // no MAS
-
-            if(cnt > 0){
-              auto temp_euler = spin_sys_euler * mas_angle;
-              rho0_evolve = propagate(rho0_evolve,
-                  packets, hamiltonian_offset, rpackets,
-                  g, temp_euler,
-                  inc, cnt, p.temperature); 
-              t += static_cast<double>(cnt) * inc;
-            }
+          else {
+            const auto &[super_op, rho_inf_eq] = uptr_cache->getCache(idx);
           }
-          prev_comp = comp;
-          packets.updatePulseSeqComponent(comp);
-          cnt = comp_size;
+
+          if(comp_size > 0){
+            auto temp_euler = spin_sys_euler * mas_angle;
+            rho0_evolve = propagate(rho0_evolve,
+                packets, hamiltonian_offset, rpackets,
+                g, temp_euler,
+                inc, comp_size, p.temperature); 
+            t += static_cast<double>(comp_size) * inc;
+          }
         }
-      } while(idx < seq.size() || cnt > 0);
+        prev_comp = comp;
+        packets.updatePulseSeqComponent(comp);
+      } while(idx < seq.size() || comp_size > 0);
 
       double result = ::dnpsoup::projectionNorm(rho0_evolve, acq_mat).real();
       return result;

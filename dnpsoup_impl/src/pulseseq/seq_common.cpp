@@ -56,9 +56,10 @@ namespace dnpsoup {
   {
     for(const auto &[spint, emr]: comp1){
       if(comp2.find(spint) == comp2.end()){
-        if (!::dnpsoup::sameValue(emr, pulseseq::EMRadiation(0.0, 0.0 ,0.0), eps)){
-          return false;
-        }
+        //if (!::dnpsoup::sameValue(emr, pulseseq::EMRadiation(0.0, 0.0 ,0.0), eps)){
+         // return false;
+        //}
+        return false;
       }
       else{
         if(!::dnpsoup::sameValue(emr, comp2.at(spint), eps)) return false;
@@ -67,9 +68,10 @@ namespace dnpsoup {
 
     for(const auto &[spint, emr]: comp2){
       if(comp1.find(spint) == comp1.end()){
-        if (!::dnpsoup::sameValue(emr, pulseseq::EMRadiation(0.0, 0.0 ,0.0), eps)){
-          return false;
-        }
+        //if (!::dnpsoup::sameValue(emr, pulseseq::EMRadiation(0.0, 0.0 ,0.0), eps)){
+        //  return false;
+        //}
+        return false;
       }
     }
     return true;
