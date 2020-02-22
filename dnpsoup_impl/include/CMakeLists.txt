@@ -17,6 +17,7 @@ target_sources(dnpsoup_core
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/relaxation.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/evolve.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/EvolutionCache.h"
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spin_physics_components/EvolutionCacheStatic.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spinsys/SpinId.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spinsys/Observable.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/spinsys/SpinSys.h"

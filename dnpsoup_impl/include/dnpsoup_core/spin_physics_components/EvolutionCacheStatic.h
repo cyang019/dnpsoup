@@ -16,7 +16,7 @@ namespace dnpsoup {
   /// rho_dt = exp(-L dt) * (rho - rho_inf_eq) + rho_inf_eq
   /// exp(-L dt) --> scaling_factor
 
-  /// to store intermediate rho_inf_eq, exp(-L dt)
+  /// to store intermediate L, rho_inf_eq
   class EvolutionCacheStatic {
   public:
     EvolutionCacheStatic(std::uint64_t capacity);
@@ -29,6 +29,7 @@ namespace dnpsoup {
     const std::pair<MatrixCxDbl, MatrixCxDbl>& getCache(
         int key) const;
 
+    // L, rho_inf_eq
     EvolutionCacheStatic& saveCache(
         const pulseseq::Component &, 
         std::pair<MatrixCxDbl, MatrixCxDbl> &&);
@@ -37,7 +38,7 @@ namespace dnpsoup {
     std::uint64_t m_capacity;
     int m_key;
     std::vector<pulseseq::Component> m_cache_identities;
-    // L, rho_inf_eq
+    /// L, rho_inf_eq
     std::vector<std::pair<MatrixCxDbl, MatrixCxDbl>> m_cache;
   };
 } // namespace dnpsoup

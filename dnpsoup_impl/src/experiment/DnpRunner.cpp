@@ -173,16 +173,23 @@ namespace DnpRunner {
       catch(const exception &e){
         throw PulseSequenceError(e.what());
       }
-      unique_ptr<EvolutionCache> uptr_cache = nullptr;
+      unique_ptr<EvolutionCacheStatic> uptr_cache = nullptr;
       const double inc = seq.getIncrement();
       uint64_t mas_inc_cnt = 0;
-      if (mas_inc > 0){
+      if (mas_inc > 0 && p.mas_frequency > 1.0 - eps){
         mas_inc_cnt = static_cast<uint64_t>(round(mas_inc/inc));
+      }
+
+      if (mas_inc_cnt == 0) {
+#ifndef NDEBUG
+        cout << "EvolutionCacheStatic capacity: " << seq.uniqueComponentsCount() << endl;
+#endif
+        uptr_cache = make_unique<EvolutionCacheStatic>(
+            seq.uniqueComponentsCount());
       }
 //#ifndef NDEBUG
 //      std::cout << "mas_inc_cnt: " << mas_inc_cnt << "\n";
 //#endif
-      uint64_t idx = 0;
 
       MatrixCxDbl hamiltonian = packets.genMatrix(spin_sys_euler * mas_angle);
       MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(spin_sys_euler * mas_angle);
@@ -195,19 +202,25 @@ namespace DnpRunner {
       }
 
       std::uint64_t comp_size = 0u;
-
-      pulseseq::Component prev_comp;
-      do {    /// step-wise consume pulse sequence
-        pulseseq::Component comp;
-        comp_size = 0u;
-        if(idx < seq.size()){
-          std::tie(comp, comp_size, idx) = seq.next();
-        }
+      uint64_t idx = 0;
+      pulseseq::Component comp;
+#ifndef NDEBUG
+      cout << "seq.size() = " << seq.size() << endl;
+#endif
+      
+      while(idx < seq.size() || comp_size > 0) {
+        /// step-wise consume pulse sequence
+        std::tie(comp, comp_size, idx) = seq.next();
+#ifndef NDEBUG
+        cout << "comp_size " << comp_size << " \t idx " << idx << endl;
+#endif
+        packets.updatePulseSeqComponent(comp);
 
         if(mas_inc_cnt > 0) { ///< with MAS
+          /// EvolutionCache is used per comp
           rho0_evolve = evolveMASCnstEmr(
               rho0_evolve, 
-              p.mas_frequency, prev_comp, 
+              p.mas_frequency, comp, 
               packets, rpackets, hamiltonian_offset,
               spin_sys_euler, mas_angle, g, 
               inc, comp_size, mas_inc_cnt, total_rotor_cnt, p.temperature);
@@ -215,25 +228,34 @@ namespace DnpRunner {
           mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
         }
         else {    // no MAS
-          int idx = uptr_cache->getCacheIdentity(comp);
-          if(idx < 0){
+          const auto temp_euler = spin_sys_euler * mas_angle;
+          auto [rotate_mat_super, rotate_mat_super_inv] = calcRotationSuperOps(
+              hamiltonian_offset, g, inc, comp_size);
+
+          int cache_idx = uptr_cache->getCacheIdentity(comp);
+          if(cache_idx < 0){
+            const auto ham = packets.genMatrix(temp_euler);
+            const auto ham_lab = ham + hamiltonian_offset; 
+            auto [h_super, gamma_super_internal, rho_eq_super] = 
+              calcSuperOpsForMasterEq(ham, ham_lab,
+                  rotate_mat_super, rotate_mat_super_inv,
+                  rpackets, p.temperature);
+            const auto super_op = calcLambdaSuper(h_super, gamma_super_internal);
+            uptr_cache->saveCache(comp, make_pair(super_op, rho_eq_super));
+            const auto scaling_factor = calcExpEvolve(super_op, inc, comp_size);
+            rho0_evolve = evolve(rho0_evolve, rho_eq_super, scaling_factor,
+                rotate_mat_super, rotate_mat_super_inv);
           }
           else {
-            const auto &[super_op, rho_inf_eq] = uptr_cache->getCache(idx);
+            const auto &[super_op, rho_eq_super] = uptr_cache->getCache(cache_idx);
+            const auto scaling_factor = calcExpEvolve(super_op, inc, comp_size);
+            rho0_evolve = evolve(rho0_evolve, rho_eq_super, scaling_factor,
+                rotate_mat_super, rotate_mat_super_inv);
           }
-
-          if(comp_size > 0){
-            auto temp_euler = spin_sys_euler * mas_angle;
-            rho0_evolve = propagate(rho0_evolve,
-                packets, hamiltonian_offset, rpackets,
-                g, temp_euler,
-                inc, comp_size, p.temperature); 
-            t += static_cast<double>(comp_size) * inc;
-          }
-        }
-        prev_comp = comp;
-        packets.updatePulseSeqComponent(comp);
-      } while(idx < seq.size() || comp_size > 0);
+          //t += static_cast<double>(comp_size) * inc;
+          //mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
+        } ///< no MAS
+      }
 
       double result = ::dnpsoup::projectionNorm(rho0_evolve, acq_mat).real();
       return result;
@@ -402,54 +424,92 @@ namespace DnpRunner {
       }
 
       uint64_t mas_inc_cnt = 0;
-      if (mas_inc > 0){
+      if (mas_inc > 0 && p.mas_frequency > 1.0 - eps){
         mas_inc_cnt = static_cast<uint64_t>(round(mas_inc/inc));
       }
-      uint64_t idx = 0;
 
       MatrixCxDbl hamiltonian = packets.genMatrix(spin_sys_euler * mas_angle);
       MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(spin_sys_euler * mas_angle);
       auto hamiltonian_lab = hamiltonian + hamiltonian_offset;
       MatrixCxDbl rho0_lab = genRhoEq(hamiltonian_lab, p.temperature);
-      const double result_ref = 
-        enhancement ? ::dnpsoup::projectionNorm(rho0_lab, acq_mat).real() : 1.0;
+      double val = ::dnpsoup::projectionNorm(rho0_lab, acq_mat).real();
+      const double result_ref = enhancement ? val : 1.0;
+      if(enhancement){
+        results.push_back(make_pair(0.0, 1.0));
+      } else {
+        results.push_back(make_pair(0.0, val));
+      }
 
       auto rho0_evolve = rho0_lab;
-      std::uint64_t cnt = 0u;    /// keep track of identical hamiltonians
       std::uint64_t comp_size = 0u;
+      uint64_t idx = 0;
+      pulseseq::Component comp;
 
-      pulseseq::Component prev_comp;
-      do {
-        pulseseq::Component comp;
-        comp_size = 0u;
-        if(idx < seq.size()){
-          std::tie(comp, comp_size, idx) = seq.next();
-        }
+      unique_ptr<EvolutionCacheStatic> uptr_cache = nullptr;
+      if (mas_inc_cnt == 0) {
+        uptr_cache = make_unique<EvolutionCacheStatic>(
+            seq.uniqueComponentsCount());
+      }
+      while(idx < seq.size() || comp_size > 0) {
+        /// step-wise consume pulse sequence
+        std::tie(comp, comp_size, idx) = seq.next();
+        packets.updatePulseSeqComponent(comp);
 
-        bool same_comp = packets.hasPulseSeqComponent(comp);
-        if(idx >= seq.size()){    // end of sequence
-          same_comp = false;
-        }
-
-        if(same_comp){
-          cnt += comp_size;
-          continue;
-        } else {
+        if(mas_inc_cnt > 0 || comp_size < mas_inc_cnt) { 
+          ///< with MAS or if need to recalculate super operators
           auto temp_results = evolveMASCnstEmr(
                 rho0_evolve, acq_mat, t, result_ref,
-                p.mas_frequency, prev_comp, 
+                p.mas_frequency, comp, 
                 packets, rpackets, hamiltonian_offset,
                 spin_sys_euler, mas_angle, g, 
-                inc, cnt, mas_inc_cnt, total_rotor_cnt, p.temperature);
-          prev_comp = comp;
-          packets.updatePulseSeqComponent(comp);
-          t += inc * static_cast<double>(cnt);
-          cnt = comp_size;
+                inc, comp_size, mas_inc_cnt, total_rotor_cnt, p.temperature);
+          t += inc * static_cast<double>(comp_size);
           mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
           std::copy(temp_results.begin(), temp_results.end(), 
               std::back_inserter(results));
         }
-      } while(idx < seq.size() || cnt > 0);
+        else {    ///< static and comp_size > mas_inc_cnt
+          auto [rotate_mat_super, rotate_mat_super_inv] = calcRotationSuperOps(
+              hamiltonian_offset, g, inc, mas_inc_cnt);
+          const auto temp_euler = spin_sys_euler * mas_angle;
+          int cache_idx = uptr_cache->getCacheIdentity(comp);
+          MatrixCxDbl h_super, gamma_super_internal, rho_eq_super, super_op;
+          if(cache_idx < 0){
+            const auto ham = packets.genMatrix(temp_euler);
+            const auto ham_lab = ham + hamiltonian_offset; 
+            std::tie(h_super, gamma_super_internal, rho_eq_super) = 
+              calcSuperOpsForMasterEq(ham, ham_lab,
+                  rotate_mat_super, rotate_mat_super_inv,
+                  rpackets, p.temperature);
+            const auto super_op = calcLambdaSuper(h_super, gamma_super_internal);
+            uptr_cache->saveCache(comp, make_pair(super_op, rho_eq_super));
+          }
+          else {
+            std::tie(super_op, rho_eq_super) = uptr_cache->getCache(cache_idx);
+          }
+          while(comp_size >= mas_inc_cnt){
+            const auto scaling_factor = calcExpEvolve(
+                super_op, inc, mas_inc_cnt);
+            rho0_evolve = evolve(rho0_evolve, rho_eq_super, scaling_factor,
+                rotate_mat_super, rotate_mat_super_inv);
+            t += inc * static_cast<double>(mas_inc_cnt);
+            double val = ::dnpsoup::projectionNorm(rho0_evolve, acq_mat).real();
+            results.push_back(make_pair(t, val));
+            comp_size -= mas_inc_cnt;
+          }
+          if(comp_size > 0){
+            auto [rotate_mat_super, rotate_mat_super_inv] = calcRotationSuperOps(
+                hamiltonian_offset, g, inc, comp_size);
+            const auto scaling_factor = calcExpEvolve(
+                super_op, inc, comp_size);
+            rho0_evolve = evolve(rho0_evolve, rho_eq_super, scaling_factor,
+                rotate_mat_super, rotate_mat_super_inv);
+            t += inc * static_cast<double>(comp_size);
+            double val = ::dnpsoup::projectionNorm(rho0_evolve, acq_mat).real();
+            results.push_back(make_pair(t, val));
+          }
+        }
+      }
       std::cout << "." << std::flush;
 
       return results;
