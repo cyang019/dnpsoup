@@ -77,8 +77,9 @@ namespace dnpsoup {
       : m_n_in_rotor_period(cnt), m_capacity(capacity),
       m_key(0)
   {
+    const pulseseq::Component default_comp = {{SpinType::Null, pulseseq::EMRadiation()}};
     m_cache_identities = std::vector<pulseseq::Component>(
-        m_capacity, pulseseq::Component());
+        m_capacity, default_comp);
     m_cache = std::vector<std::vector<EvolutionCacheElement>>(
         capacity, std::vector<EvolutionCacheElement>());
   }
@@ -86,8 +87,9 @@ namespace dnpsoup {
   EvolutionCache::EvolutionCache()
     : m_n_in_rotor_period(1u), m_capacity(1u), m_key(0u)
   {
+    const pulseseq::Component default_comp = {{SpinType::Null, pulseseq::EMRadiation()}};
     m_cache_identities = std::vector<pulseseq::Component>(
-        m_capacity, pulseseq::Component());
+        m_capacity, default_comp);
     m_cache = std::vector<std::vector<EvolutionCacheElement>>(
         m_capacity, std::vector<EvolutionCacheElement>());
   }

@@ -8,7 +8,7 @@
     "zcw": 4
   },
 
-  "ncores": 1,
+  "ncores": 2,
   
   "acq": "H",
   "field range": {

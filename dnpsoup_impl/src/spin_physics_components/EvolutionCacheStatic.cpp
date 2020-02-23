@@ -14,10 +14,12 @@ namespace dnpsoup {
   EvolutionCacheStatic::EvolutionCacheStatic(std::uint64_t capacity) 
       : m_capacity(capacity),
       m_key(0), 
-      m_cache_identities(capacity, pulseseq::Component()),
       m_cache(capacity, map<uint64_t, pair<MatrixCxDbl, MatrixCxDbl>>()),
       m_super_op_cache(capacity, MatrixCxDbl())
-  {}
+  {
+      const pulseseq::Component default_comp = {{SpinType::Null, pulseseq::EMRadiation()}};
+      m_cache_identities = vector<pulseseq::Component>(capacity, default_comp);
+  }
 
   const std::pair<MatrixCxDbl, MatrixCxDbl>& 
     EvolutionCacheStatic::getCache(
@@ -74,9 +76,10 @@ namespace dnpsoup {
       ++m_key;
       m_key %= m_capacity;
     }
+    //cout << "saveCache() cnt: " << cnt << endl;
 
     const auto scaling_factor = calcExpEvolve(super_op, dt, cnt);
-    m_cache[cache_idx].try_emplace(cnt, make_pair(scaling_factor, rho_eq_super));
+    m_cache[cache_idx].insert_or_assign(cnt, make_pair(scaling_factor, rho_eq_super));
     return *this;
   }
 
@@ -96,7 +99,8 @@ namespace dnpsoup {
       ++m_key;
       m_key %= m_capacity;
     }
-    m_cache[cache_idx].try_emplace(
+    //cout << "saveCache() cnt: " << cnt << endl;
+    m_cache[cache_idx].insert_or_assign(
         cnt, make_pair(scaling_factor, rho_eq_super));
     return *this;
   }
@@ -116,6 +120,7 @@ namespace dnpsoup {
     EvolutionCacheStatic::getCacheIdentity(
         const pulseseq::Component &comp, std::uint64_t cnt) const
   {
+    //cout << "getCacheIdentity(comp, " << cnt << ")" << endl;
     int idx = getCacheIdentity(comp);
     if(idx < 0) return make_pair(idx, false);
     bool found = (m_cache[idx].find(cnt) != m_cache[idx].end());

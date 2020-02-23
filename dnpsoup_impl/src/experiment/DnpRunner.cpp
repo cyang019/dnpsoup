@@ -214,6 +214,8 @@ namespace DnpRunner {
       while(idx < seq.size() || comp_size > 0) {
         /// step-wise consume pulse sequence
         std::tie(comp, comp_size, idx) = seq.next();
+        if(idx >= seq.size()) break;
+
 //#ifndef NDEBUG
 //        cout << "comp_size " << comp_size << " \t idx " << idx << endl;
 //#endif
@@ -235,8 +237,8 @@ namespace DnpRunner {
           auto [rotate_mat_super, rotate_mat_super_inv] = calcRotationSuperOps(
               hamiltonian_offset, g, inc, comp_size);
 
-          int cache_idx = uptr_cache->getCacheIdentity(comp);
-          if(cache_idx < 0){
+          auto [cache_idx, found_cnt] = uptr_cache->getCacheIdentity(comp, comp_size);
+          if(!found_cnt){
             const auto ham = packets.genMatrix(temp_euler);
             const auto ham_lab = ham + hamiltonian_offset; 
             auto [h_super, gamma_super_internal, rho_eq_super] = 
@@ -462,6 +464,8 @@ namespace DnpRunner {
       while(idx < seq.size() || comp_size > 0) {
         /// step-wise consume pulse sequence
         std::tie(comp, comp_size, idx) = seq.next();
+        if(idx >= seq.size()) break;
+
         packets.updatePulseSeqComponent(comp);
 
         if(mas_inc_cnt > 0 || comp_size < mas_inc_cnt) { 

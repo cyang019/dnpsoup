@@ -11,14 +11,14 @@
      "loop":
      {
        "type": "Section",
-       "size": 10,
+       "size": 2,
        "names": ["pulse_train", "d2"],
        "params": {}
      },
      "pulse_train":
      {
        "type": "Section",
-       "size": 100,
+       "size": 20,
        "names": ["p1", "d1"],
        "params": {}
      },

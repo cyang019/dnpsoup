@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
 #SPINFILE=examples/spinsys/BDPA_spinsys.json
-SPINFILE=examples/spinsys/TOTAPOL.json
-#SPINFILE=examples/spinsys/trityl.json
+#SPINFILE=examples/spinsys/TOTAPOL.json
+SPINFILE=examples/spinsys/trityl.json
 
 #PULSEFILE=examples/pulseseq/cw_pulse_short.json
-PULSEFILE=examples/pulseseq/cw_pulse.json
-#PULSEFILE=examples/pulseseq/topdnp.json
+#PULSEFILE=examples/pulseseq/cw_pulse.json
+PULSEFILE=examples/pulseseq/topdnp.json
 
-HARDWAREFILE=examples/hardware/400MHz263GHz.json
-#HARDWAREFILE=examples/hardware/14pt7MHz9pt7GHz0p35T.json
+#HARDWAREFILE=examples/hardware/400MHz263GHz.json
+HARDWAREFILE=examples/hardware/14pt7MHz9pt7GHz0p35T.json
 
 OUTPUT=results.log
 if [ -f $OUTPUT ]; then

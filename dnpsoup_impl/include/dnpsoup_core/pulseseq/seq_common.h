@@ -15,7 +15,6 @@ namespace dnpsoup {
 
     std::istream& operator>>(std::istream &is, Component &comp);
     std::ostream& operator<<(std::ostream &os, const Component &comp);
-
   } // namespace pulseseq
   bool sameValue(const pulseseq::Component &comp1, const pulseseq::Component &comp2, double eps);
 }
