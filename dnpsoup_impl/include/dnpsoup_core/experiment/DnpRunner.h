@@ -92,7 +92,7 @@ namespace dnpsoup {
         int ncores=1);
 
     MatrixCxDbl propagate(
-        const MatrixCxDbl &rho_prev, 
+        const MatrixCxDbl &rho_prev_super, 
         const MatrixCxDbl &hamiltonian,
         const MatrixCxDbl &hamiltonian_lab,
         const MatrixCxDbl &rotate_mat_super,
@@ -101,7 +101,7 @@ namespace dnpsoup {
         double dt, std::uint64_t cnt, double temperature);
 
     MatrixCxDbl propagate(
-        const MatrixCxDbl &rho_prev, 
+        const MatrixCxDbl &rho_prev_super, 
         const PacketCollection &packets,
         const MatrixCxDbl &hamiltonian_offset,
         const std::vector<RelaxationPacket> &rpackets,

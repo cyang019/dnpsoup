@@ -165,6 +165,21 @@ namespace dnpsoup {
   {
     return ::matrix::eigenVal<::matrix::EigenMethod::zheevd>(mat);
   }
+
+  inline double incToCycle(double inc, double freq)
+  {
+    const double resonance_step = 1.0/freq;
+    if (inc > resonance_step){
+      std::uint64_t cnt = static_cast<std::uint64_t>(
+          std::round(inc/resonance_step));
+      return resonance_step * (double)cnt;
+    }
+    else {
+      std::uint64_t cnt = static_cast<std::uint64_t>(
+          std::round(resonance_step/inc));
+      return resonance_step/(double)cnt;
+    }
+  }
 } // namespace dnpsoup
 
 #endif

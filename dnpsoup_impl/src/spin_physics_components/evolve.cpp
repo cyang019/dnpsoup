@@ -105,36 +105,36 @@ namespace dnpsoup {
   }
 
   MatrixCxDbl evolve(
-      const MatrixCxDbl &rho_prev,
+      const MatrixCxDbl &rho_prev_super,
       const MatrixCxDbl &rho_eq_super,
       const MatrixCxDbl &scaling_factor,
       const MatrixCxDbl &rotate_mat_super,
       const MatrixCxDbl &rotate_mat_super_inv
       )
   {
-    auto rho_prev_super = ::dnpsoup::flatten(rho_prev, 'c');
+    auto rho_super = rho_prev_super;
     if(rotate_mat_super.nrows() != 0 && rotate_mat_super_inv.nrows() != 0){
-      rho_prev_super = rotate_mat_super * rho_prev_super;
+      rho_super = rotate_mat_super * rho_prev_super;
     }
 
-    auto rho_super = evolveRho(rho_prev_super, rho_eq_super, scaling_factor);
+    rho_super = evolveRho(rho_super, rho_eq_super, scaling_factor);
     if(rotate_mat_super.nrows() != 0 && rotate_mat_super_inv.nrows() != 0){
-      rho_super = rotate_mat_super * rho_super;
+      rho_super = rotate_mat_super_inv * rho_super;
     }
-    MatrixCxDbl rho_post(rho_prev.nrows(), rho_prev.ncols());
+    //MatrixCxDbl rho_post(rho_prev.nrows(), rho_prev.ncols());
 
-    const auto nrows = rho_post.nrows();
-    const auto ncols = rho_post.ncols();
-    for(size_t i = 0; i < nrows; ++i){
-      for(size_t j = 0; j < ncols; ++j){
-        rho_post(i, j) = rho_super(j + i * ncols, 0);
-      }
-    }
-    return rho_post;
+    //const auto nrows = rho_post.nrows();
+    //const auto ncols = rho_post.ncols();
+    //for(size_t i = 0; i < nrows; ++i){
+    //  for(size_t j = 0; j < ncols; ++j){
+    //    rho_post(i, j) = rho_super(j + i * ncols, 0);
+    //  }
+    //}
+    return rho_super;
   }
 
   MatrixCxDbl evolveMASCnstEmr(
-      const MatrixCxDbl &rho_prev,
+      const MatrixCxDbl &rho_prev_super,
       double mas_frequency,
       const pulseseq::Component &comp,
       const PacketCollection &packets,
@@ -156,7 +156,7 @@ namespace dnpsoup {
     double t = 0.0;
     uint64_t rotor_cnt = 0u;
 
-    MatrixCxDbl rho_evolve = rho_prev;
+    MatrixCxDbl rho_evolve_super = rho_prev_super;
     
     while(cnt > 0){
       auto temp_euler = spin_sys_euler * mas_angle;
@@ -170,14 +170,14 @@ namespace dnpsoup {
                 rpackets, temperature);
           auto super_op = calcLambdaSuper(h_super, gamma_super_internal);
           auto scaling_factor = calcExpEvolve(super_op, inc, mas_inc_cnt);
-          rho_evolve = evolve(rho_evolve, rho_eq_super, 
+          rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, 
               scaling_factor, rotate_mat_super, rotate_mat_super_inv);
           cache.saveCache(comp, EvolutionCacheElement(scaling_factor, rho_eq_super)); 
         }
         else{ // retrieve from cache
           const auto idx = rotor_cnt % total_rotor_cnt;
           auto cache_elem = cache.getCache(0, idx);
-          rho_evolve = evolve(rho_evolve, 
+          rho_evolve_super = evolve(rho_evolve_super, 
               cache_elem.rho_inf_eq, cache_elem.scaling_factor,
               rotate_mat_super, rotate_mat_super_inv);
         }
@@ -200,17 +200,17 @@ namespace dnpsoup {
               rpackets, temperature);
         auto super_op = calcLambdaSuper(h_super, gamma_super_internal);
         auto scaling_factor = calcExpEvolve(super_op, inc, cnt);
-        rho_evolve = evolve(rho_evolve, rho_eq_super, 
+        rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, 
             scaling_factor, rotate_mat_super, rotate_mat_super_inv);
         cnt = 0;
       }
     }
-    return rho_evolve;
+    return rho_evolve_super;
   }
 
   std::vector<std::pair<double, double>> evolveMASCnstEmr(
-      const MatrixCxDbl &rho_prev,
-      const MatrixCxDbl &acq_mat,
+      const MatrixCxDbl &rho_prev_super,
+      const MatrixCxDbl &acq_mat_super,
       double t0,
       double result_ref,
       double mas_frequency,
@@ -234,7 +234,7 @@ namespace dnpsoup {
     double t = 0.0;
     uint64_t rotor_cnt = 0u;
 
-    MatrixCxDbl rho_evolve = rho_prev;
+    MatrixCxDbl rho_evolve_super = rho_prev_super;
     
     std::vector<std::pair<double, double>> results;
     while(cnt > 0){
@@ -249,19 +249,21 @@ namespace dnpsoup {
                 rpackets, temperature);
           auto super_op = calcLambdaSuper(h_super, gamma_super_internal);
           auto scaling_factor = calcExpEvolve(super_op, inc, mas_inc_cnt);
-          rho_evolve = evolve(rho_evolve, rho_eq_super, 
+          rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, 
               scaling_factor, rotate_mat_super, rotate_mat_super_inv);
           cache.saveCache(comp, EvolutionCacheElement(scaling_factor, rho_eq_super)); 
-          double result = ::dnpsoup::projectionNorm(rho_evolve, acq_mat).real();
+          double result = ::dnpsoup::projectionNorm(
+              rho_evolve_super, acq_mat_super).real();
           results.push_back(make_pair(t0 + t, result/result_ref));
         }
         else{ // retrieve from cache
           const auto idx = rotor_cnt % total_rotor_cnt;
           auto cache_elem = cache.getCache(0, idx);
-          rho_evolve = evolve(rho_evolve, 
+          rho_evolve_super = evolve(rho_evolve_super, 
               cache_elem.rho_inf_eq, cache_elem.scaling_factor,
               rotate_mat_super, rotate_mat_super_inv);
-          double result = ::dnpsoup::projectionNorm(rho_evolve, acq_mat).real();
+          double result = ::dnpsoup::projectionNorm(
+              rho_evolve_super, acq_mat_super).real();
           results.push_back(make_pair(t0 + t, result/result_ref));
         }
         
@@ -283,10 +285,11 @@ namespace dnpsoup {
               rpackets, temperature);
         auto super_op = calcLambdaSuper(h_super, gamma_super_internal);
         auto scaling_factor = calcExpEvolve(super_op, inc, cnt);
-        rho_evolve = evolve(rho_evolve, rho_eq_super, 
+        rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, 
             scaling_factor, rotate_mat_super, rotate_mat_super_inv);
         cnt = 0;
-        double result = ::dnpsoup::projectionNorm(rho_evolve, acq_mat).real();
+        double result = ::dnpsoup::projectionNorm(
+            rho_evolve_super, acq_mat_super).real();
         results.push_back(make_pair(t0 + t, result/result_ref));
       }
     }

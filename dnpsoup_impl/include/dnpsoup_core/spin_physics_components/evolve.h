@@ -68,7 +68,7 @@ namespace dnpsoup {
   }
 
   MatrixCxDbl evolve(
-      const MatrixCxDbl &rho_prev,
+      const MatrixCxDbl &rho_prev_super,
       const MatrixCxDbl &rho_eq_super,
       const MatrixCxDbl &scaling_factor,    ///< exp(-L*dt)
       const MatrixCxDbl &rotate_mat_super,
@@ -76,7 +76,7 @@ namespace dnpsoup {
       );
 
   MatrixCxDbl evolveMASCnstEmr(
-      const MatrixCxDbl &rho_prev,
+      const MatrixCxDbl &rho_prev_super,
       double mas_frequency,
       const pulseseq::Component &comp,
       const PacketCollection &packets,
@@ -92,8 +92,8 @@ namespace dnpsoup {
       double temperature);
 
   std::vector<std::pair<double, double>> evolveMASCnstEmr(
-      const MatrixCxDbl &rho_prev,
-      const MatrixCxDbl &detect_op,
+      const MatrixCxDbl &rho_prev_super,
+      const MatrixCxDbl &detect_op_super,
       double t0,
       double result_ref,
       double mas_frequency,

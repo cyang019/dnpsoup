@@ -1,4 +1,5 @@
 #include "dnpsoup_core/spin_physics_components/EvolutionCacheStatic.h"
+#include "dnpsoup_core/spin_physics_components/evolve.h"
 #include "dnpsoup_core/pulseseq/seq_common.h"
 #include "dnpsoup_core/errors.h"
 #include <string>
@@ -12,52 +13,91 @@ namespace dnpsoup {
   // ==========================
   EvolutionCacheStatic::EvolutionCacheStatic(std::uint64_t capacity) 
       : m_capacity(capacity),
-      m_key(0)
-  {
-    m_cache_identities = std::vector<pulseseq::Component>(
-        m_capacity, pulseseq::Component());
-    m_cache = std::vector<std::pair<MatrixCxDbl, MatrixCxDbl>>(
-        capacity, std::make_pair(MatrixCxDbl(), MatrixCxDbl()));
-  }
+      m_key(0), 
+      m_cache_identities(capacity, pulseseq::Component()),
+      m_cache(capacity, map<uint64_t, pair<MatrixCxDbl, MatrixCxDbl>>()),
+      m_super_op_cache(capacity, MatrixCxDbl())
+  {}
 
   const std::pair<MatrixCxDbl, MatrixCxDbl>& 
     EvolutionCacheStatic::getCache(
-      const pulseseq::Component &comp) const
+      const pulseseq::Component &comp, uint64_t cnt) const
   {
     int key_idx = getCacheIdentity(comp);
+#ifndef NDEBUG
     if(key_idx < 0) {
       throw CacheNotFoundError("Cache of the input component is missing.");
     }
 
-    return m_cache[key_idx];
+    if(m_cache[key_idx].find(cnt) == m_cache[key_idx].end()){
+      throw CacheNotFoundError(
+          "Cache of the input component with " 
+          + to_string(cnt) + " is missing.");
+    }
+#endif
+
+    return m_cache[key_idx].at(cnt);
   }
 
   const std::pair<MatrixCxDbl, MatrixCxDbl>& 
-    EvolutionCacheStatic::getCache(int key) const
+    EvolutionCacheStatic::getCache(int key, uint64_t cnt) const
   {
+#ifndef NDEBUG
     if (key < 0 || (std::uint64_t)key >= m_capacity){
       std::string err_msg = "Cache key not in range: "
         + to_string(key) + " not in [0, " + to_string(m_capacity) + "].";
       throw CacheError(err_msg);
     }
 
-    return m_cache[key];
+    if(m_cache[key].find(cnt) == m_cache[key].end()){
+      throw CacheNotFoundError(
+          "Cache of the input component with " 
+          + to_string(cnt) + " is missing.");
+    }
+#endif
+
+    return m_cache[key].at(cnt);
   }
 
   EvolutionCacheStatic& EvolutionCacheStatic::saveCache(
       const pulseseq::Component &comp, 
-      std::pair<MatrixCxDbl, MatrixCxDbl> &&elem)
+      const MatrixCxDbl &super_op,
+      const MatrixCxDbl &rho_eq_super,
+      std::uint64_t cnt,
+      double dt)
   {
     int cache_idx = getCacheIdentity(comp);
     if(cache_idx < 0){
       m_cache_identities[m_key] = comp;
-      m_cache[m_key] = std::move(elem);
+      m_super_op_cache[m_key] = super_op;
+      cache_idx = m_key;
       ++m_key;
       m_key %= m_capacity;
     }
-    else {
-      m_cache[cache_idx] = std::move(elem);      
+
+    const auto scaling_factor = calcExpEvolve(super_op, dt, cnt);
+    m_cache[cache_idx].try_emplace(cnt, make_pair(scaling_factor, rho_eq_super));
+    return *this;
+  }
+
+  EvolutionCacheStatic& EvolutionCacheStatic::saveCache(
+      const pulseseq::Component &comp,
+      const MatrixCxDbl &super_op,
+      const MatrixCxDbl &rho_eq_super,
+      const MatrixCxDbl &scaling_factor,
+      std::uint64_t cnt
+      )
+  {
+    int cache_idx = getCacheIdentity(comp);
+    if(cache_idx < 0){
+      m_cache_identities[m_key] = comp;
+      m_super_op_cache[m_key] = super_op;
+      cache_idx = m_key;
+      ++m_key;
+      m_key %= m_capacity;
     }
+    m_cache[cache_idx].try_emplace(
+        cnt, make_pair(scaling_factor, rho_eq_super));
     return *this;
   }
   
@@ -70,6 +110,16 @@ namespace dnpsoup {
       }
     }
     return idx;
+  }
+
+  std::pair<int, bool>
+    EvolutionCacheStatic::getCacheIdentity(
+        const pulseseq::Component &comp, std::uint64_t cnt) const
+  {
+    int idx = getCacheIdentity(comp);
+    if(idx < 0) return make_pair(idx, false);
+    bool found = (m_cache[idx].find(cnt) != m_cache[idx].end());
+    return make_pair(idx, found);
   }
 }   // namespace dnpsoup
 

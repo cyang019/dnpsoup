@@ -8,7 +8,7 @@
     "zcw": 4
   },
 
-  "ncores": 6,
+  "ncores": 4,
   
   "acq": "H",
   "field range": {
@@ -23,10 +23,10 @@
     "em_frequency": 263.0e9
   },
   "Probe": {
-      "mas_frequency": 1000.0,
+      "mas_frequency": 0.0,
       "temperature": 100.0,
       "mas_increment": 1e-6
   },
-  "task": "PowderBuildUpEnhancement"
+  "task": "FieldProfile"
 }
 
