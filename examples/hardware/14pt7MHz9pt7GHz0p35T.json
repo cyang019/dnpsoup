@@ -5,10 +5,10 @@
     "gamma": 0.0
   },
   "euler_scheme":{
-    "zcw": 4
+    "zcw": 2
   },
 
-  "ncores": 2,
+  "ncores": 3,
   
   "acq": "H",
   "field range": {

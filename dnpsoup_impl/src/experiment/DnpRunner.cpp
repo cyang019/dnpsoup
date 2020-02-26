@@ -35,6 +35,11 @@ namespace DnpRunner {
         const Euler<> &spin_sys_euler
         )
     {
+      auto irradiated_types = spin_sys.irradiated();
+      pulseseq::Component default_comp;
+      for(const auto &t : irradiated_types){
+        default_comp.insert_or_assign(t, pulseseq::EMRadiation());
+      }
       PulseSequence seq;
       istringstream iss(pulse_seq_str);
       try{
@@ -87,6 +92,7 @@ namespace DnpRunner {
         pulseseq::Component comp;
         std::tie(comp, comp_size, idx) = seq.next();
         if(idx == seq.size()) break;
+        packets.updatePulseSeqComponent(default_comp);
         packets.updatePulseSeqComponent(comp);
 
         while(comp_size > 0){
@@ -166,6 +172,11 @@ namespace DnpRunner {
             InteractionType::Shielding, sid, ValueName::offset, g.em_frequency);
       }
 
+      auto irradiated_types = spin_sys.irradiated();
+      pulseseq::Component default_comp;
+      for(const auto &t : irradiated_types){
+        default_comp.insert_or_assign(t, pulseseq::EMRadiation());
+      }
       PulseSequence seq;
       istringstream iss(pulse_seq_str);
       try{
@@ -219,6 +230,8 @@ namespace DnpRunner {
 //#ifndef NDEBUG
 //        cout << "comp_size " << comp_size << " \t idx " << idx << endl;
 //#endif
+//
+        packets.updatePulseSeqComponent(default_comp);
         packets.updatePulseSeqComponent(comp);
 
         if(mas_inc_cnt > 0) { ///< with MAS
@@ -379,6 +392,11 @@ namespace DnpRunner {
         bool enhancement)
     {
       constexpr double eps = std::numeric_limits<double>::epsilon();
+      auto irradiated_types = spin_sys.irradiated();
+      pulseseq::Component default_comp;
+      for(const auto &t : irradiated_types){
+        default_comp.insert_or_assign(t, pulseseq::EMRadiation());
+      }
       PulseSequence seq;
       istringstream iss(pulse_seq_str);
       try{
@@ -466,6 +484,7 @@ namespace DnpRunner {
         std::tie(comp, comp_size, idx) = seq.next();
         if(idx >= seq.size()) break;
 
+        packets.updatePulseSeqComponent(default_comp);
         packets.updatePulseSeqComponent(comp);
 
         if(mas_inc_cnt > 0 || comp_size < mas_inc_cnt) { 

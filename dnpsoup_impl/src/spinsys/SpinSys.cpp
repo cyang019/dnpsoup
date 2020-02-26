@@ -298,6 +298,7 @@ namespace dnpsoup {
     irradiation.setProperty(p);
     auto oid_name = ObservableId(InteractionType::EMR, t);
     m_observables[oid_name] = irradiation;
+    m_irradiated_types.push_back(t);
     return *this;
   }
 

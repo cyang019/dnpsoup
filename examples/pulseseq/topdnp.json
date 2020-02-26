@@ -25,14 +25,14 @@
      "p1":
      {
        "type": "Pulse",
-       "size": 30,
+       "size": 28,
        "names": ["emr1"],
        "params": {}
      },
      "d1":
      {
        "type": "Delay",
-       "size": 54,
+       "size": 56,
        "names": [],
        "params": {}
      },

@@ -70,6 +70,7 @@ namespace dnpsoup {
     // ===============================================
     
     SpinSys& irradiateOn(const SpinType &);
+    std::vector<SpinType> irradiated() const  { return m_irradiated_types; }
 
     /// @returns matrix for I+ operator
     MatrixCxDbl acquireOn(const SpinType &) const;
@@ -108,6 +109,7 @@ namespace dnpsoup {
     std::unordered_map<ObservableId, Observable, ObservableIdHash> m_observables;
     Euler<> m_e;
     std::size_t m_ntotal;
+    std::vector<SpinType> m_irradiated_types;
 
     /// need to use position info from SpinSys
     template<typename T>

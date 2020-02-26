@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-#SPINFILE=examples/spinsys/BDPA_spinsys.json
+SPINFILE=examples/spinsys/BDPA_spinsys.json
 #SPINFILE=examples/spinsys/TOTAPOL.json
-SPINFILE=examples/spinsys/trityl.json
+#SPINFILE=examples/spinsys/trityl.json
 
 #PULSEFILE=examples/pulseseq/cw_pulse_short.json
 #PULSEFILE=examples/pulseseq/cw_pulse.json
