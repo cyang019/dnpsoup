@@ -6,7 +6,8 @@ SPINFILE=examples/spinsys/BDPA_spinsys.json
 
 #PULSEFILE=examples/pulseseq/cw_pulse_short.json
 #PULSEFILE=examples/pulseseq/cw_pulse.json
-PULSEFILE=examples/pulseseq/topdnp.json
+#PULSEFILE=examples/pulseseq/topdnp.json
+PULSEFILE=examples/pulseseq/NOVEL.json
 
 #HARDWAREFILE=examples/hardware/400MHz263GHz.json
 HARDWAREFILE=examples/hardware/14pt7MHz9pt7GHz0p35T.json
