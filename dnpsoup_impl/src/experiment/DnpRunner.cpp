@@ -49,7 +49,8 @@ namespace DnpRunner {
         throw PulseSequenceError(e.what());
       }
 
-      const double inc = seq.getIncrement();
+      double inc = seq.getIncrement();
+      inc = roundToCycle(inc, g.em_frequency);
       vector<vector<double>> results;
       auto packets = spin_sys.summarize<DnpExperiment>();
       auto offset_packets = spin_sys.summarizeOffset<DnpExperiment>();
@@ -186,7 +187,8 @@ namespace DnpRunner {
         throw PulseSequenceError(e.what());
       }
       unique_ptr<EvolutionCacheStatic> uptr_cache = nullptr;
-      const double inc = seq.getIncrement();
+      double inc = seq.getIncrement();
+      inc = roundToCycle(inc, g.em_frequency);
       uint64_t mas_inc_cnt = 0;
       if (mas_inc > 0 && p.mas_frequency > 1.0 - eps){
         mas_inc_cnt = static_cast<uint64_t>(round(mas_inc/inc));
@@ -406,6 +408,7 @@ namespace DnpRunner {
         throw PulseSequenceError(e.what());
       }
       double inc = seq.getIncrement();
+      inc = roundToCycle(inc, g.em_frequency);
 
       vector<pair<double, double>> results;
       auto packets = spin_sys.summarize<DnpExperiment>();

@@ -3,10 +3,10 @@
    "components": 
    {
      "emr1": {
-            "e": { "frequency": 15.0e6, "phase": 0.0, "offset": 0.0 }
+            "e": { "frequency": 14.9e6, "phase": 0.0, "offset": 0.0 }
            },
      "emr2": {
-            "e": { "frequency": 15.0e6, "phase": 90.0, "offset": 0.0 }
+            "e": { "frequency": 14.9e6, "phase": 1.5707963, "offset": 0.0 }
            }
    },
    "sections":
@@ -35,7 +35,7 @@
      "d":
      {
        "type": "Delay",
-       "size": 10000,
+       "size": 130000,
        "names": [],
        "params": {}
      }

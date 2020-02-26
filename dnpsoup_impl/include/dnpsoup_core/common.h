@@ -166,7 +166,7 @@ namespace dnpsoup {
     return ::matrix::eigenVal<::matrix::EigenMethod::zheevd>(mat);
   }
 
-  inline double incToCycle(double inc, double freq)
+  inline double roundToCycle(double inc, double freq)
   {
     const double resonance_step = 1.0/freq;
     if (inc > resonance_step){

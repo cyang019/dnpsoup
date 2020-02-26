@@ -91,7 +91,7 @@ namespace dnpsoup {
     const double cycle = dt * static_cast<double>(cnt) * g.em_frequency;
     double cycle_int_part;
     double cycle_fraction_part = modf(cycle, &cycle_int_part);
-    if (std::abs(cycle_fraction_part) < eps) {
+    if (std::abs(cycle_fraction_part) < 1.0e-4) {
       // placeholders
       MatrixCxDbl rotate_mat_super, rotate_mat_super_inv;
       return make_pair(rotate_mat_super, rotate_mat_super_inv);
