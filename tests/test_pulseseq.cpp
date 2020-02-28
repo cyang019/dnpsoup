@@ -149,7 +149,7 @@ namespace {
         "     \"d2\":"
         "     {"
         "       \"type\": \"Delay\","
-        "       \"size\": 100,"
+        "       \"size\": 1000,"
         "       \"names\": [],"
         "       \"params\": {}"
         "     }"
@@ -169,6 +169,8 @@ namespace {
       while(idx < top_dnp_seq.size()){
         std::tie(temp, sz, idx) = top_dnp_seq.next();
         if(idx >= top_dnp_seq.size()) break;
+        std::cout << "temp: " << temp << "\t\t"
+                  << "sz: " << sz << " idx: " << idx << std::endl;
         emrs.push_back(temp);
       }
 

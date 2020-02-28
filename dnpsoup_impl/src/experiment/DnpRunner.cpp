@@ -194,7 +194,7 @@ namespace DnpRunner {
       inc = roundToCycle(inc, g.em_frequency);
       uint64_t mas_inc_cnt = static_cast<uint64_t>(round(mas_inc/inc));
 
-      if (p.mas_frequency < 1.0-eps) {
+      if (p.mas_frequency < eps) {
 //#ifndef NDEBUG
 //        cout << "EvolutionCacheStatic capacity: " << seq.uniqueComponentsCount() << endl;
 //#endif
@@ -239,7 +239,7 @@ namespace DnpRunner {
         packets.updatePulseSeqComponent(default_comp);
         packets.updatePulseSeqComponent(comp);
 
-        if(p.mas_frequency > 1.0 - eps) { ///< with MAS
+        if(p.mas_frequency > eps) { ///< with MAS
           /// EvolutionCache is used per comp
           rho0_evolve_super = evolveMASCnstEmr(
               rho0_evolve_super, 
@@ -485,12 +485,21 @@ namespace DnpRunner {
       while(idx < seq.size() || comp_size > 0) {
         /// step-wise consume pulse sequence
         std::tie(comp, comp_size, idx) = seq.next();
+#ifdef DNPSOUP_VERBOSE
+        cout << "comp: " << comp << "\n"
+             << "comp_size: " << comp_size << "\n"
+             << "idx: " << idx << "\n" << endl;
+#endif
+
         if(idx >= seq.size()) break;
 
         packets.updatePulseSeqComponent(default_comp);
         packets.updatePulseSeqComponent(comp);
 
-        if(p.mas_frequency > 1.0 - eps || comp_size < mas_inc_cnt) { 
+        if(p.mas_frequency > eps || comp_size < mas_inc_cnt) { 
+#ifdef DNPSOUP_VERBOSE
+          cout << "call evolveMASCnstEmr()..." << "\n";
+#endif
           ///< with MAS or if need to recalculate super operators
           auto temp_results = evolveMASCnstEmr(
                 rho0_evolve_super, acq_mat_super, t, result_ref,
@@ -504,6 +513,9 @@ namespace DnpRunner {
               std::back_inserter(results));
         }
         else {    ///< static and comp_size > mas_inc_cnt
+#ifdef DNPSOUP_VERBOSE
+          cout << "static evolve..." << "\n";
+#endif
           auto [rotate_mat_super, rotate_mat_super_inv] = calcRotationSuperOps(
               hamiltonian_offset, g, inc, mas_inc_cnt);
           const auto temp_euler = spin_sys_euler * mas_angle;
@@ -511,9 +523,9 @@ namespace DnpRunner {
             = uptr_cache->getCacheIdentity(comp, mas_inc_cnt);
           MatrixCxDbl h_super, gamma_super_internal, rho_eq_super, super_op;
           MatrixCxDbl scaling_factor;
+          const auto ham = packets.genMatrix(temp_euler);
+          const auto ham_lab = ham + hamiltonian_offset; 
           if(!has_super_op_section){
-            const auto ham = packets.genMatrix(temp_euler);
-            const auto ham_lab = ham + hamiltonian_offset; 
             std::tie(h_super, gamma_super_internal, rho_eq_super) = 
               calcSuperOpsForMasterEq(ham, ham_lab,
                   rotate_mat_super, rotate_mat_super_inv,
@@ -528,15 +540,18 @@ namespace DnpRunner {
                 cache_idx, mas_inc_cnt);
           }
 #ifdef DNPSOUP_VERBOSE
-          cout << setprecision(12);
-          cout << "emr comp: " << comp << endl;
-          cout << "\nrho0_evolve_super:\n" << rho0_evolve_super
-               << "\nrho_eq_super:\n" << rho_eq_super
-               << "\nscaling_factor:\n" << scaling_factor
-               << "\nrotate_mat_super:\n" << rotate_mat_super
-               << "\nrotate_mat_super_inv:\n" << rotate_mat_super_inv << endl;
+          //cout << setprecision(12);
+          //cout << "emr comp: " << comp << endl;
+          //cout << "\nrho0_evolve_super:\n" << rho0_evolve_super
+          //     << "\nrho_eq_super:\n" << rho_eq_super
+          //     << "\nscaling_factor:\n" << scaling_factor
+          //     << "\nrotate_mat_super:\n" << rotate_mat_super
+          //     << "\nrotate_mat_super_inv:\n" << rotate_mat_super_inv << endl;
 #endif
           while(comp_size >= mas_inc_cnt){
+#ifdef DNPSOUP_VERBOSE
+            cout << "in static case, call evolve() with comp_size: " << comp_size << endl;
+#endif
             rho0_evolve_super = evolve(rho0_evolve_super, rho_eq_super,
                 scaling_factor,
                 rotate_mat_super, rotate_mat_super_inv);
@@ -547,9 +562,14 @@ namespace DnpRunner {
             comp_size -= mas_inc_cnt;
           }
           if(comp_size > 0){
-            auto [rotate_mat_super, rotate_mat_super_inv] = calcRotationSuperOps(
+            std::tie(rotate_mat_super, rotate_mat_super_inv) = calcRotationSuperOps(
                 hamiltonian_offset, g, inc, comp_size);
-            const auto scaling_factor = calcExpEvolve(
+            std::tie(h_super, gamma_super_internal, rho_eq_super) = 
+              calcSuperOpsForMasterEq(ham, ham_lab,
+                  rotate_mat_super, rotate_mat_super_inv,
+                  rpackets, p.temperature);
+            super_op = calcLambdaSuper(h_super, gamma_super_internal);
+            scaling_factor = calcExpEvolve(
                 super_op, inc, comp_size);
             rho0_evolve_super = evolve(rho0_evolve_super, rho_eq_super, 
                 scaling_factor,

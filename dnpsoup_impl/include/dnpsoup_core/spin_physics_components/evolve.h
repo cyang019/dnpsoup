@@ -26,15 +26,20 @@ namespace dnpsoup {
       size_t cnt)
   {
 #ifdef DNPSOUP_VERBOSE
-    std::cout << "mas_inc_cnt: " << cnt << std::endl;
+    std::cout << "calcExpEvolve: " << "inc: " << t_atomic 
+                                   << "  cnt " << cnt << std::endl;
 #endif
     auto scaling_factor = ::dnpsoup::exp(cxdbl(-1.0 * t_atomic, 0) * super_op);
 #ifdef DNPSOUP_VERBOSE
-    std::cout << "unit scaling_factor:\n" << scaling_factor << std::endl;
+    std::cout << "scaling_factor shape: " 
+              << scaling_factor.nrows() << ", " 
+              << scaling_factor.ncols() << "\n";
 #endif
     scaling_factor = ::dnpsoup::pow(scaling_factor, cnt);
 #ifdef DNPSOUP_VERBOSE
-    std::cout << "scaling_factor:\n" << scaling_factor << std::endl;
+    std::cout << "scaling_factor shape: " 
+              << scaling_factor.nrows() << ", " 
+              << scaling_factor.ncols() << "\n";
 #endif
     return scaling_factor;
   }

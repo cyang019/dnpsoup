@@ -27,6 +27,6 @@
       "temperature": 100.0,
       "mas_increment": 1e-6
   },
-  "task": "BuildUp"
+  "task": "PowderBuildUpEnhancement"
 }
 
