@@ -47,19 +47,20 @@ namespace dnpsoup {
 
       virtual std::vector<Name> getNames() const = 0;
 
-      virtual std::uint64_t size() const { return m_sz; }
-      virtual void setSize(std::uint64_t n) { m_sz = n; }
-      virtual std::uint64_t getIndex() const { return m_idx; }
-      virtual void resetIndex() { m_idx = 0; }
+      virtual std::uint64_t size() const { return sz_; }
+      virtual void setSize(std::uint64_t n) { sz_ = n; }
+      virtual std::uint64_t getIndex() const { return idx_; }
+      virtual void resetIndex() { idx_ = 0; }
 
       double getParam(const Name &n) const { return m_params.at(n); }
       void setParam(const Name &, double);
+
       std::vector<Name> getParamNames() const;
 
       Name name;
     protected:
-      std::uint64_t m_sz;   ///< number of iterations
-      std::uint64_t m_idx;
+      std::uint64_t sz_;   ///< number of iterations
+      std::uint64_t idx_;
     private:
       std::map<Name, double> m_params;
     };

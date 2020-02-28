@@ -6,7 +6,7 @@
             "e": { "frequency": 14.9e6, "phase": 0.0, "offset": 0.0 }
            },
      "emr2": {
-            "e": { "frequency": 14.9e6, "phase": 1.5707963, "offset": 0.0 }
+            "e": { "frequency": 14.9e6, "phase": 90.0, "offset": 0.0 }
            }
    },
    "sections":
@@ -14,9 +14,13 @@
      "loop":
      {
        "type": "Section",
-       "size": 20,
+       "size": 100,
        "names": ["p1", "p2", "d"],
-       "params": {}
+       "params": {},
+       "phase0": {
+         "reset": true,
+         "seed": 0
+       }
      },
      "p1":
      {

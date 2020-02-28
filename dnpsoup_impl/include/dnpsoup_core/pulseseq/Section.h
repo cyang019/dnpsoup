@@ -11,6 +11,9 @@ namespace dnpsoup {
       Section();
       Section(const std::vector<Name> &);
       Section(std::uint64_t, const std::vector<Name> &);
+      Section(std::uint64_t, const std::vector<Name> &, bool flag_reset);
+      Section(std::uint64_t, const std::vector<Name> &, 
+          bool flag_reset, std::uint64_t seed);
       Section(const Section &) = default;
       Section(Section &&) noexcept = default;
       Section& operator=(const Section &) = default;
@@ -28,8 +31,15 @@ namespace dnpsoup {
       virtual void resetIndex() override;
     private:
       /// names in sections
-      std::vector<Name> m_names;
-      std::uint64_t m_names_idx;  ///< current index in m_names
+      std::vector<Name> names_;
+      std::uint64_t names_idx_;  ///< current index in m_names
+
+      bool use_random_phase0_;
+      std::uint_fast64_t seed_;    
+      double phase0_;
+      
+      std::uniform_real_distribution<> dist_;
+      std::mt19937 gen_;
     };
   } // namespace pulseseq
 } // namespace dnpsoup

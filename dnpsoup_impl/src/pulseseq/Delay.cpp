@@ -18,12 +18,12 @@ namespace dnpsoup {
         [[maybe_unused]] std::map<Name, std::unique_ptr<SubSequenceInterface>> *sections
         )
     {
-      if(m_idx == 0){
-        m_idx += m_sz;
-        return make_tuple(Component(), m_sz, 0);
+      if(idx_ == 0){
+        idx_ += sz_;
+        return make_tuple(Component(), sz_, 0);
       } else {
-        m_idx = 0;
-        return make_tuple(Component(), 0, m_sz);
+        idx_ = 0;
+        return make_tuple(Component(), 0, sz_);
       }
     }
 

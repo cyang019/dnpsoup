@@ -1,3 +1,4 @@
+#include "configure_dnpsoup.h"
 #include "dnpsoup_core/experiment/DnpRunner.h"
 #include "dnpsoup_core/spinsys/HamiltonianPacket.h"
 #include "dnpsoup_core/experiment/experiment_types.h"
@@ -16,6 +17,8 @@
 #include <iterator>
 #include <utility>
 #include <sstream>
+#include <iostream>
+#include <iomanip>
 #include <string>
 #include <cmath>
 #include <memory>
@@ -141,7 +144,7 @@ namespace DnpRunner {
       auto rpackets = spin_sys.summarizeRelaxation();
       auto acq_mat = spin_sys.acquireOn(acq_spin);
       auto acq_mat_super = ::dnpsoup::flatten(acq_mat, 'c');
-      double mas_inc = -1;
+      double mas_inc = p.mas_increment;
 
       double rotor_period = 0.0;
       uint64_t total_rotor_cnt = 0u;
@@ -189,12 +192,9 @@ namespace DnpRunner {
       unique_ptr<EvolutionCacheStatic> uptr_cache = nullptr;
       double inc = seq.getIncrement();
       inc = roundToCycle(inc, g.em_frequency);
-      uint64_t mas_inc_cnt = 0;
-      if (mas_inc > 0 && p.mas_frequency > 1.0 - eps){
-        mas_inc_cnt = static_cast<uint64_t>(round(mas_inc/inc));
-      }
+      uint64_t mas_inc_cnt = static_cast<uint64_t>(round(mas_inc/inc));
 
-      if (mas_inc_cnt == 0) {
+      if (p.mas_frequency < 1.0-eps) {
 //#ifndef NDEBUG
 //        cout << "EvolutionCacheStatic capacity: " << seq.uniqueComponentsCount() << endl;
 //#endif
@@ -227,6 +227,9 @@ namespace DnpRunner {
       while(idx < seq.size() || comp_size > 0) {
         /// step-wise consume pulse sequence
         std::tie(comp, comp_size, idx) = seq.next();
+#ifndef NDEBUG
+        //std::cout << comp << std::endl;
+#endif
         if(idx >= seq.size()) break;
 
 //#ifndef NDEBUG
@@ -236,7 +239,7 @@ namespace DnpRunner {
         packets.updatePulseSeqComponent(default_comp);
         packets.updatePulseSeqComponent(comp);
 
-        if(mas_inc_cnt > 0) { ///< with MAS
+        if(p.mas_frequency > 1.0 - eps) { ///< with MAS
           /// EvolutionCache is used per comp
           rho0_evolve_super = evolveMASCnstEmr(
               rho0_evolve_super, 
@@ -453,10 +456,7 @@ namespace DnpRunner {
             InteractionType::Shielding, sid, ValueName::offset, g.em_frequency);
       }
 
-      uint64_t mas_inc_cnt = 0;
-      if (mas_inc > 0 && p.mas_frequency > 1.0 - eps){
-        mas_inc_cnt = static_cast<uint64_t>(round(mas_inc/inc));
-      }
+      uint64_t mas_inc_cnt = static_cast<uint64_t>(round(mas_inc/inc));
 
       MatrixCxDbl hamiltonian = packets.genMatrix(spin_sys_euler * mas_angle);
       MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(spin_sys_euler * mas_angle);
@@ -472,13 +472,13 @@ namespace DnpRunner {
 
       auto rho0_evolve = rho0_lab;
       auto rho0_evolve_super = ::dnpsoup::flatten(rho0_evolve, 'c');
-      auto acq_mat_super = ::dnpsoup::flatten(rho0_evolve, 'c');
+      auto acq_mat_super = ::dnpsoup::flatten(acq_mat, 'c');
       std::uint64_t comp_size = 0u;
       uint64_t idx = 0;
       pulseseq::Component comp;
 
       unique_ptr<EvolutionCacheStatic> uptr_cache = nullptr;
-      if (mas_inc_cnt == 0) {
+      if (p.mas_frequency < 1.0 - eps) {
         uptr_cache = make_unique<EvolutionCacheStatic>(
             seq.uniqueComponentsCount());
       }
@@ -490,7 +490,7 @@ namespace DnpRunner {
         packets.updatePulseSeqComponent(default_comp);
         packets.updatePulseSeqComponent(comp);
 
-        if(mas_inc_cnt > 0 || comp_size < mas_inc_cnt) { 
+        if(p.mas_frequency > 1.0 - eps || comp_size < mas_inc_cnt) { 
           ///< with MAS or if need to recalculate super operators
           auto temp_results = evolveMASCnstEmr(
                 rho0_evolve_super, acq_mat_super, t, result_ref,
@@ -518,8 +518,8 @@ namespace DnpRunner {
               calcSuperOpsForMasterEq(ham, ham_lab,
                   rotate_mat_super, rotate_mat_super_inv,
                   rpackets, p.temperature);
-            const auto super_op = calcLambdaSuper(h_super, gamma_super_internal);
-            const auto scaling_factor = calcExpEvolve(super_op, inc, mas_inc_cnt);
+            super_op = calcLambdaSuper(h_super, gamma_super_internal);
+            scaling_factor = calcExpEvolve(super_op, inc, mas_inc_cnt);
             uptr_cache->saveCache(comp, super_op, rho_eq_super, 
                 scaling_factor, mas_inc_cnt);
           }
@@ -527,6 +527,15 @@ namespace DnpRunner {
             std::tie(scaling_factor, rho_eq_super) = uptr_cache->getCache(
                 cache_idx, mas_inc_cnt);
           }
+#ifdef DNPSOUP_VERBOSE
+          cout << setprecision(12);
+          cout << "emr comp: " << comp << endl;
+          cout << "\nrho0_evolve_super:\n" << rho0_evolve_super
+               << "\nrho_eq_super:\n" << rho_eq_super
+               << "\nscaling_factor:\n" << scaling_factor
+               << "\nrotate_mat_super:\n" << rotate_mat_super
+               << "\nrotate_mat_super_inv:\n" << rotate_mat_super_inv << endl;
+#endif
           while(comp_size >= mas_inc_cnt){
             rho0_evolve_super = evolve(rho0_evolve_super, rho_eq_super,
                 scaling_factor,

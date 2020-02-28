@@ -10,6 +10,7 @@
 #include <map>
 #include <string>
 #include <iostream>
+#include <random>
 
 
 namespace dnpsoup {

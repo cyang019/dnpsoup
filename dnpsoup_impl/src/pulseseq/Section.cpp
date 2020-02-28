@@ -7,21 +7,42 @@ using namespace std;
 namespace dnpsoup {
   namespace pulseseq {
     Section::Section()
-      : SubSequenceInterface(), m_names_idx(0)
+      : SubSequenceInterface(), names_idx_(0), phase0_(0.0)
     {}
 
     Section::Section(const vector<Name> &component_names)
-      : SubSequenceInterface(), m_names(component_names), m_names_idx(0)
+      : SubSequenceInterface(), names_(component_names), names_idx_(0),
+      use_random_phase0_(false), seed_(0u), phase0_(0.0)
     {}
 
     Section::Section(std::uint64_t sz, const vector<Name> &component_names)
-      : SubSequenceInterface(sz), m_names(component_names), m_names_idx(0)
+      : SubSequenceInterface(sz), names_(component_names), names_idx_(0),
+      use_random_phase0_(false), seed_(0u), phase0_(0.0)
     {}
+
+    Section::Section(
+        std::uint64_t sz, const std::vector<Name> &comp_names, 
+        bool flag_phase0)
+      : SubSequenceInterface(sz), names_(comp_names), names_idx_(0),
+      use_random_phase0_(flag_phase0), seed_(0u),
+      dist_(0.0, 360.0), gen_(seed_)
+    {
+      phase0_ = dist_(gen_) * use_random_phase0_;
+    }
+
+    Section::Section(std::uint64_t sz, const std::vector<Name> &comp_names, 
+        bool flag_phase0, std::uint64_t seed)
+      : SubSequenceInterface(sz), names_(comp_names),
+      use_random_phase0_(flag_phase0), seed_(seed),
+      dist_(0.0, 360.0), gen_(seed)
+    {
+      phase0_ = dist_(gen_) * use_random_phase0_;
+    }
 
     void Section::resetIndex()
     {
-      m_names_idx = 0;
-      m_idx = 0;
+      names_idx_ = 0;
+      idx_ = 0;
     }
 
     std::tuple<Component, std::uint64_t, std::uint64_t> Section::next(
@@ -30,30 +51,32 @@ namespace dnpsoup {
         )
     {
       /// to track iterations
-      if(m_idx >= m_sz){    // protected members of SubSequenceInterface (parent)
-        m_idx = 0;
-        m_names_idx = 0;
-        //cout << "[Termination] section " << this->name << ": " << " m_idx: " << m_idx << " " << " m_names_idx: " << m_names_idx << endl;
-        return make_tuple(Component(), 0, m_sz);
+      if(idx_ >= sz_){    // protected members of SubSequenceInterface (parent)
+        idx_ = 0;
+        names_idx_ = 0;
+        return make_tuple(Component(), 0, sz_);
       }
 
-      while(m_idx < m_sz){
+      /// iterate through Section
+      while(idx_ < sz_){
         // per iteration
-        if(m_names_idx >= m_names.size()){
-          ++m_idx;
+        if(names_idx_ >= names_.size()){
+          ++idx_;
+          phase0_ = dist_(gen_);
           // next iteration, reset all indices
-          m_names_idx = 0;
-          for(const auto &name : m_names){
+          names_idx_ = 0;
+          for(const auto &name : names_){
             (sections->at(name))->resetIndex();
           }
+          // increment idx_
           continue;
         }
 
         // within the iteration
         std::uint64_t component_idx = 0;
         Component p;
-        while(m_names_idx < m_names.size()){  // iterate through a vector
-          auto sub_name = m_names[m_names_idx];
+        while(names_idx_ < names_.size()){  // iterate through a vector
+          auto sub_name = names_[names_idx_];
           if(sections->find(sub_name) == sections->end()){
             const std::string error_str = "cannot find section " + sub_name + ".";
             throw PulseSequenceError(error_str);
@@ -66,21 +89,24 @@ namespace dnpsoup {
           uint64_t comp_size = 0;
           std::tie(p, comp_size, component_idx) = (sections->at(sub_name))->next(components, sections);
           if(component_idx >= sections->at(sub_name)->size()){
-            ++m_names_idx;
+            ++names_idx_;
             // go to the next loop to return result
             continue;
           }
           else {
-            return make_tuple(p, comp_size, m_idx);
+            for(auto &[spin_t, emr] : p){
+              emr.phase += phase0_ * use_random_phase0_;
+            }
+            return make_tuple(p, comp_size, idx_);
           }
         } // inner while loop
       } // outer while loop for iteration
 
       // finished iteration
-      m_idx = 0;
-      m_names_idx = 0;
-      //cout << "[Termination] section " << this->name << ": " << " m_idx: " << m_idx << " " << " m_names_idx: " << m_names_idx << endl;
-      return make_tuple(Component(), 0, m_sz);
+      idx_ = 0;
+      names_idx_ = 0;
+      //cout << "[Termination] section " << this->name << ": " << " idx_: " << idx_ << " " << " names_idx_: " << names_idx_ << endl;
+      return make_tuple(Component(), 0, sz_);
     }
 
     SequenceType Section::type() const 
@@ -89,7 +115,7 @@ namespace dnpsoup {
     // return subsequence names
     std::vector<Name> Section::getNames() const
     {
-      return m_names;
+      return names_;
     }
   } // namespace pulseseq
 } // namespace dnpsoup

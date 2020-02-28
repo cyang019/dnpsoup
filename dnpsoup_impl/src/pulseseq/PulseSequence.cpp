@@ -20,18 +20,23 @@ namespace dnpsoup {
 namespace pulseseq{
   PulseSequence::PulseSequence()
     : name("default"), m_inc(1.0e-9), m_idx(0)
-  {}
+  {
+  }
+
   PulseSequence::PulseSequence(double inc)
     : name("default"), m_inc(inc), m_idx(0)
-  {}
+  {
+  }
 
   PulseSequence::PulseSequence(const std::string &name, double inc)
     : name(name), m_inc(inc), m_idx(0)
-  {}
+  {
+  }
 
   PulseSequence::PulseSequence(const std::string &name)
     : name(name), m_inc(1.0e-9), m_idx(0)
-  {}
+  {
+  }
 
   PulseSequence::~PulseSequence()
   {}
@@ -191,7 +196,17 @@ namespace pulseseq{
           ptr_member = make_unique<Delay>(sz);
         }
         else if(seq_type == SequenceType::SectionType){
-          ptr_member = make_unique<Section>(sz, member_names);
+          bool use_phase0 = false;
+          std::uint_fast64_t seed = 0u;
+          if(section_info_js.find("phase0") != section_info_js.end()){
+            if(section_info_js["phase0"].find("reset") != section_info_js["phase0"].end()){
+              use_phase0 = section_info_js["phase0"]["reset"].get<bool>();
+            }
+            if(section_info_js["phase0"].find("seed") != section_info_js["phase0"].end()){
+              seed = section_info_js["phase0"]["seed"].get<std::uint_fast64_t>();
+            }
+          }
+          ptr_member = make_unique<Section>(sz, member_names, use_phase0, seed);
         }
         else{   // not implemented.
 #ifndef NDEBUG

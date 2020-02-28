@@ -57,13 +57,13 @@ namespace dnpsoup {
   MatrixCxDbl EMInteraction<T>::genMatrixInternal(const Property &p) const
   {
     const double freq = p.get(ValueName::freq);
-    const double phase = p.get(ValueName::phase);
+    const double phase = p.get(ValueName::phase) / 180.0 * dnpsoup::pi;
 
     if constexpr(std::is_same<T, RotatingFrame>::value){
       MatrixCxDbl res = freq * (m_x * std::cos(phase) + m_y * std::sin(phase));
       return res;
     } else {  // Lab Frame
-      const double phase0 = p.get(ValueName::phase0);
+      const double phase0 = p.get(ValueName::phase0) /180.0 * dnpsoup::pi;
       MatrixCxDbl res = freq * m_x * std::cos(phase0 + phase);
       return res;
     }

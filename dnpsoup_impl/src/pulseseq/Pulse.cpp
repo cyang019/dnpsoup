@@ -23,14 +23,14 @@ namespace dnpsoup {
         [[maybe_unused]] std::map<Name, std::unique_ptr<SubSequenceInterface>> *sections
         )
     {
-      if(m_idx >= m_sz){
-        m_idx = 0;
-        return make_tuple(Component(), 0, m_sz);
+      if(idx_ >= sz_){
+        idx_ = 0;
+        return make_tuple(Component(), 0, sz_);
       }
 
       if(components->find(this->m_component_name) != components->end()){
-        m_idx += m_sz;
-        return make_tuple(components->at(m_component_name), m_sz, 0);
+        idx_ += sz_;
+        return make_tuple(components->at(m_component_name), sz_, 0);
       }
       else{
         const string err_str = "Inside " + this->name + ": " + m_component_name + " not found.";
