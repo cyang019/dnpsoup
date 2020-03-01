@@ -22,6 +22,8 @@ namespace dnpsoup {
           ) override;
       virtual SequenceType type() const override;
       virtual std::vector<Name> getNames() const override;
+      virtual void resetIndex(
+          std::map<Name, std::unique_ptr<SubSequenceInterface>> *m_sections) override;
     private:
       Name m_component_name;
     };

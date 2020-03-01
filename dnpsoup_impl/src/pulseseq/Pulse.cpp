@@ -46,5 +46,12 @@ namespace dnpsoup {
       std::vector<Name> res = {m_component_name};
       return res;
     }
+
+    void Pulse::resetIndex(
+        [[maybe_unused]]
+        std::map<Name, std::unique_ptr<SubSequenceInterface>> *sections)
+    {
+      idx_ = 0;
+    }
   } // namespace pulseseq
 } // namespace dnpsoup

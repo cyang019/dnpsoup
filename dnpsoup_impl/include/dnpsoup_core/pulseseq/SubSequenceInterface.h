@@ -50,7 +50,8 @@ namespace dnpsoup {
       virtual std::uint64_t size() const { return sz_; }
       virtual void setSize(std::uint64_t n) { sz_ = n; }
       virtual std::uint64_t getIndex() const { return idx_; }
-      virtual void resetIndex() { idx_ = 0; }
+      virtual void resetIndex(
+          std::map<Name, std::unique_ptr<SubSequenceInterface>> *m_sections) = 0;
 
       double getParam(const Name &n) const { return m_params.at(n); }
       void setParam(const Name &, double);

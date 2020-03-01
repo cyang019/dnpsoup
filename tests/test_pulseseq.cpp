@@ -166,13 +166,28 @@ namespace {
       dnpsoup::pulseseq::Component temp;
       std::uint64_t idx = 0;
       std::uint64_t sz = 0;
+      std::vector<std::uint64_t> indices;
+      auto names = top_dnp_seq.getNames("loop");
+      ASSERT_EQ(2u, names.size());
+      ASSERT_EQ("pulse_train", names[0]);
+      ASSERT_EQ("d2", names[1]);
+
+      names = top_dnp_seq.getNames("pulse_train");
+      ASSERT_EQ(2u, names.size());
+      ASSERT_EQ("p1", names[0]);
+      ASSERT_EQ("d1", names[1]);
+
+      std::cout << "\n";
       while(idx < top_dnp_seq.size()){
         std::tie(temp, sz, idx) = top_dnp_seq.next();
         if(idx >= top_dnp_seq.size()) break;
-        std::cout << "temp: " << temp << "\t\t"
-                  << "sz: " << sz << " idx: " << idx << std::endl;
+        //std::cout << "temp: " << temp << "\t\t"
+        //          << "sz: " << sz << " idx: " << idx << std::endl;
         emrs.push_back(temp);
       }
+      std::vector<std::uint64_t> desired_idxs = {
+
+      };
 
       //std::size_t desired = ((50 + 65) * 5 + 100) * 3;
       std::size_t desired = ((1 + 1) * 5 + 1) * 3;

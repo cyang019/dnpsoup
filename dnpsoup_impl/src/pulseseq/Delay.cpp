@@ -35,6 +35,13 @@ namespace dnpsoup {
       auto res = std::vector<Name>();
       return res;
     }
+
+    void Delay::resetIndex(
+        [[maybe_unused]]
+        std::map<Name, std::unique_ptr<SubSequenceInterface>> *m_sections)
+    {
+      idx_ = 0;
+    }
   } // namespace pulseseq
 } // namespace dnpsoup
 

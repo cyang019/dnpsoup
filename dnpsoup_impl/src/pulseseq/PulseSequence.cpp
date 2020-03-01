@@ -61,6 +61,11 @@ namespace pulseseq{
     return *this;
   }
 
+  std::vector<Name> PulseSequence::getNames(const Name &name) const
+  {
+    return m_sections.at(name)->getNames();
+  }
+
   double PulseSequence::getParam(const Name &seq_name, const Name &param_name) const
   {
     return m_sections.at(seq_name)->getParam(param_name);
