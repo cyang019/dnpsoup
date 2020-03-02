@@ -10,6 +10,7 @@ file(GLOB SRCS *.cpp)
 
 add_executable(test_dnpsoup_core ${SRCS})
 #add_executable(test_dnpsoup_core test_pulseseq.cpp)
+#add_executable(test_dnpsoup_core test_em_interaction.cpp)
 
 set(USE_COVERAGE OFF)
 

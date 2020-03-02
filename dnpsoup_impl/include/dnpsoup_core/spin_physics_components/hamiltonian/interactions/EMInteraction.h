@@ -22,10 +22,10 @@ namespace dnpsoup {
     ~EMInteraction() {}
 
     matrix::Matrix<cxdbl> genMatrix(
-        const Property &,   // freq = 0.5 * gamma * B1 in Hz; phase in rad. phase0 in rad
+        const Property &,   // freq = 0.5 * gamma * B1 in Hz; phase in degrees. phase0 in degrees
         [[maybe_unused]] const Euler<ActiveRotation> &) const override;
     matrix::Matrix<cxdbl> genMatrix(
-        const Property &,   // freq = 0.5 * gamma * B1 in Hz; phase in rad. phase0 in rad
+        const Property &,   // freq = 0.5 * gamma * B1 in Hz; phase in degrees. phase0 in degrees
         [[maybe_unused]] const Euler<PassiveRotation> &) const override;
 
     std::size_t dimension() const;

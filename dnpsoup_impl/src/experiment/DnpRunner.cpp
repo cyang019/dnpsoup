@@ -485,11 +485,11 @@ namespace DnpRunner {
       while(idx < seq.size() || comp_size > 0) {
         /// step-wise consume pulse sequence
         std::tie(comp, comp_size, idx) = seq.next();
-#ifdef DNPSOUP_VERBOSE
-        cout << "comp: " << comp << "\n"
-             << "comp_size: " << comp_size << "\n"
-             << "idx: " << idx << "\n" << endl;
-#endif
+//#ifdef DNPSOUP_VERBOSE
+//        cout << "comp: " << comp << "\n"
+//             << "comp_size: " << comp_size << "\n"
+//             << "idx: " << idx << "\n" << endl;
+//#endif
 
         if(idx >= seq.size()) break;
 
