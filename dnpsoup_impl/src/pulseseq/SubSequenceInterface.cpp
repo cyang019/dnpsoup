@@ -88,7 +88,7 @@ namespace dnpsoup {
     }
 
     SubSequenceInterface::SubSequenceInterface()
-      : sz_(0), idx_(0)
+      : sz_(1), idx_(0)
     {}
 
     SubSequenceInterface::SubSequenceInterface(std::uint64_t sz)

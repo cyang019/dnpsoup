@@ -25,7 +25,7 @@ namespace dnpsoup {
         std::uint64_t sz, const std::vector<Name> &comp_names, 
         bool flag_phase0)
       : SubSequenceInterface(sz), names_(comp_names), names_idx_(0),
-      use_random_phase0_(flag_phase0), seed_(0u),
+      use_random_phase0_(flag_phase0), seed_(0u), phase0_(0.0),
       dist_(0.0, 360.0), gen_(seed_)
     {
       phase0_ = dist_(gen_) * use_random_phase0_;
@@ -33,7 +33,7 @@ namespace dnpsoup {
 
     Section::Section(std::uint64_t sz, const std::vector<Name> &comp_names, 
         bool flag_phase0, std::uint64_t seed)
-      : SubSequenceInterface(sz), names_(comp_names),
+      : SubSequenceInterface(sz), names_(comp_names), names_idx_(0),
       use_random_phase0_(flag_phase0), seed_(seed),
       dist_(0.0, 360.0), gen_(seed)
     {
@@ -55,39 +55,36 @@ namespace dnpsoup {
         std::map<Name, std::unique_ptr<SubSequenceInterface>> *sections
         )
     {
-      /// to track iterations
-      if(idx_ >= sz_){    // protected members of SubSequenceInterface (parent)
+      if(idx_ >= sz_){    
         idx_ = 0;
         names_idx_ = 0;
         return make_tuple(Component(), 0, sz_);
       }
 
-      /// iterate through Section
-      while(idx_ < sz_){
-        // within the iteration
-        auto [comp, comp_size, sub_idx] = 
-          increment_within_section_(components, sections);
-
-        if(sub_idx >= names_.size()){
-          ++idx_;
-          phase0_ = dist_(gen_);
-          names_idx_ = 0;
-          for(const auto &name : names_){
-            (sections->at(name))->resetIndex(sections);
+      auto [comp, comp_size, sub_idx] = 
+        increment_within_section_(components, sections);
+      /// new iteration
+      while(sub_idx >= names_.size()
+          && idx_ < sz_){
+        ++idx_;
+        if(idx_ >= sz_) break;
+        names_idx_ = 0;
+        for(const auto &name : names_){
+          if(sections->find(name) == sections->end()){
+            const auto err_msg = name + " not found in sections.";
+            throw ::dnpsoup::PulseSequenceError(err_msg);
           }
-          continue;
+          (sections->at(name))->resetIndex(sections);
         }
-        else {
+        std::tie(comp, comp_size, sub_idx) = 
+          increment_within_section_(components, sections);
+      }
 #ifdef DNPSOUP_VERBOSE
           cout << "comp size: " << comp_size 
                << "  names_idx_: " << sub_idx 
                << "  idx_: " << idx_ << endl;
 #endif
-          return make_tuple(comp, comp_size, idx_);
-        }
-      } // outer while loop for iteration
-
-      return make_tuple(Component(), 0, sz_);
+      return make_tuple(comp, comp_size, idx_);
     }
 
     SequenceType Section::type() const 
@@ -104,31 +101,25 @@ namespace dnpsoup {
         std::map<Name, Component> *components,
         std::map<Name, std::unique_ptr<SubSequenceInterface>> *sections)
     {
-      while(names_idx_ < names_.size()){
-        auto sub_name = names_[names_idx_];
-        if(sections->find(sub_name) == sections->end()){
-          const std::string error_str = 
-            "cannot find section " + sub_name + ".";
-          throw PulseSequenceError(error_str);
-        }
-        if ((sections->at(sub_name))->type() == SequenceType::DefaultType)
-        {
-          throw NotImplementedError(sub_name + " sub sequence type missing.");
-        }
-        auto [comp, comp_size, comp_idx] = (sections->at(sub_name))->next(
-            components, sections);
-        if(comp_idx >= sections->at(sub_name)->size()){
-          ++names_idx_;
-          continue;
-        }
-        else {
-          for(auto &[spin_t, emr]: comp){
-            emr.phase += phase0_ * use_random_phase0_;
-          }
-          return make_tuple(comp, comp_size, names_idx_);
-        }
+      auto sub_name = names_[names_idx_];
+      if(sections->find(sub_name) == sections->end()){
+        const auto err_msg = sub_name + " not found in sections.";
+        throw ::dnpsoup::PulseSequenceError(err_msg);
       }
-      return make_tuple(Component(), 0, names_.size());
+      auto [comp, comp_size, comp_idx] = (sections->at(sub_name))->next(
+          components, sections);
+      while(comp_idx >= sections->at(sub_name)->size()
+          && names_idx_ < names_.size()){
+        ++names_idx_;
+        if(names_idx_ >= names_.size()) break;
+        sub_name = names_[names_idx_];
+        std::tie(comp, comp_size, comp_idx) = (sections->at(sub_name))->next(
+          components, sections);
+      }
+      for(auto &[spin_t, emr]: comp){
+        emr.phase += phase0_ * use_random_phase0_;
+      }
+      return make_tuple(comp, comp_size, names_idx_);
     }
   } // namespace pulseseq
 } // namespace dnpsoup

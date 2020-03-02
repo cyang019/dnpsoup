@@ -8,8 +8,8 @@ file(GLOB SRCS *.cpp)
 #list(FILTER SRCS EXCLUDE REGEX ".*test_spinsys.cpp$")
 #list(FILTER SRCS EXCLUDE REGEX ".*test_spinsys.cpp$")
 
-#add_executable(test_dnpsoup_core ${SRCS})
-add_executable(test_dnpsoup_core test_pulseseq.cpp)
+add_executable(test_dnpsoup_core ${SRCS})
+#add_executable(test_dnpsoup_core test_pulseseq.cpp)
 
 set(USE_COVERAGE OFF)
 
