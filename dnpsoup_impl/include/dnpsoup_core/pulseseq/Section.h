@@ -20,6 +20,7 @@ namespace dnpsoup {
       Section& operator=(Section &&) noexcept = default;
       virtual ~Section() {};
 
+      virtual std::unique_ptr<SubSequenceInterface> copy() const override;
       /// names in components should not overlap with names in sections
       /// the method changes idx_, names_idx_, and phase0
       virtual std::tuple<Component, std::uint64_t, std::uint64_t> next(

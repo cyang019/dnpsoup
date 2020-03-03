@@ -40,6 +40,11 @@ namespace dnpsoup {
       phase0_ = dist_(gen_) * use_random_phase0_;
     }
 
+    std::unique_ptr<SubSequenceInterface> Section::copy() const
+    {
+      return make_unique<Section>(*this);
+    }
+
     void Section::resetIndex(
         std::map<Name, std::unique_ptr<SubSequenceInterface>> *sections)
     {

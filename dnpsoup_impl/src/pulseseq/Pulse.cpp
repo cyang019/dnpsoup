@@ -18,6 +18,11 @@ namespace dnpsoup {
       : SubSequenceInterface(sz), m_component_name(component_name)
     {}
 
+    std::unique_ptr<SubSequenceInterface> Pulse::copy() const
+    {
+      return make_unique<Pulse>(*this);
+    }
+
     std::tuple<Component, std::uint64_t, std::uint64_t> Pulse::next(
         std::map<Name, Component> *components,
         [[maybe_unused]] std::map<Name, std::unique_ptr<SubSequenceInterface>> *sections

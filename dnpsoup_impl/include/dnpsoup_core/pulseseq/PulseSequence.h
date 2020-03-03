@@ -23,9 +23,9 @@ namespace dnpsoup {
       PulseSequence(double inc);
       PulseSequence(const std::string &, double inc);
       PulseSequence(const std::string &);
-      PulseSequence(const PulseSequence &) = delete;
+      PulseSequence(const PulseSequence &);
       PulseSequence(PulseSequence &&) noexcept = default;
-      PulseSequence& operator=(const PulseSequence &) = delete;
+      PulseSequence& operator=(const PulseSequence &);
       PulseSequence& operator=(PulseSequence &&) noexcept = default;
       ~PulseSequence();
 

@@ -13,6 +13,11 @@ namespace dnpsoup {
       : SubSequenceInterface(sz)
     {}
 
+    std::unique_ptr<SubSequenceInterface> Delay::copy() const
+    {
+      return make_unique<Delay>(*this);
+    }
+
     std::tuple<Component, std::uint64_t, std::uint64_t> Delay::next(
         [[maybe_unused]] std::map<Name, Component> *components,
         [[maybe_unused]] std::map<Name, std::unique_ptr<SubSequenceInterface>> *sections

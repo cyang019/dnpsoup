@@ -39,6 +39,8 @@ namespace dnpsoup {
       SubSequenceInterface& operator=(SubSequenceInterface &&) noexcept = default;
       virtual ~SubSequenceInterface() {};
 
+      virtual std::unique_ptr<SubSequenceInterface> copy() const = 0;
+
       virtual std::tuple<Component, std::uint64_t, std::uint64_t> next(
           std::map<Name, Component> *components,
           std::map<Name, std::unique_ptr<SubSequenceInterface>> *m_sections

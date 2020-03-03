@@ -38,6 +38,30 @@ namespace pulseseq{
   {
   }
 
+  PulseSequence::PulseSequence(const PulseSequence &seq)
+    : name(seq.name), m_components(seq.m_components),
+    m_sections_in_order(seq.m_sections_in_order),
+    m_inc(seq.m_inc), m_idx(seq.m_idx)
+  {
+    for(const auto &[name, uptr_seq] : seq.m_sections){
+      m_sections[name] = uptr_seq->copy();
+    }
+  }
+
+  PulseSequence& PulseSequence::operator=(const PulseSequence &seq)
+  {
+    name = seq.name;
+    m_components = seq.m_components;
+    m_sections_in_order = seq.m_sections_in_order;
+    m_inc = seq.m_inc;
+    m_idx = seq.m_idx;
+    for(const auto &[name, uptr_seq] : seq.m_sections){
+      m_sections[name] = uptr_seq->copy();
+    }
+
+    return *this;
+  }
+
   PulseSequence::~PulseSequence()
   {}
   
