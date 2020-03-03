@@ -1,12 +1,12 @@
 {
-   "increment": 1e-9,
+   "increment": 0.1e-9,
    "components": 
    {
      "emr1": {
-            "e": { "frequency": 14.9e6, "phase": 0.0, "offset": 0.0 }
+            "e": { "frequency": 14.90212e6, "phase": 0.0, "offset": 0.0 }
            },
      "emr2": {
-            "e": { "frequency": 14.9e6, "phase": 90.0, "offset": 0.0 }
+            "e": { "frequency": 14.90212e6, "phase": 90.0, "offset": 0.0 }
            }
    },
    "sections":
@@ -14,7 +14,7 @@
      "loop":
      {
        "type": "Section",
-       "size": 100,
+       "size": 20,
        "names": ["p1", "p2", "d"],
        "params": {},
        "phase0": {
@@ -25,21 +25,21 @@
      "p1":
      {
        "type": "Pulse",
-       "size": 17,
+       "size": 165,
        "names": ["emr1"],
        "params": {}
      },
      "p2":
      {
        "type": "Pulse",
-       "size": 100,
+       "size": 1500,
        "names": ["emr2"],
        "params": {}
      },
      "d":
      {
        "type": "Delay",
-       "size": 130000,
+       "size": 1300000,
        "names": [],
        "params": {}
      }

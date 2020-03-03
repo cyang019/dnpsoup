@@ -58,6 +58,9 @@ namespace dnpsoup {
   {
     const double freq = p.get(ValueName::freq);
     const double phase = p.get(ValueName::phase) / 180.0 * dnpsoup::pi;
+//#ifndef NDEBUG
+//    std::cout << "phase:" << phase << std::endl;
+//#endif
 
     if constexpr(std::is_same<T, RotatingFrame>::value){
       MatrixCxDbl res = freq * (m_x * std::cos(phase) + m_y * std::sin(phase));

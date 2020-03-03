@@ -73,7 +73,7 @@ namespace dnpsoup {
         gamma_super_int = rotate_mat_super * gamma_super * rotate_mat_super_inv;
       }
       auto h_super = commutationSuperOp(ham);
-      auto super_op = complex<double>(0,1.0) * h_super + gamma_super_int;
+      //auto super_op = complex<double>(0,1.0) * h_super + gamma_super_int;
       auto rho_eq_super = calcRhoDynamicEq(h_super, gamma_super_int, rho_ss_super);
       return std::make_tuple(std::move(h_super), 
                              std::move(gamma_super_int),

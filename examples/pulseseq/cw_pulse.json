@@ -3,7 +3,7 @@
     "components": {
         "emr": {
             "e": {
-                "frequency": 1.0e6,
+                "frequency": 2.4e6,
                 "offset": 0.0,
                 "phase": 0.0
             }

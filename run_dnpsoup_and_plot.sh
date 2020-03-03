@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 SPINFILE=examples/spinsys/BDPA_spinsys.json
+#SPINFILE=examples/spinsys/eH_spinsys.json
 #SPINFILE=examples/spinsys/TOTAPOL.json
 #SPINFILE=examples/spinsys/trityl.json
 

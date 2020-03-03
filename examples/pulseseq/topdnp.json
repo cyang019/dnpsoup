@@ -11,7 +11,7 @@
      "loop":
      {
        "type": "Section",
-       "size": 2,
+       "size": 100,
        "names": ["pulse_train", "d2"],
        "params": {}
      },

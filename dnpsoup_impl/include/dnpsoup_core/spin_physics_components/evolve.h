@@ -29,7 +29,7 @@ namespace dnpsoup {
     std::cout << "calcExpEvolve: " << "inc: " << t_atomic 
                                    << "  cnt " << cnt << std::endl;
 #endif
-    auto scaling_factor = ::dnpsoup::exp(cxdbl(-1.0 * t_atomic, 0) * super_op);
+    auto scaling_factor = ::dnpsoup::exp(cxdbl(-2.0 * pi * t_atomic, 0) * super_op);
 #ifdef DNPSOUP_VERBOSE
     std::cout << "scaling_factor shape: " 
               << scaling_factor.nrows() << ", " 

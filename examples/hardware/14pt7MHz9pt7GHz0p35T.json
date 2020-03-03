@@ -5,7 +5,7 @@
     "gamma": 0.0
   },
   "euler_scheme":{
-    "zcw": 2
+    "zcw": 1
   },
 
   "ncores": 3,
@@ -13,20 +13,20 @@
   "acq": "H",
   "field range": {
     "begin": 0.345,
-    "end": 0.355,
-    "step": 0.0002
+    "end": 0.350,
+    "step": 0.0001
   },
   "Magnet": {
     "b0": 0.35
   },
   "Gyrotron": {
-    "em_frequency": 9.809e9
+    "em_frequency": 9.74e9
   },
   "Probe": {
       "mas_frequency": 0.0,
       "temperature": 100.0,
       "mas_increment": 1e-6
   },
-  "task": "PowderBuildUpEnhancement"
+  "task": "FieldProfile"
 }
 
