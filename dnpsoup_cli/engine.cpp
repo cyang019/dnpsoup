@@ -38,9 +38,18 @@ void dnpsoup_exec(const std::string &spinsys_filename,
   std::ifstream pulseseq_stream;
 	pulseseq_stream.exceptions(std::ios::failbit | std::ios::badbit);
 	pulseseq_stream.open(pulse_sequence_filename.c_str());
-	ostringstream oss;
-	oss << pulseseq_stream.rdbuf();
-	string pulse_seq_str = oss.str();
+	//ostringstream oss;
+	//oss << pulseseq_stream.rdbuf();
+	//string pulse_seq_str = oss.str();
+  PulseSequence seq;
+  //istringstream iss(pulse_seq_str);
+  try{
+    //iss >> seq;
+    pulseseq_stream >> seq;
+  }
+  catch(const exception &e){
+    throw PulseSequenceError(e.what());
+  }
 	cout << "pulse sequence file loaded: " << pulse_sequence_filename << endl;
 
 	std::ifstream exp_stream;
@@ -81,7 +90,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 		}
 
 		auto result = DnpRunner::calcEigenValues(magnet, gyrotron, probe,
-			spinsys, pulse_seq_str, euler);
+			spinsys, seq, euler);
 
     std::ofstream result_stream;
 	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);
@@ -125,7 +134,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 
     if(task_str == "Intensity"){
 		  auto result = DnpRunner::calcIntensity(magnet, gyrotron, probe,
-		  	spinsys, pulse_seq_str, acq_t, euler);
+		  	spinsys, seq, acq_t, euler);
 
       std::ofstream result_stream;
 	    result_stream.exceptions(std::ios::failbit | std::ios::badbit);
@@ -139,7 +148,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 		  return;
     } else {
 		  auto results = DnpRunner::calcBuildUp(magnet, gyrotron, probe,
-		  	spinsys, pulse_seq_str, acq_t, euler);
+		  	spinsys, seq, acq_t, euler);
 
       std::ofstream result_stream;
 	    result_stream.exceptions(std::ios::failbit | std::ios::badbit);
@@ -197,7 +206,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 		auto magnet = Magnet(j);		
 		auto gyrotron = Gyrotron(j);
 		auto result = DnpRunner::calcPowderIntensity(magnet, gyrotron, probe,
-			spinsys, pulse_seq_str, acq_t, eulers, ncores);
+			spinsys, seq, acq_t, eulers, ncores);
 
     std::ofstream result_stream;
 	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);
@@ -215,7 +224,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 		auto magnet = Magnet(j);		
 		auto gyrotron = Gyrotron(j);
 		auto results = DnpRunner::calcPowderBuildUp(magnet, gyrotron, probe,
-			spinsys, pulse_seq_str, acq_t, eulers, ncores);
+			spinsys, seq, acq_t, eulers, ncores);
 
     std::ofstream result_stream;
 	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);
@@ -237,7 +246,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 		auto magnet = Magnet(j);		
 		auto gyrotron = Gyrotron(j);
 		auto results = DnpRunner::calcPowderBuildUpEnhancement(magnet, gyrotron, probe,
-			spinsys, pulse_seq_str, acq_t, eulers, ncores);
+			spinsys, seq, acq_t, eulers, ncores);
 
     std::ofstream result_stream;
 	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);
@@ -265,7 +274,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 			}
 			auto gyrotron = Gyrotron(j);
 		  result = DnpRunner::calcFieldProfile(magnets, gyrotron, probe,
-		  	spinsys, pulse_seq_str, acq_t, eulers, ncores);
+		  	spinsys, seq, acq_t, eulers, ncores);
 		}
     else if(j.find("field range") != j.end()){
       vector<Magnet> magnets;
@@ -282,7 +291,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
       }
 			auto gyrotron = Gyrotron(j);
 		  result = DnpRunner::calcFieldProfile(magnets, gyrotron, probe,
-		  	spinsys, pulse_seq_str, acq_t, eulers, ncores);
+		  	spinsys, seq, acq_t, eulers, ncores);
     }
 		else if(j.find("emrs") != j.end()){
 			vector<Gyrotron> emrs;
@@ -292,7 +301,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 			}
 			auto magnet = Magnet(j);
 		  result = DnpRunner::calcFieldProfile(magnet, emrs, probe,
-		  	spinsys, pulse_seq_str, acq_t, eulers, ncores);
+		  	spinsys, seq, acq_t, eulers, ncores);
 		}
     else if(j.find("emr range") != j.end()){
       vector<Gyrotron> emrs;
@@ -309,7 +318,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
       }
 			auto magnet = Magnet(j);
 		  result = DnpRunner::calcFieldProfile(magnet, emrs, probe,
-		  	spinsys, pulse_seq_str, acq_t, eulers, ncores);
+		  	spinsys, seq, acq_t, eulers, ncores);
     }
 		else {
 			throw runtime_error("Neither 'fields' nor 'emrs' was in the input json.");

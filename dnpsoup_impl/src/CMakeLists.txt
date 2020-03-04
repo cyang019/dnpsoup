@@ -32,6 +32,7 @@ target_sources(dnpsoup_core
 
   "${CMAKE_CURRENT_LIST_DIR}/experiment/DnpRunner.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/experiment/hardware.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/experiment/dnp/scan.cpp"
   PUBLIC
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_api.cpp"
   )

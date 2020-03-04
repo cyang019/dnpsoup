@@ -34,7 +34,7 @@ namespace DnpRunner {
         const Gyrotron &g,
         const Probe &p,
         const SpinSys &spin_sys,
-        const std::string &pulse_seq_str,
+        PulseSequence seq,
         const Euler<> &spin_sys_euler
         )
     {
@@ -42,14 +42,6 @@ namespace DnpRunner {
       pulseseq::Component default_comp;
       for(const auto &t : irradiated_types){
         default_comp.insert_or_assign(t, pulseseq::EMRadiation());
-      }
-      PulseSequence seq;
-      istringstream iss(pulse_seq_str);
-      try{
-        iss >> seq;
-      }
-      catch(const exception &e){
-        throw PulseSequenceError(e.what());
       }
 
       double inc = seq.getIncrement();
@@ -134,7 +126,7 @@ namespace DnpRunner {
         const Gyrotron &g,
         const Probe &p,
         const SpinSys &spin_sys,
-        const std::string &pulse_seq_str,
+        PulseSequence seq,
         const SpinType &acq_spin,
         const Euler<> &spin_sys_euler)
     {
@@ -180,14 +172,6 @@ namespace DnpRunner {
       pulseseq::Component default_comp;
       for(const auto &t : irradiated_types){
         default_comp.insert_or_assign(t, pulseseq::EMRadiation());
-      }
-      PulseSequence seq;
-      istringstream iss(pulse_seq_str);
-      try{
-        iss >> seq;
-      }
-      catch(const exception &e){
-        throw PulseSequenceError(e.what());
       }
       unique_ptr<EvolutionCacheStatic> uptr_cache = nullptr;
       double inc = seq.getIncrement();
@@ -293,15 +277,17 @@ namespace DnpRunner {
         const Gyrotron &g,
         const Probe &p,
         const SpinSys &spin_sys,
-        const std::string &pulse_seq_str,
+        PulseSequence seq,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
         int ncores)
     {
       auto raw_results = calcPowderBuildUp(
-          m, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers, ncores);
+          m, g, p, spin_sys, seq, acq_spin, spin_sys_eulers, ncores);
       const double ref_intensity = calcPowderIntensity(
-            m.b0, g, p, spin_sys, "{}", acq_spin, spin_sys_eulers, ncores);
+            m.b0, g, p, spin_sys, 
+            PulseSequence(), 
+            acq_spin, spin_sys_eulers, ncores);
       auto res = raw_results;
       for(size_t i = 0; i < raw_results.size(); ++i){
         res[i].second /= ref_intensity;
@@ -314,7 +300,7 @@ namespace DnpRunner {
         const Gyrotron &g,
         const Probe &p,
         const SpinSys &spin_sys,
-        const std::string &pulse_seq_str,
+        PulseSequence seq,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
         int ncores)
@@ -323,7 +309,7 @@ namespace DnpRunner {
       const double scaling_factor = 1.0 / static_cast<double>(spin_sys_eulers.size());
       if(ncores == 1) {
         for(const auto &e : spin_sys_eulers){
-          auto xtal_results = calcBuildUp(m, g, p, spin_sys, pulse_seq_str,
+          auto xtal_results = calcBuildUp(m, g, p, spin_sys, seq,
               acq_spin, e, false);
           if(results.size() == 0){  // initial crystal point
             for(const auto &pt_res : xtal_results){
@@ -349,7 +335,7 @@ namespace DnpRunner {
         for(const auto &e : spin_sys_eulers){
           auto task = [=](){
             auto xtal_results = 
-              calcBuildUp(m, g, p, spin_sys, pulse_seq_str, acq_spin, e, false);
+              calcBuildUp(m, g, p, spin_sys, seq, acq_spin, e, false);
             const double factor = std::sin(e.beta());
             for(auto &xtal_result : xtal_results){
               xtal_result.second *= factor;
@@ -391,7 +377,7 @@ namespace DnpRunner {
         const Gyrotron &g,
         const Probe &p,
         const SpinSys &spin_sys,
-        const std::string &pulse_seq_str,
+        PulseSequence seq,
         const SpinType &acq_spin,
         const Euler<> &spin_sys_euler,
         bool enhancement)
@@ -401,14 +387,6 @@ namespace DnpRunner {
       pulseseq::Component default_comp;
       for(const auto &t : irradiated_types){
         default_comp.insert_or_assign(t, pulseseq::EMRadiation());
-      }
-      PulseSequence seq;
-      istringstream iss(pulse_seq_str);
-      try{
-        iss >> seq;
-      }
-      catch(const exception &e){
-        throw PulseSequenceError(e.what());
       }
       double inc = seq.getIncrement();
       inc = roundToCycle(inc, g.em_frequency);
@@ -591,7 +569,7 @@ namespace DnpRunner {
         const Gyrotron &g,
         const Probe &p,
         const SpinSys &spin_sys,
-        const std::string &pulse_seq_str,
+        PulseSequence seq,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
         [[maybe_unused]] int ncores)
@@ -600,9 +578,10 @@ namespace DnpRunner {
       for(const auto &field : fields){
         //constexpr double ref = 1.0;
         const double ref = calcPowderIntensity(
-            field, g, p, spin_sys, "{}", acq_spin, spin_sys_eulers, ncores);
+            field, g, p, spin_sys, PulseSequence(),
+            acq_spin, spin_sys_eulers, ncores);
         const double res = calcPowderIntensity(
-            field, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers, ncores);
+            field, g, p, spin_sys, seq, acq_spin, spin_sys_eulers, ncores);
         const double ratio = res/ref;
         result.push_back(std::make_pair(field.b0, ratio));
         std::cout << "." << std::flush;
@@ -616,7 +595,7 @@ namespace DnpRunner {
         const std::vector<Gyrotron> &emrs,
         const Probe &p,
         const SpinSys &spin_sys,
-        const std::string &pulse_seq_str,
+        PulseSequence seq,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
         [[maybe_unused]] int ncores)
@@ -625,9 +604,10 @@ namespace DnpRunner {
       for(const auto g : emrs) {
         //constexpr double ref = 1.0;
         const double ref = calcPowderIntensity(
-            m, g, p, spin_sys, "{}", acq_spin, spin_sys_eulers, ncores);
+            m, g, p, spin_sys, PulseSequence(),
+            acq_spin, spin_sys_eulers, ncores);
         const double res = calcPowderIntensity(
-            m, g, p, spin_sys, pulse_seq_str, acq_spin, spin_sys_eulers, ncores);
+            m, g, p, spin_sys, seq, acq_spin, spin_sys_eulers, ncores);
         const double ratio = res/ref;
         result.emplace_back(make_pair(g.em_frequency, ratio));
         std::cout << "." << std::flush;
@@ -641,7 +621,7 @@ namespace DnpRunner {
         const Gyrotron &g,
         const Probe &p,
         const SpinSys &spin_sys,
-        const std::string &pulse_seq_str,
+        PulseSequence seq,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
         [[maybe_unused]] int ncores)
@@ -651,7 +631,7 @@ namespace DnpRunner {
       if(ncores == 1) {
         for(const auto &e : spin_sys_eulers){
           auto xtal_intensity = 
-            calcIntensity(m, g, p, spin_sys, pulse_seq_str, acq_spin, e);
+            calcIntensity(m, g, p, spin_sys, seq, acq_spin, e);
           result += xtal_intensity * std::sin(e.beta());
         }
       }
@@ -660,7 +640,7 @@ namespace DnpRunner {
         for(const auto &e : spin_sys_eulers){
           auto task = [=](){
             auto xtal_intensity = 
-              calcIntensity(m, g, p, spin_sys, pulse_seq_str, acq_spin, e);
+              calcIntensity(m, g, p, spin_sys, seq, acq_spin, e);
             return xtal_intensity * std::sin(e.beta());
           };
           tpool.add_task(std::move(task));

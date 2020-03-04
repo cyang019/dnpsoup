@@ -3,6 +3,7 @@
 #include "dnpsoup_core/experiment/DnpRunner.h"
 #include "dnpsoup_core/experiment/hardware.h"
 #include <sstream>
+#include <fstream>
 #include <string>
 
 using namespace std;
@@ -28,6 +29,9 @@ extern "C" {
     spins_iss >> spins;
 
     const string pulse_seq_str = j["pulse_sequence"].dump(4);
+    istringstream pulse_seq_iss(pulse_seq_str);
+    dnpsoup::PulseSequence seq;
+    pulse_seq_iss >> seq;
     
     auto euler = dnpsoup::Euler<>(0.0, 0.0, 0.0);
     if(j.find("euler") != j.end()){
@@ -43,7 +47,7 @@ extern "C" {
     }
 
     auto results = dnpsoup::DnpRunner::calcEigenValues(
-        magnet, gyrotron, probe, spins, pulse_seq_str,
+        magnet, gyrotron, probe, spins, seq,
         euler);
 
     if(results.size() == 0) return;
@@ -76,6 +80,9 @@ extern "C" {
     spins_iss >> spins;
 
     const string pulse_seq_str = j["pulse_sequence"].dump(4);
+    istringstream pulse_seq_iss(pulse_seq_str);
+    dnpsoup::PulseSequence seq;
+    pulse_seq_iss >> seq;
     
     auto euler = dnpsoup::Euler<>(0.0, 0.0, 0.0);
     if(j.find("euler") != j.end()){
@@ -96,7 +103,7 @@ extern "C" {
     dnpsoup::SpinType t_acq = dnpsoup::toSpinType(j["acq"].get<string>());
 
     double result = dnpsoup::DnpRunner::calcIntensity(
-        magnet, gyrotron, probe, spins, pulse_seq_str,
+        magnet, gyrotron, probe, spins, seq,
         t_acq, euler);
 
     return result;
@@ -122,6 +129,9 @@ extern "C" {
     spins_iss >> spins;
 
     const string pulse_seq_str = j["pulse_sequence"].dump(4);
+    istringstream pulse_seq_iss(pulse_seq_str);
+    dnpsoup::PulseSequence seq;
+    pulse_seq_iss >> seq;
     
     auto eulers = vector<dnpsoup::Euler<>>();
     if(j.find("eulers") != j.end()){
@@ -145,7 +155,7 @@ extern "C" {
     dnpsoup::SpinType t_acq = dnpsoup::toSpinType(j["acq"].get<string>());
 
     double result = dnpsoup::DnpRunner::calcPowderIntensity(
-        magnet, gyrotron, probe, spins, pulse_seq_str,
+        magnet, gyrotron, probe, spins, seq,
         t_acq, eulers, ncores);
 
     return result;
@@ -169,6 +179,9 @@ extern "C" {
     spins_iss >> spins;
 
     const string pulse_seq_str = j["pulse_sequence"].dump(4);
+    istringstream pulse_seq_iss(pulse_seq_str);
+    dnpsoup::PulseSequence seq;
+    pulse_seq_iss >> seq;
     
     auto eulers = vector<dnpsoup::Euler<>>();
     if(j.find("eulers") != j.end()){
@@ -201,7 +214,7 @@ extern "C" {
       auto gyrotron = dnpsoup::Gyrotron(j);
 
       auto results = dnpsoup::DnpRunner::calcFieldProfile(
-          fields, gyrotron, probe, spins, pulse_seq_str, 
+          fields, gyrotron, probe, spins, seq, 
           t_acq, eulers, ncores);
 
       unsigned idx = 0;
@@ -218,7 +231,7 @@ extern "C" {
       }
 
       auto results = dnpsoup::DnpRunner::calcFieldProfile(
-          magnet, ems, probe, spins, pulse_seq_str,
+          magnet, ems, probe, spins, seq,
           t_acq, eulers, ncores);
       unsigned idx = 0;
       for(const auto &val : results){

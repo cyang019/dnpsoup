@@ -18,7 +18,7 @@ namespace dnpsoup {
         const Gyrotron &g,
         const Probe &p,
         const SpinSys &spin_sys,
-        const std::string &pulse_seq_str,
+        PulseSequence seq,
         const Euler<> &spin_sys_euler
         );
 
@@ -27,7 +27,7 @@ namespace dnpsoup {
         const Gyrotron &g,
         const Probe &p,
         const SpinSys &spin_sys,
-        const std::string &pulse_seq_str,
+        PulseSequence seq,
         const SpinType &acq_spin,
         const Euler<> &spin_sys_euler);
 
@@ -36,7 +36,7 @@ namespace dnpsoup {
         const Gyrotron &g,
         const Probe &p,
         const SpinSys &spin_sys,
-        const std::string &pulse_seq_str,
+        PulseSequence seq,
         const SpinType &acq_spin,
         const Euler<> &spin_sys_euler,
         bool enhancement=true);
@@ -46,7 +46,7 @@ namespace dnpsoup {
         const Gyrotron &g,
         const Probe &p,
         const SpinSys &spin_sys,
-        const std::string &pulse_seq_str,
+        PulseSequence seq,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
         int ncores=1);
@@ -56,7 +56,7 @@ namespace dnpsoup {
         const Gyrotron &g,
         const Probe &p,
         const SpinSys &spin_sys,
-        const std::string &pulse_seq_str,
+        PulseSequence seq,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
         int ncores=1);
@@ -66,7 +66,7 @@ namespace dnpsoup {
         const Gyrotron &g,
         const Probe &p,
         const SpinSys &spin_sys,
-        const std::string &pulse_seq_str,
+        PulseSequence seq,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
         int ncores=1);
@@ -76,7 +76,7 @@ namespace dnpsoup {
         const std::vector<Gyrotron> &emrs,
         const Probe &p,
         const SpinSys &spin_sys,
-        const std::string &pulse_seq_str,
+        PulseSequence seq,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
         int ncores=1);
@@ -86,7 +86,7 @@ namespace dnpsoup {
         const Gyrotron &g,
         const Probe &p,
         const SpinSys &spin_sys,
-        const std::string &pulse_seq_str,
+        PulseSequence seq,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
         int ncores=1);
