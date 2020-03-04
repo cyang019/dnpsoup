@@ -143,6 +143,26 @@ namespace pulseseq{
     return std::make_tuple(comp, comp_size, m_idx);
   }
 
+  void PulseSequence::setEmrFreq(const Name &name, SpinType t, double val)
+  {
+    m_components[name][t].freq = val;
+  }
+
+  void PulseSequence::setEmrPhase(const Name &name, SpinType t, double val)
+  {
+    m_components[name][t].phase = val;
+  }
+
+  void PulseSequence::setEmrOffset(const Name &name, SpinType t, double val)
+  {
+    m_components[name][t].offset = val;
+  }
+
+  void PulseSequence::setSize(const Name &name, std::uint64_t sz)
+  {
+    m_sections[name]->setSize(sz);
+  }
+
   std::istream& operator>>(std::istream &is, PulseSequence &pseq)
   {
     json j;

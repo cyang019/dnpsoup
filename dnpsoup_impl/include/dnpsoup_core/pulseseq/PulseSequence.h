@@ -50,6 +50,12 @@ namespace dnpsoup {
       double getIncrement() const { return m_inc; }
       void setIncrement(double dt) { m_inc = dt; }
 
+      void setEmrFreq(const Name &name, SpinType t, double val);
+      void setEmrPhase(const Name &name, SpinType t, double val);
+      void setEmrOffset(const Name &name, SpinType t, double val);
+
+      void setSize(const Name &name, std::uint64_t sz);
+
       Name name;
     private:
       std::map<Name, Component> m_components;
