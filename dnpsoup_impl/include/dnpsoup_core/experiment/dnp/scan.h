@@ -49,27 +49,35 @@ namespace dnpsoup {
     std::vector<Euler<>> spin_sys_eulers;
   };
 
-  ScanResults1D scan1d(
+  ScanResults1D scan1dEmrFreq(
       const Parameters &params,
-      const ScanType &scan_t,
-      const std::string &scan_name,
+      const std::string &name,
+      const SpinType t,
       double value_begin,
       double value_end,
       std::uint64_t cnt,
       int ncores=1);
 
-  ScanResults2D scan2d(
+  ScanResults1D scan1dEmrPhase(
       const Parameters &params,
-      const ScanType &scan_t_1,
-      const std::string &scan_name_1,
-      double value_begin_1,
-      double value_end_1,
-      std::uint64_t cnt1,
-      const ScanType &scan_t_2,
-      const std::string &scan_name_2,
-      double value_begin_2,
-      double value_end_2,
-      std::uint64_t cnt2,
+      const std::string &name,
+      const SpinType t,
+      double value_begin,
+      double value_end,
+      std::uint64_t cnt,
+      int ncores=1);
+
+  ScanResults1D scan1dEmrLength(
+      const Parameters &params,
+      const std::string &name,
+      double value_begin,
+      double value_end,
+      std::uint64_t cnt,
+      int ncores=1);
+
+  std::vector<double> scan1d(
+      const Parameters &params,
+      const std::vector<PulseSequence> &seqs,
       int ncores=1);
 
   std::vector<double> populateValues(double val_beg, double val_end, std::uint64_t cnt);
