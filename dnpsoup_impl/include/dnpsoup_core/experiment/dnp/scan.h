@@ -11,17 +11,9 @@
 namespace dnpsoup {
   enum class ScanType : int
   {
-    //FieldType = 0,
-    //EmOffsetType = 1,
-
     GammaB1Type = 10,
     PhaseType = 11,
     LengthType = 12,
-
-    EulerType = 100,
-
-    T1Type = 200,
-    T2Type = 201
   };
 
   /// x, y pairs
@@ -49,35 +41,52 @@ namespace dnpsoup {
     std::vector<Euler<>> spin_sys_eulers;
   };
 
-  ScanResults1D scan1dEmrFreq(
+  struct Range {
+    Range() : beg(0.0), end(0.0), cnt(1u) {}
+    Range(double beg, double end, std::uint64_t cnt)
+      : beg(beg), end(end), cnt(cnt)
+    {}
+    Range(const Range &) = default;
+    Range(Range &&) noexcept = default;
+    Range& operator=(const Range &) = default;
+    Range& operator=(Range &&) noexcept = default;
+    ~Range() {}
+
+    std::vector<double> values() const;
+
+    double beg;
+    double end;
+    std::uint64_t cnt;
+  };
+
+  class Selector {
+  public:
+    Selector(const ScanType &scan_t, 
+        const std::string &name, 
+        const SpinType &spin_t);
+
+    Selector(const ScanType &scan_t, const std::string &name); 
+
+    PulseSequence modify(const PulseSequence &seq, double value) const;
+    PulseSequence modify(PulseSequence &&seq, double value) const;
+  private:
+    ScanType scan_t_;
+    std::string name_;
+    SpinType spin_t_;
+  };
+
+  ScanResults1D scan1d(
       const Parameters &params,
-      const std::string &name,
-      const SpinType t,
-      double value_begin,
-      double value_end,
-      std::uint64_t cnt,
+      const Selector &selector,
+      const Range &range,
       int ncores=1);
 
-  ScanResults1D scan1dEmrPhase(
+  ScanResults2D scan2d(
       const Parameters &params,
-      const std::string &name,
-      const SpinType t,
-      double value_begin,
-      double value_end,
-      std::uint64_t cnt,
-      int ncores=1);
-
-  ScanResults1D scan1dEmrLength(
-      const Parameters &params,
-      const std::string &name,
-      double value_begin,
-      double value_end,
-      std::uint64_t cnt,
-      int ncores=1);
-
-  std::vector<double> scan1d(
-      const Parameters &params,
-      const std::vector<PulseSequence> &seqs,
+      const Selector &selector1,
+      const Range &range1,
+      const Selector &selector2,
+      const Range &range2,
       int ncores=1);
 
   std::vector<double> populateValues(double val_beg, double val_end, std::uint64_t cnt);

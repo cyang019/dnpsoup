@@ -1,123 +1,133 @@
 #include "dnpsoup_core/experiment/dnp/scan.h"
 #include "dnpsoup_core/experiment/DnpRunner.h"
+#include "dnpsoup_core/errors.h"
 #include <cmath>
 
 using namespace std;
 
 
 namespace dnpsoup {
-  // enum class ScanType : int
-  // {
-  //   FieldType = 0,
-  //   EmOffsetType = 1,
-
-  //   GammaB1Type = 10,
-  //   PhaseType = 11,
-  //   LengthType = 12,
-
-  //   EulerType = 100,
-
-  //   T1Type = 200,
-  //   T2Type = 201
-  // };
-  ScanResults1D scan1dEmrFreq(
-      const Parameters &params,
-      const std::string &name,
-      const SpinType t,
-      double value_begin,
-      double value_end,
-      std::uint64_t cnt,
-      int ncores)
+  vector<double> Range::values() const
   {
-    vector<double> gamma_b1s = populateValues(
-        value_begin, value_end, cnt);
-
-    ScanResults1D results;
-    for(const auto &val : gamma_b1s){
-      PulseSequence seq = params.seq;
-      seq.setEmrFreq(name, t, val);
-      double intensity = DnpRunner::calcPowderIntensity(
-          params.magnet, params.gyrotron, params.probe,
-          params.spin_sys, seq, params.acq_spin,
-          params.spin_sys_eulers, ncores);
-      results.push_back(make_pair(val, intensity));
-    }
-
-    return results;
+    return populateValues(beg, end, cnt);
   }
 
-  ScanResults1D scan1dEmrPhase(
-      const Parameters &params,
-      const std::string &name,
-      const SpinType t,
-      double value_begin,
-      double value_end,
-      std::uint64_t cnt,
-      int ncores)
+  Selector::Selector(const ScanType &scan_t, const std::string &name,
+      const SpinType &spin_t)
+    : scan_t_(scan_t), name_(name), spin_t_(spin_t)
+  {}
+
+  Selector::Selector(const ScanType &scan_t, const std::string &name)
+    : scan_t_(scan_t), name_(name), spin_t_(SpinType::Null)
+  {}
+
+  PulseSequence Selector::modify(const PulseSequence &seq, double value) const
   {
-    vector<double> phases = populateValues(
-        value_begin, value_end, cnt);
+    PulseSequence result = seq;
+    switch(scan_t_){
+      case ScanType::GammaB1Type:
+        {
+          result.setEmrFreq(name_, spin_t_, value);
+          return result;
+        }
+        break;
+      case ScanType::PhaseType:
+        {
+          result.setEmrPhase(name_, spin_t_, value);
+          return result;
+        }
+        break;
+      case ScanType::LengthType:
+        {
+          std::uint64_t sz = static_cast<std::uint64_t>(std::round(
+                value/result.getIncrement()));
 
-    ScanResults1D results;
-    for(const auto &val : phases){
-      PulseSequence seq = params.seq;
-      seq.setEmrPhase(name, t, val);
-
-      double intensity = DnpRunner::calcPowderIntensity(
-          params.magnet, params.gyrotron, params.probe,
-          params.spin_sys, seq, params.acq_spin,
-          params.spin_sys_eulers, ncores);
-      results.push_back(make_pair(val, intensity));
+          result.setSize(name_, sz);
+          return result;
+        }
+        break;
+      default:
+        throw NotImplementedError("Unknown ScanType.");
     }
-
-    return results;
-  }
-
-  ScanResults1D scan1dEmrLength(
-      const Parameters &params,
-      const std::string &name,
-      double value_begin,
-      double value_end,
-      std::uint64_t cnt,
-      int ncores)
-  {
-    vector<double> lengths = populateValues(
-        value_begin, value_end, cnt);
-
-    ScanResults1D results;
-    for(const auto &val : lengths){
-      PulseSequence seq = params.seq;
-      std::uint64_t sz = static_cast<std::uint64_t>(std::round(
-            val/seq.getIncrement()));
-
-      seq.setSize(name, sz);
-
-      double intensity = DnpRunner::calcPowderIntensity(
-          params.magnet, params.gyrotron, params.probe,
-          params.spin_sys, seq, params.acq_spin,
-          params.spin_sys_eulers, ncores);
-      results.push_back(make_pair(val, intensity));
-    }
-
-    return results;
-  }
-
-  vector<double> scan1d(
-      const Parameters &params,
-      const std::vector<PulseSequence> &seqs,
-      int ncores)
-  {
-    vector<double> results;
-    for(const auto &seq : seqs){
-      double intensity = DnpRunner::calcPowderIntensity(
-          params.magnet, params.gyrotron, params.probe,
-          params.spin_sys, seq, params.acq_spin,
-          params.spin_sys_eulers, ncores);
-      results.push_back(intensity);
-    }
-    return results;
+    return result;
   }
   
+  PulseSequence Selector::modify(PulseSequence &&seq, double value) const
+  {
+    PulseSequence pseq = std::move(seq);
+    switch(scan_t_){
+      case ScanType::GammaB1Type:
+        {
+          pseq.setEmrFreq(name_, spin_t_, value);
+          return pseq;
+        }
+        break;
+      case ScanType::PhaseType:
+        {
+          pseq.setEmrPhase(name_, spin_t_, value);
+          return pseq;
+        }
+        break;
+      case ScanType::LengthType:
+        {
+          std::uint64_t sz = static_cast<std::uint64_t>(std::round(
+                value/seq.getIncrement()));
+
+          pseq.setSize(name_, sz);
+          return pseq;
+        }
+        break;
+      default:
+        throw NotImplementedError("Unknown ScanType.");
+    }
+    return pseq;
+  }
+
+  ScanResults1D scan1d(
+      const Parameters &params,
+      const Selector &selector,
+      const Range &range,
+      int ncores)
+  {
+    ScanResults1D results;
+    vector<double> values = range.values();
+    for(const auto &value : values){
+      PulseSequence pseq = selector.modify(params.seq, value);
+      double intensity = DnpRunner::calcPowderIntensity(
+          params.magnet, params.gyrotron, params.probe,
+          params.spin_sys, pseq, params.acq_spin,
+          params.spin_sys_eulers, ncores);
+      results.push_back(make_pair(value, intensity));
+    }
+    
+    return results;
+  }
+
+  ScanResults2D scan2d(
+      const Parameters &params,
+      const Selector &selector1,
+      const Range &range1,
+      const Selector &selector2,
+      const Range &range2,
+      int ncores)
+  {
+    ScanResults2D results;
+    vector<double> values1 = range1.values();
+    vector<double> values2 = range2.values();
+    for(const auto &v1 : values1){
+      for(const auto &v2 : values2) {
+        auto seq_temp = selector1.modify(params.seq, v1);
+        auto pseq = selector2.modify(std::move(seq_temp), v2);
+        double intensity = DnpRunner::calcPowderIntensity(
+            params.magnet, params.gyrotron, params.probe,
+            params.spin_sys, pseq, params.acq_spin,
+            params.spin_sys_eulers, ncores);
+        results.push_back(make_tuple(v1, v2, intensity));
+      }
+    }
+    return results;
+  }
+
   vector<double> populateValues(double val_beg, double val_end, uint64_t cnt)
   {
     const double diff = val_end - val_beg;
