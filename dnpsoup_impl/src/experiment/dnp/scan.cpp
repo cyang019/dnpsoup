@@ -89,6 +89,11 @@ namespace dnpsoup {
       const Range &range,
       int ncores)
   {
+    PulseSequence pseq_ref;
+    const double intensity_ref = DnpRunner::calcPowderIntensity(
+        params.magnet, params.gyrotron, params.probe,
+        params.spin_sys, pseq_ref, params.acq_spin,
+        params.spin_sys_eulers, ncores);
     ScanResults1D results;
     vector<double> values = range.values();
     for(const auto &value : values){
@@ -97,7 +102,7 @@ namespace dnpsoup {
           params.magnet, params.gyrotron, params.probe,
           params.spin_sys, pseq, params.acq_spin,
           params.spin_sys_eulers, ncores);
-      results.push_back(make_pair(value, intensity));
+      results.push_back(make_pair(value, intensity/intensity_ref));
     }
     
     return results;
@@ -111,6 +116,11 @@ namespace dnpsoup {
       const Range &range2,
       int ncores)
   {
+    PulseSequence pseq_ref;
+    const double intensity_ref = DnpRunner::calcPowderIntensity(
+        params.magnet, params.gyrotron, params.probe,
+        params.spin_sys, pseq_ref, params.acq_spin,
+        params.spin_sys_eulers, ncores);
     ScanResults2D results;
     vector<double> values1 = range1.values();
     vector<double> values2 = range2.values();
@@ -122,7 +132,8 @@ namespace dnpsoup {
             params.magnet, params.gyrotron, params.probe,
             params.spin_sys, pseq, params.acq_spin,
             params.spin_sys_eulers, ncores);
-        results.push_back(make_tuple(v1, v2, intensity));
+        results.push_back(
+            make_tuple(v1, v2, intensity/intensity_ref));
       }
     }
     return results;

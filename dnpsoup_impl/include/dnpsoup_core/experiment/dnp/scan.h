@@ -2,6 +2,7 @@
 #define DNPSOUP_SCAN_H
 
 #include "dnpsoup_core/experiment/DnpRunner.h"
+#include "dnpsoup_core/common.h"
 #include <vector>
 #include <tuple>
 #include <cstdint>
@@ -42,10 +43,22 @@ namespace dnpsoup {
   };
 
   struct Range {
-    Range() : beg(0.0), end(0.0), cnt(1u) {}
+    Range() : beg(0.0), end(0.0), cnt(1u), step(1.0) {}
     Range(double beg, double end, std::uint64_t cnt)
       : beg(beg), end(end), cnt(cnt)
-    {}
+    {
+      step = (end - beg)/static_cast<double>(
+          ((cnt==0) + (cnt!=0)*(cnt-1)));
+    }
+    Range(double beg, double end, double step)
+      : beg(beg), end(end) step(step)
+    {
+      cnt = static_cast<std::uint64_t>(
+          std::round(
+            (end - beg)/((step <= eps)*1.0 + (step > eps) * step)
+            ));
+    }
+
     Range(const Range &) = default;
     Range(Range &&) noexcept = default;
     Range& operator=(const Range &) = default;
@@ -57,6 +70,7 @@ namespace dnpsoup {
     double beg;
     double end;
     std::uint64_t cnt;
+    double step;
   };
 
   class Selector {
