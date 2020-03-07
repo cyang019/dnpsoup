@@ -49,6 +49,11 @@ namespace dnpsoup {
     return populateValues(beg, end, cnt);
   }
 
+  std::vector<std::uint64_t> Range::sz_values() const
+  {
+    return populateValues(sz_beg, sz_end, cnt);
+  }
+
   Selector::Selector()
     : scan_t_(ScanType::DefaultType), name_(""), spin_t_(SpinType::Null)
   {}
@@ -200,6 +205,17 @@ namespace dnpsoup {
     for(uint64_t i = 0; i < cnt; ++i){
       results.push_back(elem);
       elem += step;
+    }
+    return results;
+  }
+
+  std::vector<std::uint64_t> populateValues(
+      std::uint64_t val_beg, std::uint64_t val_end, std::uint64_t cnt)
+  {
+    vector<uint64_t> results;
+    auto step = (val_end - val_beg)/((cnt == 0) + (cnt != 0) * (cnt - 1));
+    for(auto val = val_beg; val < val_end; val += step){
+      results.push_back(val);
     }
     return results;
   }

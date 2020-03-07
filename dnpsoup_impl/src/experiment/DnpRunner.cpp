@@ -158,6 +158,15 @@ namespace DnpRunner {
       double t = 0.0;
       auto mas_angle = p.magic_angle;
 
+      auto irradiated_types = spin_sys.irradiated();
+      pulseseq::Component default_comp;
+      for(const auto &t : irradiated_types){
+        default_comp.insert_or_assign(t, pulseseq::EMRadiation());
+      }
+      double inc = seq.getIncrement();
+      inc = roundToCycle(inc, g.em_frequency);
+      uint64_t mas_inc_cnt = static_cast<uint64_t>(round(mas_inc/inc));
+
       packets.setPropertyValue(ValueName::b0, m.b0);
       offset_packets.setPropertyValue(ValueName::b0, m.b0);
       auto e_spin_ids = spin_sys.getSpinIds(SpinType::e);
@@ -168,16 +177,7 @@ namespace DnpRunner {
             InteractionType::Shielding, sid, ValueName::offset, g.em_frequency);
       }
 
-      auto irradiated_types = spin_sys.irradiated();
-      pulseseq::Component default_comp;
-      for(const auto &t : irradiated_types){
-        default_comp.insert_or_assign(t, pulseseq::EMRadiation());
-      }
       unique_ptr<EvolutionCacheStatic> uptr_cache = nullptr;
-      double inc = seq.getIncrement();
-      inc = roundToCycle(inc, g.em_frequency);
-      uint64_t mas_inc_cnt = static_cast<uint64_t>(round(mas_inc/inc));
-
       if (p.mas_frequency < eps) {
 //#ifndef NDEBUG
 //        cout << "EvolutionCacheStatic capacity: " << seq.uniqueComponentsCount() << endl;
@@ -381,24 +381,11 @@ namespace DnpRunner {
         const Euler<> &spin_sys_euler)
     {
       constexpr double eps = std::numeric_limits<double>::epsilon();
-      auto irradiated_types = spin_sys.irradiated();
-      pulseseq::Component default_comp;
-      for(const auto &t : irradiated_types){
-        default_comp.insert_or_assign(t, pulseseq::EMRadiation());
-      }
-      double inc = seq.getIncrement();
-      inc = roundToCycle(inc, g.em_frequency);
-
-      vector<pair<double, double>> results;
       auto packets = spin_sys.summarize<DnpExperiment>();
       auto offset_packets = spin_sys.summarizeOffset<DnpExperiment>();
       auto rpackets = spin_sys.summarizeRelaxation();
       auto acq_mat = spin_sys.acquireOn(acq_spin);
       double mas_inc = p.mas_increment;
-      if(mas_inc < inc - eps) {
-        throw InputError("For BuildUp, MAS increment is needed. (>= inc of a pulse sequence)");
-      }
-
       double rotor_period = 0.0;
       uint64_t total_rotor_cnt = 0u;
       if(p.mas_frequency > eps){
@@ -415,12 +402,24 @@ namespace DnpRunner {
           mas_inc = rotor_period / static_cast<double>(total_rotor_cnt);
           ///< 1% of MAS
         }
-      } else {  // static
-        total_rotor_cnt = 1;
       }
-
+      else {
+        total_rotor_cnt = 1u;
+      }
       double t = 0.0;
       auto mas_angle = p.magic_angle;
+
+      auto irradiated_types = spin_sys.irradiated();
+      pulseseq::Component default_comp;
+      for(const auto &t : irradiated_types){
+        default_comp.insert_or_assign(t, pulseseq::EMRadiation());
+      }
+      double inc = seq.getIncrement();
+      inc = roundToCycle(inc, g.em_frequency);
+      if(mas_inc < inc - eps) {
+        throw InputError("For BuildUp, MAS increment is needed. (>= inc of a pulse sequence)");
+      }
+      uint64_t mas_inc_cnt = static_cast<uint64_t>(round(mas_inc/inc));
 
       packets.setPropertyValue(ValueName::b0, m.b0);
       offset_packets.setPropertyValue(ValueName::b0, m.b0);
@@ -432,7 +431,11 @@ namespace DnpRunner {
             InteractionType::Shielding, sid, ValueName::offset, g.em_frequency);
       }
 
-      uint64_t mas_inc_cnt = static_cast<uint64_t>(round(mas_inc/inc));
+      unique_ptr<EvolutionCacheStatic> uptr_cache = nullptr;
+      if (p.mas_frequency < eps) {
+        uptr_cache = make_unique<EvolutionCacheStatic>(
+            seq.uniqueComponentsCount());
+      }
 
       MatrixCxDbl hamiltonian = packets.genMatrix(spin_sys_euler * mas_angle);
       MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(spin_sys_euler * mas_angle);
@@ -440,6 +443,7 @@ namespace DnpRunner {
       MatrixCxDbl rho0_lab = genRhoEq(hamiltonian_lab, p.temperature);
       double val = ::dnpsoup::projectionNorm(rho0_lab, acq_mat).real();
       const double result_ref = val;
+      vector<pair<double, double>> results;
       results.push_back(make_pair(0.0, val));
 
       auto rho0_evolve = rho0_lab;
@@ -449,11 +453,6 @@ namespace DnpRunner {
       uint64_t idx = 0;
       pulseseq::Component comp;
 
-      unique_ptr<EvolutionCacheStatic> uptr_cache = nullptr;
-      if (p.mas_frequency < 1.0 - eps) {
-        uptr_cache = make_unique<EvolutionCacheStatic>(
-            seq.uniqueComponentsCount());
-      }
       while(idx < seq.size() || comp_size > 0) {
         /// step-wise consume pulse sequence
         std::tie(comp, comp_size, idx) = seq.next();

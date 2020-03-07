@@ -29,16 +29,16 @@
       "mas_increment": 1e-6
   },
 
-  "task": "FieldProfile",
+  "task": "scan1d",
   
   "task details": {
-    "type": "GammaB1",
+    "type": "EmrLength",
     "spin": "e",
-    "name": "emr1",
+    "name": "loop",
 
     "range": {
-      "begin": 0.0,
-      "end": 16.0,
+      "begin": 1,
+      "end": 100,
       "count": 33
     }
   }
