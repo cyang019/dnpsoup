@@ -282,17 +282,16 @@ namespace DnpRunner {
         const std::vector<Euler<>> &spin_sys_eulers,
         int ncores)
     {
-      auto raw_results = calcPowderBuildUp(
-          m, g, p, spin_sys, seq, acq_spin, spin_sys_eulers, ncores);
+      auto results = calcPowderBuildUp(
+          m, g, p, spin_sys, seq, 
+          acq_spin, spin_sys_eulers, ncores);
       const double ref_intensity = calcPowderIntensity(
-            m.b0, g, p, spin_sys, 
-            PulseSequence(), 
+            m, g, p, spin_sys, PulseSequence(), 
             acq_spin, spin_sys_eulers, ncores);
-      auto res = raw_results;
-      for(size_t i = 0; i < raw_results.size(); ++i){
-        res[i].second /= ref_intensity;
+      for(size_t i = 0; i < results.size(); ++i){
+        results[i].second /= ref_intensity;
       }
-      return res;
+      return results;
     }
 
     std::vector<std::pair<double, double>> calcPowderBuildUp(
@@ -310,7 +309,7 @@ namespace DnpRunner {
       if(ncores == 1) {
         for(const auto &e : spin_sys_eulers){
           auto xtal_results = calcBuildUp(m, g, p, spin_sys, seq,
-              acq_spin, e, false);
+              acq_spin, e);
           if(results.size() == 0){  // initial crystal point
             for(const auto &pt_res : xtal_results){
               const double temp = pt_res.second * std::sin(e.beta());
@@ -335,7 +334,7 @@ namespace DnpRunner {
         for(const auto &e : spin_sys_eulers){
           auto task = [=](){
             auto xtal_results = 
-              calcBuildUp(m, g, p, spin_sys, seq, acq_spin, e, false);
+              calcBuildUp(m, g, p, spin_sys, seq, acq_spin, e);
             const double factor = std::sin(e.beta());
             for(auto &xtal_result : xtal_results){
               xtal_result.second *= factor;
@@ -379,8 +378,7 @@ namespace DnpRunner {
         const SpinSys &spin_sys,
         PulseSequence seq,
         const SpinType &acq_spin,
-        const Euler<> &spin_sys_euler,
-        bool enhancement)
+        const Euler<> &spin_sys_euler)
     {
       constexpr double eps = std::numeric_limits<double>::epsilon();
       auto irradiated_types = spin_sys.irradiated();
@@ -441,12 +439,8 @@ namespace DnpRunner {
       auto hamiltonian_lab = hamiltonian + hamiltonian_offset;
       MatrixCxDbl rho0_lab = genRhoEq(hamiltonian_lab, p.temperature);
       double val = ::dnpsoup::projectionNorm(rho0_lab, acq_mat).real();
-      const double result_ref = enhancement ? val : 1.0;
-      if(enhancement){
-        results.push_back(make_pair(0.0, 1.0));
-      } else {
-        results.push_back(make_pair(0.0, val));
-      }
+      const double result_ref = val;
+      results.push_back(make_pair(0.0, val));
 
       auto rho0_evolve = rho0_lab;
       auto rho0_evolve_super = ::dnpsoup::flatten(rho0_evolve, 'c');

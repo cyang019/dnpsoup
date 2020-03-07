@@ -151,6 +151,7 @@ namespace dnpsoup {
           params.spin_sys, pseq, params.acq_spin,
           params.spin_sys_eulers, ncores);
       results.push_back(make_pair(value, intensity/intensity_ref));
+      std::cout << "." << std::flush;
     }
     
     return results;
@@ -182,7 +183,9 @@ namespace dnpsoup {
             params.spin_sys_eulers, ncores);
         results.push_back(
             make_tuple(v1, v2, intensity/intensity_ref));
+        std::cout << "." << std::flush;
       }
+      std::cout << std::endl;
     }
     return results;
   }

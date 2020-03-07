@@ -379,6 +379,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
     if(j_task.find("type") == j_task.end()){
       throw runtime_error("Need a type for scan1d tasks in 'task details'.");
     }
+    auto selector = Selector();
     auto scan_type = getScanType(j_task["type"].get<string>());
     switch (scan_type){
       case ScanType::EmrGammaB1Type:
@@ -388,20 +389,19 @@ void dnpsoup_exec(const std::string &spinsys_filename,
             throw runtime_error("Need to set 'spin' for scan1d task details.");
           }
           auto spin_t = toSpinType(j_task["spin"].get<string>());
-          auto selector = Selector(scan_type, name, spin_t);
-          result = scan1d(params, selector, range, ncores);
+          selector = Selector(scan_type, name, spin_t);
         }
         break;
       case ScanType::EmrLengthType:
         {
-          auto selector = Selector(scan_type, name);
-          result = scan1d(params, selector, range, ncores);
+          selector = Selector(scan_type, name);
         }
         break;
       case ScanType::DefaultType:
         throw runtime_error("Scan type unknown.");
     }
     
+    result = scan1d(params, selector, range, ncores);
     std::ofstream result_stream;
 	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);
 	  result_stream.open(result_filename.c_str());

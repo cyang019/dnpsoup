@@ -14,11 +14,11 @@
      "loop":
      {
        "type": "Section",
-       "size": 20,
+       "size": 100,
        "names": ["p1", "p2", "d"],
        "params": {},
        "phase0": {
-         "reset": true,
+         "reset": false,
          "seed": 0
        }
      },

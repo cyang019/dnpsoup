@@ -38,8 +38,7 @@ namespace dnpsoup {
         const SpinSys &spin_sys,
         PulseSequence seq,
         const SpinType &acq_spin,
-        const Euler<> &spin_sys_euler,
-        bool enhancement=true);
+        const Euler<> &spin_sys_euler);
 
     std::vector<std::pair<double, double>> calcPowderBuildUp(
         const Magnet &m, 
