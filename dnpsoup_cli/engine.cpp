@@ -146,7 +146,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
            << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
            << " seconds." << endl;
 		  return;
-    } else {
+    } else {  // "BuildUp"
 		  auto results = DnpRunner::calcBuildUp(magnet, gyrotron, probe,
 		  	spinsys, seq, acq_t, euler);
 
@@ -167,6 +167,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
     }
 	}
 
+  /// otherwise simulating powder
 	auto eulers = vector<Euler<>>();
   if(j.find("euler_scheme") != j.end()){
     if(j["euler_scheme"].find("zcw") != j["euler_scheme"].end()){
@@ -195,9 +196,10 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 	}
 	int ncores = 1;
 	if(j.find("ncores") != j.end()){
-    cout << std::thread::hardware_concurrency() << " cores detected on the current machine." << endl;
+    cout << std::thread::hardware_concurrency() << " cores detected on the current machine." << "\n";
 		ncores = j["ncores"].get<int>();
     if (ncores > (int)std::thread::hardware_concurrency()){
+      cout << ncores << " exceeds the number of cores on the current machine, overriding..." << endl;
       ncores = std::thread::hardware_concurrency();
     }
     cout << "use " << ncores << " core(s)." << endl;
@@ -219,8 +221,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
          << " seconds." << endl;
 		return;
 	}
-
-  if(task_str == "PowderBuildUp"){
+  else if(task_str == "PowderBuildUp"){
 		auto magnet = Magnet(j);		
 		auto gyrotron = Gyrotron(j);
 		auto results = DnpRunner::calcPowderBuildUp(magnet, gyrotron, probe,
@@ -241,8 +242,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
          << " seconds." << endl;
     return;
   }
-
-  if(task_str == "PowderBuildUpEnhancement"){
+  else if(task_str == "PowderBuildUpEnhancement"){
 		auto magnet = Magnet(j);		
 		auto gyrotron = Gyrotron(j);
 		auto results = DnpRunner::calcPowderBuildUpEnhancement(magnet, gyrotron, probe,
@@ -263,8 +263,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
          << " seconds." << endl;
     return;
   }
-
-	if(task_str == "FieldProfile"){
+	else if(task_str == "FieldProfile"){
 		std::vector<std::pair<double, double>> result;
 		if(j.find("fields") != j.end()){
 			vector<Magnet> magnets;
@@ -336,8 +335,229 @@ void dnpsoup_exec(const std::string &spinsys_filename,
          << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
          << " seconds." << endl;
 		return;
-	}
+	} // field profile
+  else if (task_str == "scan1d") {
+		auto gyrotron = Gyrotron(j);
+		auto magnet = Magnet(j);
+    auto params = Parameters(magnet, gyrotron, probe,
+        spinsys, seq, acq_t, eulers);
+    auto j_task = j["task details"];
+    if(j_task.find("range") == j_task.end()){
+      throw runtime_error("Need a 'range' for scan1d 'task details'.");
+    }
+    auto task_range_js = j_task["range"];
+    if(task_range_js.find("begin") == task_range_js.end()){
+      throw runtime_error("Need a 'begin' for scan1d task 'range'.");
+    }
+    double scan_beg = task_range_js["begin"].get<double>();
+    if(task_range_js.find("end") == task_range_js.end()){
+      throw runtime_error("Need an 'end' for scan1d task 'range'.");
+    }
+    double scan_end = task_range_js["end"].get<double>();
+    if(task_range_js.find("count") != task_range_js.end()
+        && task_range_js.find("step") != task_range_js.end()){
+      throw runtime_error("Cannot specify both 'count' and 'step'. Set one of them.");
+    }
+    Range range;
+    if(task_range_js.find("count") != task_range_js.end()){
+      uint64_t scan_count = task_range_js["count"].get<uint64_t>();
+      range = Range(scan_beg, scan_end, scan_count);
+    }
+    else if(task_range_js.find("step") != task_range_js.end()){
+      double step = task_range_js["step"].get<double>();
+      range = Range(scan_beg, scan_end, step);
+    }
+    else{
+      throw runtime_error("Need either 'step' or 'count' for scan1d 'range'");
+    }
 
-	throw runtime_error("Accepted tasks: 'EigenValues', 'Intensity', 'PowderIntensity', 'FieldProfile', 'BuildUp'.");
+    auto result = ScanResults1D();
+    if(j_task.find("name") == j_task.end()){
+      throw runtime_error("Need a 'name' for scan1d task details.");
+    }
+    auto name = j_task["name"].get<string>();
+    if(j_task.find("type") == j_task.end()){
+      throw runtime_error("Need a type for scan1d tasks in 'task details'.");
+    }
+    auto scan_type = getScanType(j_task["type"].get<string>());
+    switch (scan_type){
+      case ScanType::EmrGammaB1Type:
+      case ScanType::EmrPhaseType:
+        {
+          if(j_task.find("spin") == j_task.end()){
+            throw runtime_error("Need to set 'spin' for scan1d task details.");
+          }
+          auto spin_t = toSpinType(j_task["spin"].get<string>());
+          auto selector = Selector(scan_type, name, spin_t);
+          result = scan1d(params, selector, range, ncores);
+        }
+        break;
+      case ScanType::EmrLengthType:
+        {
+          auto selector = Selector(scan_type, name);
+          result = scan1d(params, selector, range, ncores);
+        }
+        break;
+      case ScanType::DefaultType:
+        throw runtime_error("Scan type unknown.");
+    }
+    
+    std::ofstream result_stream;
+	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);
+	  result_stream.open(result_filename.c_str());
+		result_stream << "# scan1d:\n";
+    result_stream << setprecision(numeric_limits<double>::max_digits10);
+		for(size_t i = 0; i < result.size(); ++i){
+			result_stream << result[i].first << "," << result[i].second << "\n";
+		}
+    auto end_time = chrono::high_resolution_clock::now();
+	  cout << "Total time: " 
+         << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
+         << " seconds." << endl;
+		return;
+  }
+  else if (task_str == "scan2d") {
+		auto gyrotron = Gyrotron(j);
+		auto magnet = Magnet(j);
+    auto params = Parameters(magnet, gyrotron, probe,
+        spinsys, seq, acq_t, eulers);
+    auto j_task = j["task details"];
+    if(j_task.find("range1") == j_task.end()){
+      throw runtime_error("Need a 'range1' for scan2d 'task details'.");
+    }
+    auto task_range1_js = j_task["range1"];
+    if(task_range1_js.find("begin") == task_range1_js.end()){
+      throw runtime_error("Need a 'begin' for scan2d task 'range1'.");
+    }
+    double scan_beg1 = task_range1_js["begin"].get<double>();
+    if(task_range1_js.find("end") == task_range1_js.end()){
+      throw runtime_error("Need an 'end' for scan2d task 'range1'.");
+    }
+    double scan_end1 = task_range1_js["end"].get<double>();
+    if(task_range1_js.find("count") != task_range1_js.end()
+        && task_range1_js.find("step") != task_range1_js.end()){
+      throw runtime_error("Cannot specify both 'count' and 'step'. Set one of them.");
+    }
+    Range range1;
+    if(task_range1_js.find("count") != task_range1_js.end()){
+      uint64_t scan_count1 = task_range1_js["count"].get<uint64_t>();
+      range1 = Range(scan_beg1, scan_end1, scan_count1);
+    }
+    else if(task_range1_js.find("step") != task_range1_js.end()){
+      double step1 = task_range1_js["step"].get<double>();
+      range1 = Range(scan_beg1, scan_end1, step1);
+    }
+    else{
+      throw runtime_error("Need either 'step' or 'count' for scan2d 'range1'");
+    }
+    if(j_task.find("range2") == j_task.end()){
+      throw runtime_error("Need a 'range2' for scan2d 'task details'.");
+    }
+    auto task_range2_js = j_task["range2"];
+    if(task_range2_js.find("begin") == task_range2_js.end()){
+      throw runtime_error("Need a 'begin' for scan2d task 'range2'.");
+    }
+    double scan_beg2 = task_range2_js["begin"].get<double>();
+    if(task_range2_js.find("end") == task_range2_js.end()){
+      throw runtime_error("Need an 'end' for scan2d task 'range1'.");
+    }
+    double scan_end2 = task_range2_js["end"].get<double>();
+    if(task_range2_js.find("count") != task_range2_js.end()
+        && task_range2_js.find("step") != task_range2_js.end()){
+      throw runtime_error("Cannot specify both 'count' and 'step'. Set one of them.");
+    }
+    Range range2;
+    if(task_range2_js.find("count") != task_range2_js.end()){
+      uint64_t scan_count2 = task_range2_js["count"].get<uint64_t>();
+      range2 = Range(scan_beg2, scan_end2, scan_count2);
+    }
+    else if(task_range2_js.find("step") != task_range2_js.end()){
+      double step2 = task_range2_js["step"].get<double>();
+      range2 = Range(scan_beg2, scan_end2, step2);
+    }
+    else{
+      throw runtime_error("Need either 'step' or 'count' for scan2d 'range2'");
+    }
+
+    auto result = ScanResults2D();
+    if(j_task.find("name1") == j_task.end()){
+      throw runtime_error("Need a 'name1' for scan2d task details.");
+    }
+    auto name1 = j_task["name1"].get<string>();
+    if(j_task.find("type1") == j_task.end()){
+      throw runtime_error("Need a type1 for scan2d tasks in 'task details'.");
+    }
+    auto scan_type1 = getScanType(j_task["type1"].get<string>());
+    Selector selector1;
+    switch (scan_type1){
+      case ScanType::EmrGammaB1Type:
+      case ScanType::EmrPhaseType:
+        {
+          if(j_task.find("spin1") == j_task.end()){
+            throw runtime_error("Need to set 'spin' for scan1d task details.");
+          }
+          auto spin_t = toSpinType(j_task["spin1"].get<string>());
+          selector1 = Selector(scan_type1, name1, spin_t);
+        }
+        break;
+      case ScanType::EmrLengthType:
+        {
+          selector1 = Selector(scan_type1, name1);
+        }
+        break;
+      case ScanType::DefaultType:
+        throw runtime_error("Scan type1 unknown.");
+    }
+    if(j_task.find("name2") == j_task.end()){
+      throw runtime_error("Need a 'name2' for scan2d task details.");
+    }
+    auto name2 = j_task["name2"].get<string>();
+    if(j_task.find("type2") == j_task.end()){
+      throw runtime_error("Need a type2 for scan2d tasks in 'task details'.");
+    }
+    auto scan_type2 = getScanType(j_task["type2"].get<string>());
+    Selector selector2;
+    switch (scan_type2){
+      case ScanType::EmrGammaB1Type:
+      case ScanType::EmrPhaseType:
+        {
+          if(j_task.find("spin2") == j_task.end()){
+            throw runtime_error("Need to set 'spin' for scan1d task details.");
+          }
+          auto spin_t = toSpinType(j_task["spin2"].get<string>());
+          selector2 = Selector(scan_type2, name2, spin_t);
+        }
+        break;
+      case ScanType::EmrLengthType:
+        {
+          selector2 = Selector(scan_type2, name2);
+        }
+        break;
+      case ScanType::DefaultType:
+        throw runtime_error("Scan type2 unknown.");
+    }
+    result = scan2d(params, selector1, range1, selector2, range2, ncores);
+    
+    std::ofstream result_stream;
+	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);
+	  result_stream.open(result_filename.c_str());
+		result_stream << "# Scan2d:\n";
+    result_stream << setprecision(numeric_limits<double>::max_digits10);
+		for(size_t i = 0; i < result.size(); ++i){
+      const auto [x, y, z] = result[i];
+      result_stream << x << "," << y << "," << z << "\n";
+		}
+    auto end_time = chrono::high_resolution_clock::now();
+	  cout << "Total time: " 
+         << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
+         << " seconds." << endl;
+		return;
+  }
+
+  const string err_msg = "Accepted tasks: "
+    "'EigenValues', 'Intensity', 'PowderIntensity', 'FieldProfile', "
+    "'BuildUp', 'PowderBuildUpEnhancement', "
+    "'scan1d', and 'scan2d'";
+	throw runtime_error(err_msg);
 	return;
 }

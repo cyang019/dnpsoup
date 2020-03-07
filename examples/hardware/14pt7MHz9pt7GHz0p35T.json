@@ -11,6 +11,7 @@
   "ncores": 3,
   
   "acq": "H",
+
   "field range": {
     "begin": 0.345,
     "end": 0.350,
@@ -27,6 +28,20 @@
       "temperature": 100.0,
       "mas_increment": 1e-6
   },
-  "task": "FieldProfile"
+
+  "task": "scan1d",
+  
+  "task details": {
+    "selector": {
+      "type": "GammaB1",
+      "spin": "e",
+      "name": "emr1"
+    },
+    "range": {
+      "begin": 0.0,
+      "end": 15.0,
+      "cnt": 16
+    }
+  }
 }
 

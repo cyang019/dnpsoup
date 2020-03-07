@@ -12,10 +12,14 @@
 namespace dnpsoup {
   enum class ScanType : int
   {
-    GammaB1Type = 10,
-    PhaseType = 11,
-    LengthType = 12,
+    DefaultType = 0,
+
+    EmrGammaB1Type = 10,
+    EmrPhaseType = 11,
+    EmrLengthType = 12,
   };
+
+  ScanType getScanType(const std::string &type_str);
 
   /// x, y pairs
   using ScanResults1D = std::vector<std::pair<double, double>>;
@@ -75,11 +79,16 @@ namespace dnpsoup {
 
   class Selector {
   public:
+    Selector();
     Selector(const ScanType &scan_t, 
         const std::string &name, 
         const SpinType &spin_t);
 
     Selector(const ScanType &scan_t, const std::string &name); 
+    Selector(const Selector &) = default;
+    Selector(Selector &&) noexcept = default;
+    Selector& operator=(const Selector &) = default;
+    Selector& operator=(Selector &&) noexcept = default;
 
     PulseSequence modify(const PulseSequence &seq, double value) const;
     PulseSequence modify(PulseSequence &&seq, double value) const;
