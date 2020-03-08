@@ -1,7 +1,9 @@
 #include "dnpsoup_core/experiment/dnp/scan.h"
 #include "dnpsoup_core/experiment/DnpRunner.h"
+#include "dnpsoup_core/common.h"
 #include "dnpsoup_core/errors.h"
 #include <cmath>
+#include <limits>
 
 using namespace std;
 
@@ -44,15 +46,179 @@ namespace dnpsoup {
     return ScanType::DefaultType;
   }
 
+  // class ScanValueType
+  ScanValueType::ScanValueType()
+    : value_({0.0}), is_real_(true)
+  {}
+
+  ScanValueType::ScanValueType(double val)
+    : value_({val}), is_real_(true)
+  {}
+
+  ScanValueType::ScanValueType(std::uint64_t val)
+    : is_real_(false)
+  {
+    value_.sz_value = val;
+  }
+
+  ScanValueType::ScanValueType(const ScanValueType &rhs)
+    : value_(rhs.value_), is_real_(rhs.is_real_)
+  {}
+
+  ScanValueType::ScanValueType(ScanValueType &&rhs) noexcept
+    : value_(std::move(rhs.value_)), is_real_(rhs.is_real_)
+  {}
+
+  ScanValueType& ScanValueType::operator=(const ScanValueType &rhs)
+  {
+    value_ = rhs.value_;
+    is_real_ = rhs.is_real_;
+    return *this;
+  }
+
+  ScanValueType& ScanValueType::operator=(ScanValueType &&rhs) noexcept
+  {
+    value_ = std::move(rhs.value_);
+    is_real_ = std::move(rhs.is_real_);
+    return *this;
+  }
+
+  ScanValueType& ScanValueType::operator=(const double &rhs)
+  {
+    value_.d_value = rhs;
+    is_real_ = true;
+    return *this;
+  }
+  ScanValueType& ScanValueType::operator=(double && rhs) noexcept
+  {
+    value_.d_value = std::move(rhs);
+    is_real_ = true;
+    return *this;
+  }
+  ScanValueType& ScanValueType::operator=(const std::uint64_t &rhs)
+  {
+    value_.sz_value = rhs;
+    is_real_ = false;
+    return *this;
+  }
+
+  ScanValueType& ScanValueType::operator=(std::uint64_t && rhs) noexcept
+  {
+    value_.sz_value = std::move(rhs);
+    is_real_ = false;
+    return *this;
+  }
+
+  ScanValueType& ScanValueType::operator+=(const double &rhs)
+  {
+    value_.d_value *= is_real_;
+    value_.d_value += rhs;
+    is_real_ = true;
+    return *this;
+  }
+
+  ScanValueType& ScanValueType::operator+=(double && rhs) noexcept
+  {
+    value_.d_value *= is_real_;
+    value_.d_value += std::move(rhs);
+    is_real_ = true;
+    return *this;
+  }
+
+  ScanValueType& ScanValueType::operator+=(const std::uint64_t &rhs)
+  {
+    value_.sz_value *= (!is_real_);
+    value_.sz_value += rhs;
+    is_real_ = false;
+    return *this;
+  }
+
+  ScanValueType& ScanValueType::operator+=(std::uint64_t && rhs) noexcept
+  {
+    value_.sz_value *= (!is_real_);
+    value_.sz_value += std::move(rhs);
+    is_real_ = false;
+    return *this;
+  }
+
+  double ScanValueType::getRealValue() const
+  {
+    return (is_real_) * value_.d_value;
+  }
+
+  std::uint64_t ScanValueType::getSizeValue() const
+  {
+    return (!is_real_) * value_.sz_value;
+  }
+
+  ScanValueType& ScanValueType::setRealValue(const double &val)
+  {
+    value_.d_value = val;
+    is_real_ = true;
+    return *this;
+  }
+
+  ScanValueType& ScanValueType::setIntValue(const std::uint64_t &val)
+  {
+    value_.sz_value = val;
+    is_real_ = false;
+    return *this;
+  }
+  // class ScanValueType
+  
+  // class Range
+  Range::Range()
+    : start_(0.0), stop_(0.0), step_(1.0)
+  {}
+
+  Range::Range(double start, double stop, std::uint64_t cnt)
+    : start_(start), stop_(stop)
+  {
+    constexpr double eps = std::numeric_limits<double>::epsilon();
+    const double diff = stop - start;
+    if(cnt <= 1) step_ = diff;
+    else {
+      step_ = diff / static_cast<double>(cnt - 1);
+      step_ += 1.0 * (::dnpsoup::approxEqual(step_.getRealValue(), 0.0, eps, eps));
+    }
+  }
+
+  Range::Range(double start, double stop, double step)
+    : start_(start), stop_(stop), step_(step)
+  {
+      step_ += 1.0 * (::dnpsoup::approxEqual(step, 0.0, eps, eps));
+  }
+
+  Range::Range(std::uint64_t start, std::uint64_t stop, std::uint64_t step)
+    : start_(start), stop_(stop), step_(step)
+  {
+    step_ += static_cast<std::uint64_t>(step_.getSizeValue() == 0u);
+  }
+
   vector<double> Range::values() const
   {
-    return populateValues(beg, end, cnt);
+    vector<double> results;
+    double val = start_.getRealValue();
+    const double inc = step_.getRealValue();
+    while(val < stop_.getRealValue()){
+      results.push_back(val);
+      val += inc;
+    }
+    return results;
   }
 
   std::vector<std::uint64_t> Range::sz_values() const
   {
-    return populateValues(sz_beg, sz_end, cnt);
+    vector<std::uint64_t> results;
+    std::uint64_t val = start_.getSizeValue();
+    const std::uint64_t inc = step_.getSizeValue();
+    while(val < stop_.getSizeValue()){
+      results.push_back(val);
+      val += inc;
+    }
+    return results;
   }
+  // class Range
 
   Selector::Selector()
     : scan_t_(ScanType::DefaultType), name_(""), spin_t_(SpinType::Null)
@@ -67,28 +233,27 @@ namespace dnpsoup {
     : scan_t_(scan_t), name_(name), spin_t_(SpinType::Null)
   {}
 
-  PulseSequence Selector::modify(const PulseSequence &seq, double value) const
+  PulseSequence Selector::modify(
+      const PulseSequence &seq,
+      const ScanValueType &value) const
   {
     PulseSequence result = seq;
     switch(scan_t_){
       case ScanType::EmrGammaB1Type:
         {
-          result.setEmrFreq(name_, spin_t_, value);
+          result.setEmrFreq(name_, spin_t_, value.getRealValue());
           return result;
         }
         break;
       case ScanType::EmrPhaseType:
         {
-          result.setEmrPhase(name_, spin_t_, value);
+          result.setEmrPhase(name_, spin_t_, value.getRealValue());
           return result;
         }
         break;
       case ScanType::EmrLengthType:
         {
-          std::uint64_t sz = static_cast<std::uint64_t>(std::round(
-                value/result.getIncrement()));
-
-          result.setSize(name_, sz);
+          result.setSize(name_, value.getSizeValue());
           return result;
         }
         break;
@@ -98,28 +263,26 @@ namespace dnpsoup {
     return result;
   }
   
-  PulseSequence Selector::modify(PulseSequence &&seq, double value) const
+  PulseSequence Selector::modify(
+      PulseSequence &&seq, const ScanValueType &value) const
   {
     PulseSequence pseq = std::move(seq);
     switch(scan_t_){
       case ScanType::EmrGammaB1Type:
         {
-          pseq.setEmrFreq(name_, spin_t_, value);
+          pseq.setEmrFreq(name_, spin_t_, value.getRealValue());
           return pseq;
         }
         break;
       case ScanType::EmrPhaseType:
         {
-          pseq.setEmrPhase(name_, spin_t_, value);
+          pseq.setEmrPhase(name_, spin_t_, value.getRealValue());
           return pseq;
         }
         break;
       case ScanType::EmrLengthType:
         {
-          std::uint64_t sz = static_cast<std::uint64_t>(std::round(
-                value/seq.getIncrement()));
-
-          pseq.setSize(name_, sz);
+          pseq.setSize(name_, value.getSizeValue());
           return pseq;
         }
         break;

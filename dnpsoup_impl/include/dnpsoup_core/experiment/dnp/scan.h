@@ -42,15 +42,46 @@ namespace dnpsoup {
     ScanValueType(ScanValueType &&) noexcept;
     ScanValueType& operator=(const ScanValueType &);
     ScanValueType& operator=(ScanValueType &&) noexcept;
+    ScanValueType& operator=(const double &);
+    ScanValueType& operator=(double &&) noexcept;
+    ScanValueType& operator=(const std::uint64_t &);
+    ScanValueType& operator=(std::uint64_t &&) noexcept;
+    ScanValueType& operator+=(const double &);
+    ScanValueType& operator+=(double &&) noexcept;
+    ScanValueType& operator+=(const std::uint64_t &);
+    ScanValueType& operator+=(std::uint64_t &&) noexcept;
     ~ScanValueType() {}
 
     double getRealValue() const;
-    std::uint64_t getIntValue() const;
+    std::uint64_t getSizeValue() const;
 
     ScanValueType& setRealValue(const double &val);
     ScanValueType& setIntValue(const std::uint64_t &val);
+
+    bool isReal() const { return is_real_; }
   private:
     ValueContainer value_;
+    bool is_real_;
+  };
+
+  class Range {
+  public:
+    Range();
+    Range(double start, double stop, std::uint64_t cnt);
+    Range(double start, double stop, double step);
+    Range(std::uint64_t start, std::uint64_t stop, std::uint64_t step);
+    Range(const Range &) = default;
+    Range(Range &&) noexcept = default;
+    Range& operator=(const Range &) = default;
+    Range& operator=(Range &&) noexcept = default;
+    ~Range() {}
+
+    std::vector<double> values() const;
+    std::vector<std::uint64_t> sz_values() const;
+  private:
+    ScanValueType start_;
+    ScanValueType stop_;
+    ScanValueType step_;
   };
 
   struct Parameters {
@@ -72,46 +103,6 @@ namespace dnpsoup {
     std::vector<Euler<>> spin_sys_eulers;
   };
 
-  struct Range {
-    Range() : beg(0.0), end(0.0), cnt(1u), step(1.0), sz_beg(0u), sz_end(0u) {}
-    Range(double beg, double end, std::uint64_t cnt)
-      : beg(beg), end(end), cnt(cnt), sz_beg(0u), sz_end(0u)
-    {
-      step = (end - beg)/static_cast<double>(
-          ((cnt==0) + (cnt!=0)*(cnt-1)));
-    }
-    Range(double beg, double end, double step)
-      : beg(beg), end(end), step(step), sz_beg(0u), sz_end(0u)
-    {
-      cnt = static_cast<std::uint64_t>(
-          std::round(
-            (end - beg)/((step <= eps)*1.0 + (step > eps) * step)
-            ));
-    }
-
-    Range(std::uint64_t szbeg, std::uint64_t szend, std::uint64_t step)
-      : beg(0.0), end(0.0), step(0u), sz_beg(szbeg), sz_end(szend)
-    {
-      cnt = (sz_beg - sz_end)/step;
-    }
-
-    Range(const Range &) = default;
-    Range(Range &&) noexcept = default;
-    Range& operator=(const Range &) = default;
-    Range& operator=(Range &&) noexcept = default;
-    ~Range() {}
-
-    std::vector<double> values() const;
-    std::vector<std::uint64_t> sz_values() const;
-
-    double beg;
-    double end;
-    std::uint64_t cnt;
-    double step;
-
-    std::uint64_t sz_beg;
-    std::uint64_t sz_end;
-  };
 
   class Selector {
   public:
@@ -126,9 +117,7 @@ namespace dnpsoup {
     Selector& operator=(const Selector &) = default;
     Selector& operator=(Selector &&) noexcept = default;
 
-    PulseSequence modify(const PulseSequence &seq, double value) const;
     PulseSequence modify(const PulseSequence &seq, const ScanValueType &value) const;
-    PulseSequence modify(PulseSequence &&seq, double value) const;
     PulseSequence modify(PulseSequence &&seq, const ScanValueType &value) const;
   private:
     ScanType scan_t_;
