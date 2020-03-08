@@ -41,7 +41,7 @@ namespace pulseseq{
   PulseSequence::PulseSequence(const PulseSequence &seq)
     : name(seq.name), m_components(seq.m_components),
     m_sections_in_order(seq.m_sections_in_order),
-    m_inc(seq.m_inc), m_idx(seq.m_idx)
+    m_inc(seq.m_inc), m_idx(0u)
   {
     for(const auto &[name, uptr_seq] : seq.m_sections){
       m_sections[name] = uptr_seq->copy();
@@ -54,7 +54,7 @@ namespace pulseseq{
     m_components = seq.m_components;
     m_sections_in_order = seq.m_sections_in_order;
     m_inc = seq.m_inc;
-    m_idx = seq.m_idx;
+    m_idx = 0u;
     for(const auto &[name, uptr_seq] : seq.m_sections){
       m_sections[name] = uptr_seq->copy();
     }
@@ -93,6 +93,15 @@ namespace pulseseq{
   double PulseSequence::getParam(const Name &seq_name, const Name &param_name) const
   {
     return m_sections.at(seq_name)->getParam(param_name);
+  }
+
+  PulseSequence& PulseSequence::resetIdx()
+  {
+    m_idx = 0u;
+    for(auto &[name, uptr_s] : m_sections){
+      uptr_s->resetIndex(&m_sections);
+    }
+    return *this;
   }
 
   PulseSequence& PulseSequence::setParam(const Name &seq_name, const Name &param_name, double value)

@@ -20,7 +20,9 @@ namespace dnpsoup {
 
     std::unique_ptr<SubSequenceInterface> Pulse::copy() const
     {
-      return make_unique<Pulse>(*this);
+      auto res = make_unique<Pulse>(*this);
+      res->idx_ = 0u;
+      return res;
     }
 
     std::tuple<Component, std::uint64_t, std::uint64_t> Pulse::next(

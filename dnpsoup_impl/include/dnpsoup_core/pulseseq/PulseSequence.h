@@ -35,6 +35,7 @@ namespace dnpsoup {
 
       std::vector<Name> getNames(const Name &) const;
       std::uint64_t getIdx() const { return m_idx; }
+      PulseSequence& resetIdx(); 
 
       double getParam(const Name &seq_name, const Name &param_name) const;
       PulseSequence& setParam(const Name &seq_name, const Name &param_name, double value);

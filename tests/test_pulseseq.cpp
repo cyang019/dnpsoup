@@ -192,6 +192,23 @@ namespace {
       //std::size_t desired = ((50 + 65) * 5 + 100) * 3;
       std::size_t desired = ((1 + 1) * 5 + 1) * 3;
       ASSERT_EQ(desired, emrs.size());
+
+      auto selector = dnpsoup::Selector(dnpsoup::ScanType::EmrLengthType, "loop");
+      dnpsoup::ScanValueType new_val = dnpsoup::ScanValueType(std::uint64_t(5u));
+      auto pseq2 = selector.modify(top_dnp_seq, new_val.getSizeValue());
+      //std::cout << "pseq2:\n" << pseq2 << std::endl;
+      std::size_t desired2 = ((1 + 1) * 5 + 1) * 5;
+      idx = 0u;
+      std::vector<dnpsoup::pulseseq::Component> emrs2;
+      while(idx < pseq2.size()){
+        std::tie(temp, sz, idx) = pseq2.next();
+        if(idx >= pseq2.size()) break;
+        //std::cout << "temp: " << temp << "\t\t"
+        //          << "sz: " << sz << " idx: " << idx << std::endl;
+        emrs2.push_back(temp);
+
+      }
+      ASSERT_EQ(desired2, emrs2.size());
       //std::cout << "Print EMRadiations: " << std::endl;
       //for(const auto &emr : emrs){
       //  std::cout << emr << "\n";

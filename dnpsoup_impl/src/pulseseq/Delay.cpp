@@ -15,7 +15,9 @@ namespace dnpsoup {
 
     std::unique_ptr<SubSequenceInterface> Delay::copy() const
     {
-      return make_unique<Delay>(*this);
+      auto res = make_unique<Delay>(*this);
+      res->idx_ = 0u;
+      return res;
     }
 
     std::tuple<Component, std::uint64_t, std::uint64_t> Delay::next(

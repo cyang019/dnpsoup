@@ -310,14 +310,17 @@ namespace dnpsoup {
         params.magnet, params.gyrotron, params.probe,
         params.spin_sys, pseq_ref, params.acq_spin,
         params.spin_sys_eulers, ncores);
+    cout << "intensity_ref: " << intensity_ref << "\n";
     ScanResults1D results;
     vector<double> values = range.values();
     for(const auto &value : values){
+      cout << "value: " << value << "\t";
       PulseSequence pseq = selector.modify(params.seq, value);
       double intensity = DnpRunner::calcPowderIntensity(
           params.magnet, params.gyrotron, params.probe,
           params.spin_sys, pseq, params.acq_spin,
           params.spin_sys_eulers, ncores);
+      cout << "Intensity: " << intensity << "\n";
       results.push_back(make_pair(value, intensity/intensity_ref));
       std::cout << "." << std::flush;
     }

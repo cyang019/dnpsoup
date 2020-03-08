@@ -42,7 +42,10 @@ namespace dnpsoup {
 
     std::unique_ptr<SubSequenceInterface> Section::copy() const
     {
-      return make_unique<Section>(*this);
+      auto res = make_unique<Section>(*this);
+      res->idx_ = 0u;
+      res->names_idx_ = 0u;
+      return res;
     }
 
     void Section::resetIndex(
@@ -76,7 +79,7 @@ namespace dnpsoup {
         names_idx_ = 0;
         for(const auto &name : names_){
           if(sections->find(name) == sections->end()){
-            const auto err_msg = name + " not found in sections.";
+            const auto err_msg = "name [" + name + "] not found in sections.";
             throw ::dnpsoup::PulseSequenceError(err_msg);
           }
           (sections->at(name))->resetIndex(sections);
