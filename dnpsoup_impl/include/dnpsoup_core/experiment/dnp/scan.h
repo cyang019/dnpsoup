@@ -3,6 +3,7 @@
 
 #include "dnpsoup_core/experiment/DnpRunner.h"
 #include "dnpsoup_core/common.h"
+#include "json.hpp"
 #include <vector>
 #include <tuple>
 #include <cstdint>
@@ -34,6 +35,8 @@ namespace dnpsoup {
   };
 
   class ScanValueType {
+    friend ScanValueType operator+(const ScanValueType &, const ScanValueType &);
+    friend bool operator<(const ScanValueType &, const ScanValueType &);
   public:
     ScanValueType();
     ScanValueType(double);
@@ -46,6 +49,7 @@ namespace dnpsoup {
     ScanValueType& operator=(double &&) noexcept;
     ScanValueType& operator=(const std::uint64_t &);
     ScanValueType& operator=(std::uint64_t &&) noexcept;
+    ScanValueType& operator+=(const ScanValueType &);
     ScanValueType& operator+=(const double &);
     ScanValueType& operator+=(double &&) noexcept;
     ScanValueType& operator+=(const std::uint64_t &);
@@ -64,6 +68,9 @@ namespace dnpsoup {
     bool is_real_;
   };
 
+  ScanValueType operator+(const ScanValueType &lhs, const ScanValueType &rhs);
+  bool operator<(const ScanValueType &, const ScanValueType &);
+
   class Range {
   public:
     Range();
@@ -76,13 +83,37 @@ namespace dnpsoup {
     Range& operator=(Range &&) noexcept = default;
     ~Range() {}
 
-    std::vector<double> values() const;
-    std::vector<std::uint64_t> sz_values() const;
+    std::vector<ScanValueType> values() const;
   private:
     ScanValueType start_;
     ScanValueType stop_;
     ScanValueType step_;
   };
+
+  template<typename T>
+  Range genRangeFromJs(const json &js)
+  {
+    if(js.find("begin") == js.end()
+        || js.find("end") == js.end()
+        || js.find("step") == js.end()){
+      throw PropertyNameNotFound("A Range needs 'begin', 'end' and 'step' properties.");
+    }
+    if constexpr(std::is_same<T, double>::value){
+      auto start = js["begin"].get<double>();
+      auto stop = js["end"].get<double>();
+      auto step = js["step"].get<double>();
+      return Range(start, stop, step);
+    }
+    else if constexpr(std::is_same<T, std::uint64_t>::value){
+      auto start = js["begin"].get<std::uint64_t>();
+      auto stop = js["end"].get<std::uint64_t>();
+      auto step = js["step"].get<std::uint64_t>();
+      return Range(start, stop, step);
+    }
+    else {
+      throw NotImplementedError("Unknown Range Type.");
+    }
+  }
 
   struct Parameters {
     Parameters(const Magnet &m, const Gyrotron &g, const Probe &p,

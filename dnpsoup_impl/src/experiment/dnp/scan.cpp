@@ -109,6 +109,17 @@ namespace dnpsoup {
     return *this;
   }
 
+  ScanValueType& ScanValueType::operator+=(const ScanValueType &rhs)
+  {
+    if(is_real_){
+      value_.d_value += rhs.getRealValue();
+    }
+    else {
+      value_.sz_value += rhs.getSizeValue();
+    }
+    return *this;
+  }
+
   ScanValueType& ScanValueType::operator+=(const double &rhs)
   {
     value_.d_value *= is_real_;
@@ -143,12 +154,22 @@ namespace dnpsoup {
 
   double ScanValueType::getRealValue() const
   {
-    return (is_real_) * value_.d_value;
+    if(is_real_){
+      return value_.d_value;
+    }
+    else{
+      return static_cast<double>(value_.sz_value);
+    }
   }
 
   std::uint64_t ScanValueType::getSizeValue() const
   {
-    return (!is_real_) * value_.sz_value;
+    if(!is_real_){
+      return value_.sz_value;
+    }
+    else{
+      return static_cast<uint64_t>(value_.d_value);
+    }
   }
 
   ScanValueType& ScanValueType::setRealValue(const double &val)
@@ -163,6 +184,23 @@ namespace dnpsoup {
     value_.sz_value = val;
     is_real_ = false;
     return *this;
+  }
+  
+  ScanValueType operator+(const ScanValueType &lhs, const ScanValueType &rhs)
+  {
+    ScanValueType result;
+    result.is_real_ = lhs.is_real_ | rhs.is_real_;
+    if(result.is_real_){
+      result.setRealValue(lhs.getRealValue());
+      result += rhs.getRealValue();
+    }
+    
+    return result;
+  }
+
+  bool operator<(const ScanValueType &lhs, const ScanValueType &rhs)
+  {
+    return lhs.getRealValue() < rhs.getRealValue();
   }
   // class ScanValueType
   
@@ -195,26 +233,13 @@ namespace dnpsoup {
     step_ += static_cast<std::uint64_t>(step_.getSizeValue() == 0u);
   }
 
-  vector<double> Range::values() const
+  vector<ScanValueType> Range::values() const
   {
-    vector<double> results;
-    double val = start_.getRealValue();
-    const double inc = step_.getRealValue();
-    while(val < stop_.getRealValue()){
+    vector<ScanValueType> results;
+    ScanValueType val = start_;
+    while(val < stop_){
       results.push_back(val);
-      val += inc;
-    }
-    return results;
-  }
-
-  std::vector<std::uint64_t> Range::sz_values() const
-  {
-    vector<std::uint64_t> results;
-    std::uint64_t val = start_.getSizeValue();
-    const std::uint64_t inc = step_.getSizeValue();
-    while(val < stop_.getSizeValue()){
-      results.push_back(val);
-      val += inc;
+      val += step_;
     }
     return results;
   }
@@ -312,16 +337,16 @@ namespace dnpsoup {
         params.spin_sys_eulers, ncores);
     cout << "intensity_ref: " << intensity_ref << "\n";
     ScanResults1D results;
-    vector<double> values = range.values();
+    vector<ScanValueType> values = range.values();
     for(const auto &value : values){
-      cout << "value: " << value << "\t";
+      cout << "value: " << value.getRealValue() << "\t";
       PulseSequence pseq = selector.modify(params.seq, value);
       double intensity = DnpRunner::calcPowderIntensity(
           params.magnet, params.gyrotron, params.probe,
           params.spin_sys, pseq, params.acq_spin,
           params.spin_sys_eulers, ncores);
       cout << "Intensity: " << intensity << "\n";
-      results.push_back(make_pair(value, intensity/intensity_ref));
+      results.push_back(make_pair(value.getRealValue(), intensity/intensity_ref));
       std::cout << "." << std::flush;
     }
     
@@ -342,8 +367,8 @@ namespace dnpsoup {
         params.spin_sys, pseq_ref, params.acq_spin,
         params.spin_sys_eulers, ncores);
     ScanResults2D results;
-    vector<double> values1 = range1.values();
-    vector<double> values2 = range2.values();
+    vector<ScanValueType> values1 = range1.values();
+    vector<ScanValueType> values2 = range2.values();
     for(const auto &v1 : values1){
       for(const auto &v2 : values2) {
         auto seq_temp = selector1.modify(params.seq, v1);
@@ -353,7 +378,8 @@ namespace dnpsoup {
             params.spin_sys, pseq, params.acq_spin,
             params.spin_sys_eulers, ncores);
         results.push_back(
-            make_tuple(v1, v2, intensity/intensity_ref));
+            make_tuple(
+              v1.getRealValue(), v2.getRealValue(), intensity/intensity_ref));
         std::cout << "." << std::flush;
       }
       std::cout << std::endl;
