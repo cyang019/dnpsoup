@@ -8,7 +8,7 @@
     "zcw": 1
   },
 
-  "ncores": 4,
+  "ncores": 6,
   
   "acq": "H",
 
@@ -38,8 +38,8 @@
 
     "range": {
       "begin": 0,
-      "end": 3000,
-      "step": 10
+      "end": 30000,
+      "step": 1000
     }
   }
 }

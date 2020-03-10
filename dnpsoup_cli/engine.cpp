@@ -351,6 +351,16 @@ void dnpsoup_exec(const std::string &spinsys_filename,
     }
     auto selector = Selector();
     auto scan_type = getScanType(j_task["type"].get<string>());
+    if(j_task.find("range") == j_task.end()){
+      throw runtime_error("Need a 'range' for task details.");
+    }
+    auto task_range_js = j_task["range"];
+    Range range;
+    if(task_range_js.find("begin") == task_range_js.end()
+        || task_range_js.find("end") == task_range_js.end()
+        || task_range_js.find("step") == task_range_js.end()){
+      throw runtime_error("Need 'begin', 'end', and 'step' for scan1d task 'range'.");
+    }
     switch (scan_type){
       case ScanType::EmrGammaB1Type:
       case ScanType::EmrPhaseType:
@@ -360,60 +370,17 @@ void dnpsoup_exec(const std::string &spinsys_filename,
           }
           auto spin_t = toSpinType(j_task["spin"].get<string>());
           selector = Selector(scan_type, name, spin_t);
+          range = genRangeFromJs<double>(task_range_js);
         }
         break;
       case ScanType::EmrLengthType:
         {
           selector = Selector(scan_type, name);
+          range = genRangeFromJs<std::uint64_t>(task_range_js);
         }
         break;
       case ScanType::DefaultType:
         throw runtime_error("Scan type unknown.");
-    }
-    if(j_task.find("range") == j_task.end()){
-      throw runtime_error("Need a 'range' for scan1d 'task details'.");
-    }
-    Range range;
-    auto task_range_js = j_task["range"];
-    if(task_range_js.find("begin") == task_range_js.end()){
-      throw runtime_error("Need a 'begin' for scan1d task 'range'.");
-    }
-    auto task_range_beg_js = task_range_js["begin"];
-    if(task_range_js.find("end") == task_range_js.end()){
-      throw runtime_error("Need an 'end' for scan1d task 'range'.");
-    }
-    auto task_range_end_js = task_range_js["end"];
-    if(task_range_js.find("count") != task_range_js.end()
-        && task_range_js.find("step") != task_range_js.end()){
-      throw runtime_error("Cannot specify both 'count' and 'step'. Set one of them.");
-    }
-    if(task_range_js.find("count") != task_range_js.end()){
-      uint64_t scan_count = task_range_js["count"].get<uint64_t>();
-      if(scan_type == ScanType::EmrLengthType){
-        auto beg = task_range_beg_js.get<uint64_t>();
-        auto end = task_range_end_js.get<uint64_t>();
-        range = Range(beg, end, scan_count);
-      } else {
-        auto beg = task_range_beg_js.get<double>();
-        auto end = task_range_end_js.get<double>();
-        range = Range(beg, end, scan_count);
-      }
-    }
-    else if(task_range_js.find("step") != task_range_js.end()){
-      if(scan_type == ScanType::EmrLengthType){
-        auto beg = task_range_beg_js.get<uint64_t>();
-        auto end = task_range_end_js.get<uint64_t>();
-        auto step = task_range_js["step"].get<uint64_t>();
-        range = Range(beg, end, step);
-      } else {
-        auto beg = task_range_beg_js.get<double>();
-        auto end = task_range_end_js.get<double>();
-        auto step = task_range_js["step"].get<double>();
-        range = Range(beg, end, step);
-      }
-    }
-    else{
-      throw runtime_error("Need either 'step' or 'count' for scan1d 'range'");
     }
 
     auto result = ScanResults1D();
@@ -455,7 +422,17 @@ void dnpsoup_exec(const std::string &spinsys_filename,
       throw runtime_error("Need a type1 for scan2d tasks in 'task details'.");
     }
     auto scan_type1 = getScanType(j_task["type1"].get<string>());
+    if(j_task.find("range1") == j_task.end()){
+      throw runtime_error("Need a 'range1' for scan2d task details.");
+    }
+    auto task_range1_js = j_task["range1"];
+    if(task_range1_js.find("begin") == task_range1_js.end()
+        || task_range1_js.find("end") == task_range1_js.end()
+        || task_range1_js.find("step") == task_range1_js.end()){
+      throw runtime_error("Need 'begin', 'end' and 'step' for scan2d task 'range1'.");
+    }
     Selector selector1;
+    Range range1;
     switch (scan_type1){
       case ScanType::EmrGammaB1Type:
       case ScanType::EmrPhaseType:
@@ -465,11 +442,13 @@ void dnpsoup_exec(const std::string &spinsys_filename,
           }
           auto spin_t = toSpinType(j_task["spin1"].get<string>());
           selector1 = Selector(scan_type1, name1, spin_t);
+          range1 = genRangeFromJs<double>(task_range1_js);
         }
         break;
       case ScanType::EmrLengthType:
         {
           selector1 = Selector(scan_type1, name1);
+          range1 = genRangeFromJs<uint64_t>(task_range1_js);
         }
         break;
       case ScanType::DefaultType:
@@ -479,7 +458,17 @@ void dnpsoup_exec(const std::string &spinsys_filename,
       throw runtime_error("Need a type2 for scan2d tasks in 'task details'.");
     }
     auto scan_type2 = getScanType(j_task["type2"].get<string>());
+    if(j_task.find("range2") == j_task.end()){
+      throw runtime_error("Need a 'range2' for scan2d 'task details'.");
+    }
+    auto task_range2_js = j_task["range2"];
+    if(task_range2_js.find("begin") == task_range2_js.end()
+        || task_range2_js.find("end") == task_range2_js.end()
+        || task_range2_js.find("step") == task_range2_js.end()){
+      throw runtime_error("Need 'begin', 'end' and 'step' for scan2d task 'range2'.");
+    }
     Selector selector2;
+    Range range2;
     switch (scan_type2){
       case ScanType::EmrGammaB1Type:
       case ScanType::EmrPhaseType:
@@ -489,106 +478,17 @@ void dnpsoup_exec(const std::string &spinsys_filename,
           }
           auto spin_t = toSpinType(j_task["spin2"].get<string>());
           selector2 = Selector(scan_type2, name2, spin_t);
+          range2 = genRangeFromJs<double>(task_range2_js);
         }
         break;
       case ScanType::EmrLengthType:
         {
           selector2 = Selector(scan_type2, name2);
+          range2 = genRangeFromJs<uint64_t>(task_range2_js);
         }
         break;
       case ScanType::DefaultType:
         throw runtime_error("Scan type2 unknown.");
-    }
-    auto task_range1_js = j_task["range1"];
-    if(task_range1_js.find("begin") == task_range1_js.end()){
-      throw runtime_error("Need a 'begin' for scan2d task 'range1'.");
-    }
-    auto scan_beg1_js = task_range1_js["begin"];
-    if(task_range1_js.find("end") == task_range1_js.end()){
-      throw runtime_error("Need an 'end' for scan2d task 'range1'.");
-    }
-    auto scan_end1_js = task_range1_js["end"];
-    if(task_range1_js.find("count") != task_range1_js.end()
-        && task_range1_js.find("step") != task_range1_js.end()){
-      throw runtime_error("Cannot specify both 'count' and 'step'. Set one of them.");
-    }
-    Range range1;
-    if(task_range1_js.find("count") != task_range1_js.end()){
-      uint64_t scan_count1 = task_range1_js["count"].get<uint64_t>();
-      if(scan_type1 == ScanType::EmrLengthType){
-        auto beg = scan_beg1_js.get<uint64_t>();
-        auto end = scan_end1_js.get<uint64_t>();
-        range1 = Range(beg, end, scan_count1);
-      }
-      else {
-        auto beg = scan_beg1_js.get<double>();
-        auto end = scan_end1_js.get<double>();
-        range1 = Range(beg, end, scan_count1);
-      }
-    }
-    else if(task_range1_js.find("step") != task_range1_js.end()){
-      if(scan_type1 == ScanType::EmrLengthType){
-        auto beg = scan_beg1_js.get<uint64_t>();
-        auto end = scan_end1_js.get<uint64_t>();
-        auto step1 = task_range1_js["step"].get<uint64_t>();
-        range1 = Range(beg, end, step1);
-      }
-      else {
-        auto beg = scan_beg1_js.get<double>();
-        auto end = scan_end1_js.get<double>();
-        auto step1 = task_range1_js["step"].get<double>();
-        range1 = Range(beg, end, step1);
-      }
-    }
-    else{
-      throw runtime_error("Need either 'step' or 'count' for scan2d 'range1'");
-    }
-    if(j_task.find("range2") == j_task.end()){
-      throw runtime_error("Need a 'range2' for scan2d 'task details'.");
-    }
-    auto task_range2_js = j_task["range2"];
-    if(task_range2_js.find("begin") == task_range2_js.end()){
-      throw runtime_error("Need a 'begin' for scan2d task 'range2'.");
-    }
-    auto scan_beg2_js = task_range2_js["begin"];
-    if(task_range2_js.find("end") == task_range2_js.end()){
-      throw runtime_error("Need an 'end' for scan2d task 'range2'.");
-    }
-    auto scan_end2_js = task_range2_js["end"];
-    if(task_range2_js.find("count") != task_range2_js.end()
-        && task_range2_js.find("step") != task_range2_js.end()){
-      throw runtime_error("Cannot specify both 'count' and 'step'. Set one of them.");
-    }
-    Range range2;
-    if(task_range2_js.find("count") != task_range2_js.end()){
-      uint64_t scan_count2 = task_range2_js["count"].get<uint64_t>();
-      if(scan_type2 == ScanType::EmrLengthType){
-        auto beg = scan_beg2_js.get<uint64_t>();
-        auto end = scan_end2_js.get<uint64_t>();
-        range2 = Range(beg, end, scan_count2);
-      }
-      else {
-        auto beg = scan_beg2_js.get<double>();
-        auto end = scan_end2_js.get<double>();
-        range2 = Range(beg, end, scan_count2);
-      }
-    }
-    else if(task_range2_js.find("step") != task_range2_js.end()){
-      if(scan_type2 == ScanType::EmrLengthType){
-        auto beg = scan_beg2_js.get<uint64_t>();
-        auto end = scan_end2_js.get<uint64_t>();
-        auto step2 = task_range2_js["step"].get<uint64_t>();
-        range2 = Range(beg, end, step2);
-      }
-      else {
-        auto beg = scan_beg2_js.get<double>();
-        auto end = scan_end2_js.get<double>();
-        auto step2 = task_range2_js["step"].get<double>();
-        range2 = Range(beg, end, step2);
-      }
-    }
-    else{
-      throw runtime_error("Need either 'step' or 'count' for scan2d 'range2'");
     }
 
     auto result = ScanResults2D();
