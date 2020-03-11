@@ -21,25 +21,25 @@
     "b0": 0.34746
   },
   "Gyrotron": {
-    "em_frequency": 9.74e9
+    "em_frequency": 9.745e9
   },
   "Probe": {
       "mas_frequency": 0.0,
       "temperature": 100.0,
-      "mas_increment": 1e-6
+      "mas_increment": 2e-5
   },
 
-  "task": "scan1d",
+  "task": "FieldProfile",
   
   "task details": {
     "type": "EmrLength",
     "spin": "e",
-    "name": "p2",
+    "name": "loop",
 
     "range": {
-      "begin": 0,
-      "end": 30000,
-      "step": 1000
+      "begin": 1,
+      "end": 500,
+      "step": 10
     }
   }
 }

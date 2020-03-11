@@ -1,5 +1,5 @@
 {
-   "increment": 0.1e-9,
+   "increment": 1e-9,
    "components": 
    {
      "emr1": {
@@ -14,7 +14,7 @@
      "loop":
      {
        "type": "Section",
-       "size": 100,
+       "size": 500,
        "names": ["p1", "p2", "d"],
        "params": {},
        "phase0": {
@@ -25,21 +25,21 @@
      "p1":
      {
        "type": "Pulse",
-       "size": 165,
+       "size": 16,
        "names": ["emr1"],
        "params": {}
      },
      "p2":
      {
        "type": "Pulse",
-       "size": 1500,
+       "size": 100,
        "names": ["emr2"],
        "params": {}
      },
      "d":
      {
        "type": "Delay",
-       "size": 1300000,
+       "size": 40000,
        "names": [],
        "params": {}
      }

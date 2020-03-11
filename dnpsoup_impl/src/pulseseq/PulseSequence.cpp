@@ -87,6 +87,9 @@ namespace pulseseq{
 
   std::vector<Name> PulseSequence::getNames(const Name &name) const
   {
+    if(m_sections.count(name) == 0){
+      return vector<Name>();
+    }
     return m_sections.at(name)->getNames();
   }
 
@@ -106,6 +109,9 @@ namespace pulseseq{
 
   PulseSequence& PulseSequence::setParam(const Name &seq_name, const Name &param_name, double value)
   {
+    if(m_sections.find(seq_name) == m_sections.end()){
+      throw PulseSequenceError(seq_name + " not found in sections.");
+    }
     m_sections.at(seq_name)->setParam(param_name, value);
     return *this;
   }
@@ -154,21 +160,33 @@ namespace pulseseq{
 
   void PulseSequence::setEmrFreq(const Name &name, SpinType t, double val)
   {
+    if(m_components.find(name) == m_components.end()){
+      throw PulseSequenceError(name + " not found in pulse sequence components.");
+    }
     m_components[name][t].freq = val;
   }
 
   void PulseSequence::setEmrPhase(const Name &name, SpinType t, double val)
   {
+    if(m_components.find(name) == m_components.end()){
+      throw PulseSequenceError(name + " not found in pulse sequence components.");
+    }
     m_components[name][t].phase = val;
   }
 
   void PulseSequence::setEmrOffset(const Name &name, SpinType t, double val)
   {
+    if(m_components.find(name) == m_components.end()){
+      throw PulseSequenceError(name + " not found in pulse sequence components.");
+    }
     m_components[name][t].offset = val;
   }
 
   void PulseSequence::setSize(const Name &name, std::uint64_t sz)
   {
+    if(m_sections.find(name) == m_sections.end()){
+      throw PulseSequenceError(name + " not found in pulse sequence sections.");
+    }
     m_sections[name]->setSize(sz);
   }
 
