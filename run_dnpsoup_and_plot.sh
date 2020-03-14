@@ -11,7 +11,8 @@ SPINFILE=examples/spinsys/trityl_2spins.json
 #PULSEFILE=examples/pulseseq/cw_pulse.json
 #PULSEFILE=examples/pulseseq/topdnp.json
 #PULSEFILE=examples/pulseseq/NOVEL.json
-PULSEFILE=examples/pulseseq/ise_sse.json
+#PULSEFILE=examples/pulseseq/ise_sse.json
+PULSEFILE=examples/pulseseq/pulsed_se.json
 
 #HARDWAREFILE=examples/hardware/400MHz263GHz.json
 #HARDWAREFILE=examples/hardware/14pt7MHz9pt7GHz0p35T.json

@@ -1,0 +1,45 @@
+{
+  "increment": 1e-8,
+
+  "components": 
+  {
+    "emr1": 
+    {
+      "e": 
+      {
+        "frequency": 5.0e6, "phase": 0.0
+      }
+    }
+  },
+
+  "sections":
+  {
+    "loop":
+    {
+      "type": "Section",
+      "size": 20,
+      "names": ["p1", "d"],
+      "params": {},
+      "phase0": {
+        "reset": false,
+        "seed": 0
+      }
+    },
+    "p1":
+    {
+      "type": "Pulse",
+      "size": 1000,
+      "names": ["emr1"],
+      "params": {}
+    },
+    "d":
+    {
+      "type": "Delay",
+      "size": 99000,
+      "names": [],
+      "params": {}
+    }
+  },            
+  "sequence": ["loop"]
+}
+

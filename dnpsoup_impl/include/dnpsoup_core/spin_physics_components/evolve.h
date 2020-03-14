@@ -105,7 +105,8 @@ namespace dnpsoup {
       std::uint64_t total_rotor_cnt,
       double temperature);
 
-  std::vector<std::pair<double, double>> evolveMASCnstEmr(
+  std::pair<std::vector<std::pair<double, double>>, MatrixCxDbl>
+    evolveMASCnstEmr(
       const MatrixCxDbl &rho_prev_super,
       const MatrixCxDbl &detect_op_super,
       double t0,

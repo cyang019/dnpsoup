@@ -149,6 +149,7 @@ namespace dnpsoup {
       std::uint64_t total_rotor_cnt,
       double temperature)
   {
+    /// 2d cache
     auto cache = EvolutionCache(total_rotor_cnt, 1);
     auto [rotate_mat_super, rotate_mat_super_inv] = 
       calcRotationSuperOps(ham_offset, g, inc, mas_inc_cnt);
@@ -188,7 +189,8 @@ namespace dnpsoup {
 
         mas_angle.gamma(t * mas_frequency * 2.0 * pi);
       }
-      else {    /// if pulse length is not a integer multiple of rotor period.
+      else {    
+        /// if pulse length is less than an integer multiple of rotor period.
         auto [rotate_mat_super, rotate_at_super_inv] = 
           calcRotationSuperOps(ham_offset, g, inc, cnt);
 
@@ -208,7 +210,8 @@ namespace dnpsoup {
     return rho_evolve_super;
   }
 
-  std::vector<std::pair<double, double>> evolveMASCnstEmr(
+  std::pair<std::vector<std::pair<double, double>>, MatrixCxDbl>
+    evolveMASCnstEmr(
       const MatrixCxDbl &rho_prev_super,
       const MatrixCxDbl &acq_mat_super,
       double t0,
@@ -293,6 +296,6 @@ namespace dnpsoup {
         results.push_back(make_pair(t0 + t, result/result_ref));
       }
     }
-    return results;
+    return make_pair(results, rho_evolve_super);
   }
 } // namespace dnpsoup

@@ -442,7 +442,7 @@ namespace DnpRunner {
       auto hamiltonian_lab = hamiltonian + hamiltonian_offset;
       MatrixCxDbl rho0_lab = genRhoEq(hamiltonian_lab, p.temperature);
       double val = ::dnpsoup::projectionNorm(rho0_lab, acq_mat).real();
-      const double result_ref = val;
+      const double result_ref = 1.0;  ///< intensity, not enhancement
       vector<pair<double, double>> results;
       results.push_back(make_pair(0.0, val));
 
@@ -472,13 +472,16 @@ namespace DnpRunner {
           cout << "call evolveMASCnstEmr()..." << "\n";
 #endif
           ///< with MAS or if need to recalculate super operators
-          auto temp_results = evolveMASCnstEmr(
+          /// result_ref = 1.0 for intensity (not enhancement)
+          vector<pair<double, double>> temp_results;
+          std::tie(temp_results, rho0_evolve_super) = evolveMASCnstEmr(
                 rho0_evolve_super, acq_mat_super, t, result_ref,
                 p.mas_frequency, comp, 
                 packets, rpackets, hamiltonian_offset,
                 spin_sys_euler, mas_angle, g, 
-                inc, comp_size, mas_inc_cnt, total_rotor_cnt, p.temperature);
-          t += inc * static_cast<double>(comp_size);
+                inc, comp_size, 
+                mas_inc_cnt, total_rotor_cnt, p.temperature);
+          t += static_cast<double>(comp_size) * inc;
           mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
           std::copy(temp_results.begin(), temp_results.end(), 
               std::back_inserter(results));
