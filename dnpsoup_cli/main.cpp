@@ -13,6 +13,7 @@ bool fileExists(const string &filename)
 
 int main(int argc, char **argv)
 {
+  int ret_code = 0;
 	if(argc != 5){
 		std::cout << "Saw " << argc - 1 << " arguments." << std::endl;
 		std::cout << "Need exactly 4 argumments: "
@@ -39,8 +40,8 @@ int main(int argc, char **argv)
 	}
 	catch(const exception &e){
 		std::cout << e.what() << std::endl;
-		return 1;
+    ret_code = 1;
 	}
 
-  return 0;
+  return ret_code;
 }

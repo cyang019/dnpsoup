@@ -1,0 +1,47 @@
+{
+  "increment": 1e-8,
+
+  "components": 
+  {
+    "emr1": 
+    {
+      "e": 
+      {
+        "frequency": 40.0e6, "phase": 0.0
+      }
+    }
+  },
+
+  "sections":
+  {
+    "loop":
+    {
+      "type": "Section",
+      "size": 5,
+      "names": ["p1", "d"],
+      "params": {},
+      "phase0": {
+        "reset": false,
+        "seed": 0
+      }
+    },
+    "p1":
+    {
+      "type": "Chirp",
+      "size": 300,
+      "names": ["emr1"],
+      "span": 300.0e6,
+      "spin type": "e",
+      "params": {}
+    },
+    "d":
+    {
+      "type": "Delay",
+      "size": 100000,
+      "names": [],
+      "params": {}
+    }
+  },            
+  "sequence": ["loop"]
+}
+

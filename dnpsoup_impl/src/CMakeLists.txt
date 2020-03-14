@@ -24,6 +24,7 @@ target_sources(dnpsoup_core
 
   "${CMAKE_CURRENT_LIST_DIR}/pulseseq/EMRadiation.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/pulseseq/Pulse.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/pulseseq/ChirpPulse.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/pulseseq/Delay.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/pulseseq/PulseSequence.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/pulseseq/Section.cpp"

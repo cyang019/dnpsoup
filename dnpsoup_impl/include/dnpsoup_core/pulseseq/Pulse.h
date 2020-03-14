@@ -5,6 +5,7 @@
 
 namespace dnpsoup {
   namespace pulseseq {
+    /// @brief constant pulse
     class Pulse : public SubSequenceInterface {
     public:
       Pulse();

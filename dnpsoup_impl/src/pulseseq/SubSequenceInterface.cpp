@@ -34,16 +34,17 @@ namespace dnpsoup {
 
     SequenceType toSequenceType(const std::string &s)
     {
-      if(s == "Pulse"){
+      if(s == "Pulse" || s == "pulse"){
         return SequenceType::PulseType;
       }
-      else if(s == "Delay"){
+      else if(s == "Delay" || s == "delay"){
         return SequenceType::DelayType;
       }
-      else if(s == "Chirp"){
+      else if(s == "Chirp" || s == "chirp"
+          || s == "ChirpPulse" || s == "chirp-pulse"){
         return SequenceType::ChirpType;
       }
-      else if(s == "Section"){
+      else if(s == "Section" || s == "section"){
         return SequenceType::SectionType;
       }
       return SequenceType::DefaultType;
@@ -54,6 +55,9 @@ namespace dnpsoup {
       switch(t){
         case SequenceType::PulseType:
           os << "Pulse";
+          break;
+        case SequenceType::ChirpType:
+          os << "Chirp";
           break;
         case SequenceType::DelayType:
           os << "Delay";
@@ -72,13 +76,16 @@ namespace dnpsoup {
     {
       string name;
       is >> name;
-      if(name == "Pulse"){
+      if(name == "Pulse" || name == "pulse"){
         t = SequenceType::PulseType;
       } 
-      else if(name == "Delay"){
+      else if(name == "Chirp" || name == "chirp"){
+        t = SequenceType::ChirpType;
+      }
+      else if(name == "Delay" || name == "delay"){
         t = SequenceType::DelayType;
       }
-      else if(name == "Section"){
+      else if(name == "Section" || name == "section"){
         t = SequenceType::SectionType;
       }
       else {

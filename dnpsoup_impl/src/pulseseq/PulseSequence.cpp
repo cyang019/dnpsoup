@@ -2,6 +2,7 @@
 #include "dnpsoup_core/pulseseq/seq_common.h"
 #include "dnpsoup_core/errors.h"
 #include "dnpsoup_core/pulseseq/Pulse.h"
+#include "dnpsoup_core/pulseseq/ChirpPulse.h"
 #include "dnpsoup_core/pulseseq/Delay.h"
 #include "dnpsoup_core/pulseseq/Section.h"
 #include <limits>
@@ -210,23 +211,24 @@ namespace pulseseq{
         auto comp = Component();
         for(auto &[emr_name_str, emr_js] : comp_emrs_js.items()){
           auto emr_name = toSpinType(emr_name_str);
-#ifndef NDEBUG
           const std::string err_str_postfix = 
             " not found for " + emr_name_str + " of " + comp_name;
           
+          double freq = 0.0;
+          double phase = 0.0;
+          double offset = 0.0;
           if(emr_js.find("frequency") == emr_js.end()){
             throw PulseSequenceError("frequency" + err_str_postfix);
           }
           if(emr_js.find("phase") == emr_js.end()){
             throw PulseSequenceError("phase" + err_str_postfix);
           }
-          if(emr_js.find("offset") == emr_js.end()){
-            throw PulseSequenceError("offset" + err_str_postfix);
+          freq = emr_js["frequency"].get<double>();
+          phase = emr_js["phase"].get<double>();
+          if(emr_js.find("offset") != emr_js.end()){
+            
+            offset = emr_js["offset"].get<double>();
           }
-#endif
-          const double freq = emr_js["frequency"].get<double>();
-          const double phase = emr_js["phase"].get<double>();
-          const double offset = emr_js["offset"].get<double>();
           comp[emr_name] = EMRadiation(freq, phase, offset);
         }
         pseq.m_components[comp_name] = comp;
@@ -236,14 +238,12 @@ namespace pulseseq{
     if(j.find("sections") != j.end()){
       for(auto& [section_name, section_info_js] : j["sections"].items()){
         const std::string name_str = section_name;
-#ifndef NDEBUG
         if(section_info_js.find("type") == section_info_js.end()){
           throw PulseSequenceError("type not found in section");
         }
         if(section_info_js.find("size") == section_info_js.end()){
           throw PulseSequenceError("size not found in section");
         }
-#endif
         const std::string seq_type_str = section_info_js["type"].get<std::string>();
         const std::uint64_t sz = section_info_js["size"].get<std::uint64_t>();
         std::vector<std::string> member_names;
@@ -261,12 +261,27 @@ namespace pulseseq{
         unique_ptr<SubSequenceInterface> ptr_member;
         if(seq_type == SequenceType::PulseType){
           if(member_names.size() < 1){
-#ifndef NDEBUG
             throw PulseSequenceError("Pulse EMR component missing.");
-#endif
             continue;
           }
           ptr_member = make_unique<Pulse>(sz, member_names[0]);
+        }
+        else if(seq_type == SequenceType::ChirpType){
+          if(member_names.size() < 1){
+            throw PulseSequenceError("ChirpPulse EMR component missing.");
+            continue;
+          }
+          if(section_info_js.find("span") == section_info_js.end()){
+            throw PulseSequenceError("span not found in chirp section");
+          }
+          if(section_info_js.find("spin type") == section_info_js.end()){
+            throw PulseSequenceError("spin type not found in chirp section");
+          }
+          double span = section_info_js["span"].get<double>();
+          const std::string spin_t_str = section_info_js["spin type"].get<std::string>();
+          auto spin_t = toSpinType(spin_t_str);
+          ptr_member = make_unique<ChirpPulse>(sz, member_names[0], 
+              spin_t, span, pseq.m_inc);
         }
         else if(seq_type == SequenceType::DelayType){
           ptr_member = make_unique<Delay>(sz);
@@ -285,9 +300,8 @@ namespace pulseseq{
           ptr_member = make_unique<Section>(sz, member_names, use_phase0, seed);
         }
         else{   // not implemented.
-#ifndef NDEBUG
-          throw PulseSequenceError("Such Sequence Type is not implemented.");
-#endif
+          throw PulseSequenceError("Such Sequence Type is not implemented: "
+              + seq_type_str);
           continue;
         }
         pseq.m_sections[name_str] = std::move(ptr_member);
@@ -299,11 +313,9 @@ namespace pulseseq{
     } // sections
 
     pseq.m_sections_in_order.clear();
-#ifndef NDEBUG
     if(j.find("sequence") == j.end()){
       throw PulseSequenceError("sequence of components missing.");
     }
-#endif
     for(auto &name : j["sequence"]){
       pseq.m_sections_in_order.push_back(name.get<std::string>());
     }

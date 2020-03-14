@@ -320,7 +320,7 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 		  	spinsys, seq, acq_t, eulers, ncores);
     }
 		else {
-			throw runtime_error("Neither 'fields' nor 'emrs' was in the input json.");
+			throw runtime_error("Missing 'fields', 'emrs' or 'field range', 'emr range' in the input json.");
 		}
     std::ofstream result_stream;
 	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);

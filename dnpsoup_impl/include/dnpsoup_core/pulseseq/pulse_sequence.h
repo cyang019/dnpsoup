@@ -3,6 +3,7 @@
 
 #include "dnpsoup_core/pulseseq/PulseSequence.h"
 #include "dnpsoup_core/pulseseq/Pulse.h"
+#include "dnpsoup_core/pulseseq/ChirpPulse.h"
 #include "dnpsoup_core/pulseseq/Delay.h"
 #include "dnpsoup_core/pulseseq/Section.h"
 
