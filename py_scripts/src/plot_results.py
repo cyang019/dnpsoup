@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import argparse
 
-UPPER_LIMIT = 1000
+UPPER_LIMIT = 6000
 
 
 def plot_data(datafile):

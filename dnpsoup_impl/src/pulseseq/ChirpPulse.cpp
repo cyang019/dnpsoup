@@ -1,5 +1,6 @@
 #include "dnpsoup_core/pulseseq/ChirpPulse.h"
 #include "dnpsoup_core/errors.h"
+#include <cmath>
 
 
 using namespace std;
@@ -62,9 +63,10 @@ namespace dnpsoup {
         return make_tuple(components->at(component_name_), sz_, 0);
       }
       const double t = static_cast<double>(idx_) * inc_;
-      const double phase_t = (0.5 * c_ * t + f0_) * t;
+      /// in degree
+      const double phase_t = 360.0 * (0.5 * c_ * t + f0_) * t;
       Component comp = components->at(component_name_);
-      comp[spin_t_].phase += phase_t;
+      comp[spin_t_].phase = fmod(comp[spin_t_].phase + phase_t, 360.0);
       auto this_idx_ = idx_;
 
       ++idx_;

@@ -5,10 +5,10 @@
     "gamma": 0.0
   },
   "euler_scheme":{
-    "zcw": 4
+    "zcw": 2
   },
 
-  "ncores": 4,
+  "ncores": 6,
   
   "acq": "H",
 
@@ -21,7 +21,7 @@
     "b0": 3.35
   },
   "Gyrotron": {
-    "em_frequency": 93.8e9
+    "em_frequency": 93.77e9
   },
   "Probe": {
       "mas_frequency": 0.0,
@@ -29,7 +29,7 @@
       "mas_increment": 1e-4
   },
 
-  "task": "PowderBuildUp",
+  "task": "PowderBuildUpEnhancement",
   
   "task details": {
     "type": "EmrLength",
