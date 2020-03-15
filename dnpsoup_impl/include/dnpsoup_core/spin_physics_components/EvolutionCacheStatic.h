@@ -44,8 +44,11 @@ namespace dnpsoup {
         std::uint64_t cnt
         );
     int getCacheIdentity(const pulseseq::Component &) const;
+
+    /// @param comp: component
+    /// @param comp_size: component size
     std::pair<int, bool>
-      getCacheIdentity(const pulseseq::Component &comp, std::uint64_t) const;
+      getCacheIdentity(const pulseseq::Component &comp, std::uint64_t comp_size) const;
   private:
     std::uint64_t m_capacity;
     int m_key;
