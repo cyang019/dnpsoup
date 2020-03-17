@@ -13,6 +13,11 @@ namespace dnpsoup {
   {}
 
   EvolutionCacheElement::EvolutionCacheElement(
+      MatrixCxDbl &&factor, const MatrixCxDbl &&rho)
+    : scaling_factor(std::move(factor)), rho_inf_eq(std::move(rho))
+  {}
+
+  EvolutionCacheElement::EvolutionCacheElement(
       const MatrixCxDbl &factor, const MatrixCxDbl &rho,
       const MatrixCxDbl &rotate_mat_super,
       const MatrixCxDbl &rotate_mat_super_inv)

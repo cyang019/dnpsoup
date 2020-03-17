@@ -252,8 +252,12 @@ namespace DnpRunner {
             rho0_evolve_super = evolve(rho0_evolve_super, rho_eq_super, 
                 scaling_factor,
                 rotate_mat_super, rotate_mat_super_inv);
-            uptr_cache->saveCache(comp, super_op, rho_eq_super, 
-                scaling_factor, comp_size);
+            uptr_cache->saveCache(
+                comp, 
+                std::move(super_op), 
+                std::move(rho_eq_super), 
+                std::move(scaling_factor), 
+                comp_size);
           }
           else {
             const auto &[scaling_factor, rho_eq_super] = uptr_cache->getCache(
@@ -509,8 +513,12 @@ namespace DnpRunner {
                   rpackets, p.temperature);
             super_op = calcLambdaSuper(h_super, gamma_super_internal);
             scaling_factor = calcExpEvolve(super_op, inc, mas_inc_cnt);
-            uptr_cache->saveCache(comp, super_op, rho_eq_super, 
-                scaling_factor, mas_inc_cnt);
+            uptr_cache->saveCache(
+                comp, 
+                std::move(super_op), 
+                std::move(rho_eq_super), 
+                std::move(scaling_factor), 
+                mas_inc_cnt);
           }
           else {
             std::tie(scaling_factor, rho_eq_super) = uptr_cache->getCache(

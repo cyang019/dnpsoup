@@ -4,7 +4,6 @@
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
-#include <chrono>
 #include <iomanip>
 #include <limits>
 #include <cmath>
@@ -20,7 +19,6 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 								  const std::string &experiment_filename,
 									const std::string &result_filename)
 {
-  auto start_time = chrono::high_resolution_clock::now();
   std::ifstream spinsys_stream;
 	spinsys_stream.exceptions(std::ios::failbit | std::ios::badbit);
 	spinsys_stream.open(spinsys_filename.c_str());
@@ -105,10 +103,6 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 				result_stream << row.back() << "\n";
 			}
 		}
-    auto end_time = chrono::high_resolution_clock::now();
-	  cout << "Total time: " 
-         << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
-         << " seconds." << endl;
 		return;
 	}
 
@@ -141,10 +135,6 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 	    result_stream.open(result_filename.c_str());
       result_stream << setprecision(numeric_limits<double>::max_digits10);
 		  result_stream << "# Intensity:\n" << result;
-      auto end_time = chrono::high_resolution_clock::now();
-	    cout << "Total time: " 
-           << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
-           << " seconds." << endl;
 		  return;
     } else {  // "BuildUp"
 		  auto results = DnpRunner::calcBuildUp(magnet, gyrotron, probe,
@@ -159,10 +149,6 @@ void dnpsoup_exec(const std::string &spinsys_filename,
       for(const auto &val_pair : results){
         result_stream << val_pair.first << "," << val_pair.second << "\n";
       }
-      auto end_time = chrono::high_resolution_clock::now();
-	    cout << "Total time: " 
-           << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
-           << " seconds." << endl;
 		  return;
     }
 	}
@@ -215,10 +201,6 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 	  result_stream.open(result_filename.c_str());
     result_stream << setprecision(numeric_limits<double>::max_digits10);
 		result_stream << "# PowderIntensity:\n" << result;
-    auto end_time = chrono::high_resolution_clock::now();
-	  cout << "Total time: " 
-         << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
-         << " seconds." << endl;
 		return;
 	}
   else if(task_str == "PowderBuildUp"){
@@ -236,10 +218,6 @@ void dnpsoup_exec(const std::string &spinsys_filename,
     for(const auto &val_pair : results){
       result_stream << val_pair.first << "," << val_pair.second << "\n";
     }
-    auto end_time = chrono::high_resolution_clock::now();
-	  cout << "Total time: " 
-         << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
-         << " seconds." << endl;
     return;
   }
   else if(task_str == "PowderBuildUpEnhancement"){
@@ -257,10 +235,6 @@ void dnpsoup_exec(const std::string &spinsys_filename,
     for(const auto &val_pair : results){
       result_stream << val_pair.first << "," << val_pair.second << "\n";
     }
-    auto end_time = chrono::high_resolution_clock::now();
-	  cout << "Total time: " 
-         << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
-         << " seconds." << endl;
     return;
   }
 	else if(task_str == "FieldProfile"){
@@ -330,10 +304,6 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 		for(size_t i = 0; i < result.size(); ++i){
 			result_stream << result[i].first << "," << result[i].second << "\n";
 		}
-    auto end_time = chrono::high_resolution_clock::now();
-	  cout << "Total time: " 
-         << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
-         << " seconds." << endl;
 		return;
 	} // field profile
   else if (task_str == "scan1d") {
@@ -394,10 +364,6 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 		for(size_t i = 0; i < result.size(); ++i){
 			result_stream << result[i].first << "," << result[i].second << "\n";
 		}
-    auto end_time = chrono::high_resolution_clock::now();
-	  cout << "Total time: " 
-         << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
-         << " seconds." << endl;
 		return;
   }
   else if (task_str == "scan2d") {
@@ -503,10 +469,6 @@ void dnpsoup_exec(const std::string &spinsys_filename,
       const auto [x, y, z] = result[i];
       result_stream << x << "," << y << "," << z << "\n";
 		}
-    auto end_time = chrono::high_resolution_clock::now();
-	  cout << "Total time: " 
-         << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
-         << " seconds." << endl;
 		return;
   }
 

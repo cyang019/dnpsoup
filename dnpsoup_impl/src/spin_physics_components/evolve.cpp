@@ -173,7 +173,10 @@ namespace dnpsoup {
           auto scaling_factor = calcExpEvolve(super_op, inc, mas_inc_cnt);
           rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, 
               scaling_factor, rotate_mat_super, rotate_mat_super_inv);
-          cache.saveCache(comp, EvolutionCacheElement(scaling_factor, rho_eq_super)); 
+          cache.saveCache(
+              comp, 
+              EvolutionCacheElement(
+                std::move(scaling_factor), std::move(rho_eq_super))); 
         }
         else{ // retrieve from cache
           const auto idx = rotor_cnt % total_rotor_cnt;
@@ -254,7 +257,9 @@ namespace dnpsoup {
           auto scaling_factor = calcExpEvolve(super_op, inc, mas_inc_cnt);
           rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, 
               scaling_factor, rotate_mat_super, rotate_mat_super_inv);
-          cache.saveCache(comp, EvolutionCacheElement(scaling_factor, rho_eq_super)); 
+          cache.saveCache(comp, 
+              EvolutionCacheElement(
+                std::move(scaling_factor), std::move(rho_eq_super))); 
           double result = ::dnpsoup::projectionNorm(
               rho_evolve_super, acq_mat_super).real();
           results.push_back(make_pair(t0 + t, result/result_ref));
