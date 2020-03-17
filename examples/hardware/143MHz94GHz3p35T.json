@@ -1,7 +1,7 @@
 {
   "euler": {
     "alpha": 0.0,
-    "beta": 0.0,
+    "beta": 0.6,
     "gamma": 0.0
   },
   "euler_scheme":{
@@ -29,7 +29,7 @@
       "mas_increment": 1e-4
   },
 
-  "task": "PowderBuildUpEnhancement",
+  "task": "BuildUp",
   
   "task details": {
     "type": "EmrLength",

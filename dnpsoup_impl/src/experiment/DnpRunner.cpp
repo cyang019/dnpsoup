@@ -183,7 +183,7 @@ namespace DnpRunner {
 //        cout << "EvolutionCacheStatic capacity: " << seq.uniqueComponentsCount() << endl;
 //#endif
         uptr_cache = make_unique<EvolutionCacheStatic>(
-            seq.uniqueComponentsCount());
+            seq.uniqueEmrsCount());
       }
 //#ifndef NDEBUG
 //      std::cout << "mas_inc_cnt: " << mas_inc_cnt << "\n";
@@ -434,7 +434,7 @@ namespace DnpRunner {
       unique_ptr<EvolutionCacheStatic> uptr_cache = nullptr;
       if (p.mas_frequency < eps) {
         uptr_cache = make_unique<EvolutionCacheStatic>(
-            seq.uniqueComponentsCount());
+            seq.uniqueEmrsCount());
       }
 
       MatrixCxDbl hamiltonian = packets.genMatrix(spin_sys_euler * mas_angle);
@@ -442,7 +442,7 @@ namespace DnpRunner {
       auto hamiltonian_lab = hamiltonian + hamiltonian_offset;
       MatrixCxDbl rho0_lab = genRhoEq(hamiltonian_lab, p.temperature);
       double val = ::dnpsoup::projectionNorm(rho0_lab, acq_mat).real();
-      const double result_ref = 1.0;  ///< intensity, not enhancement
+      constexpr double result_ref = 1.0;  ///< intensity, not enhancement
       vector<pair<double, double>> results;
       results.push_back(make_pair(0.0, val));
 

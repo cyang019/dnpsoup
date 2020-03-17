@@ -47,6 +47,7 @@ namespace dnpsoup {
       std::tuple<Component, std::uint64_t, std::uint64_t> next();
       std::size_t size() const { return m_sections_in_order.size(); }
       std::size_t uniqueComponentsCount() const { return m_components.size(); }
+      std::size_t uniqueEmrsCount() const;
 
       double getIncrement() const { return m_inc; }
       void setIncrement(double dt) { m_inc = dt; }

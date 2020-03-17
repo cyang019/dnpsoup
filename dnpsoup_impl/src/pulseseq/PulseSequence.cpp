@@ -159,6 +159,24 @@ namespace pulseseq{
     return std::make_tuple(comp, comp_size, m_idx);
   }
 
+  std::size_t PulseSequence::uniqueEmrsCount() const
+  {
+    std::size_t result = 0u;
+
+    for(const auto &name_comp : m_sections){
+      const auto seq_t = name_comp.second->type();
+      switch(seq_t){
+        case ::dnpsoup::pulseseq::SequenceType::ChirpType:
+          result += name_comp.second->size();
+          break;
+        default:
+          result += 1u;
+          break;
+      }
+    }
+    return result;
+  }
+
   void PulseSequence::setEmrFreq(const Name &name, SpinType t, double val)
   {
     if(m_components.find(name) == m_components.end()){
