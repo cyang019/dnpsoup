@@ -37,10 +37,23 @@ namespace dnpsoup {
         std::uint64_t cnt,
         double dt);
     EvolutionCacheStatic& saveCache(
+        const pulseseq::Component &, 
+        MatrixCxDbl &&super_op,
+        MatrixCxDbl &&rho_eq_super,
+        std::uint64_t cnt,
+        double dt);
+    EvolutionCacheStatic& saveCache(
         const pulseseq::Component &comp,
         const MatrixCxDbl &super_op,
         const MatrixCxDbl &rho_eq_super,
         const MatrixCxDbl &scaling_factor,
+        std::uint64_t cnt
+        );
+    EvolutionCacheStatic& saveCache(
+        const pulseseq::Component &comp,
+        MatrixCxDbl &&super_op,
+        MatrixCxDbl &&rho_eq_super,
+        MatrixCxDbl &&scaling_factor,
         std::uint64_t cnt
         );
     int getCacheIdentity(const pulseseq::Component &) const;

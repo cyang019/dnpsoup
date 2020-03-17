@@ -179,9 +179,9 @@ namespace DnpRunner {
 
       unique_ptr<EvolutionCacheStatic> uptr_cache = nullptr;
       if (p.mas_frequency < eps) {
-//#ifndef NDEBUG
-//        cout << "EvolutionCacheStatic capacity: " << seq.uniqueComponentsCount() << endl;
-//#endif
+#ifndef NDEBUG
+        cout << "EvolutionCacheStatic capacity: " << seq.uniqueEmrsCount() << endl;
+#endif
         uptr_cache = make_unique<EvolutionCacheStatic>(
             seq.uniqueEmrsCount());
       }
@@ -249,11 +249,11 @@ namespace DnpRunner {
                   rpackets, p.temperature);
             const auto super_op = calcLambdaSuper(h_super, gamma_super_internal);
             const auto scaling_factor = calcExpEvolve(super_op, inc, comp_size);
-            uptr_cache->saveCache(comp, super_op, rho_eq_super, 
-                scaling_factor, comp_size);
             rho0_evolve_super = evolve(rho0_evolve_super, rho_eq_super, 
                 scaling_factor,
                 rotate_mat_super, rotate_mat_super_inv);
+            uptr_cache->saveCache(comp, super_op, rho_eq_super, 
+                scaling_factor, comp_size);
           }
           else {
             const auto &[scaling_factor, rho_eq_super] = uptr_cache->getCache(
@@ -433,6 +433,9 @@ namespace DnpRunner {
 
       unique_ptr<EvolutionCacheStatic> uptr_cache = nullptr;
       if (p.mas_frequency < eps) {
+#ifndef NDEBUG
+        cout << "EvolutionCacheStatic capacity: " << seq.uniqueEmrsCount() << endl;
+#endif
         uptr_cache = make_unique<EvolutionCacheStatic>(
             seq.uniqueEmrsCount());
       }
@@ -554,7 +557,7 @@ namespace DnpRunner {
             results.push_back(make_pair(t, val));
           }
         }
-      }
+      } // while
       std::cout << "." << std::flush;
 
       return results;

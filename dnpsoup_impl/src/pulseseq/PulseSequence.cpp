@@ -166,10 +166,12 @@ namespace pulseseq{
     for(const auto &name_comp : m_sections){
       const auto seq_t = name_comp.second->type();
       switch(seq_t){
-        case ::dnpsoup::pulseseq::SequenceType::ChirpType:
+        case SequenceType::ChirpType:
           result += name_comp.second->size();
           break;
-        default:
+        case SequenceType::SectionType:
+          break;
+        default:  ///< pulse, delay
           result += 1u;
           break;
       }
