@@ -103,7 +103,7 @@ namespace dnpsoup {
     //cout << "saveCache() cnt: " << cnt << endl;
 
     const auto scaling_factor = calcExpEvolve(
-        m_super_op_cache[m_key], dt, cnt);
+        m_super_op_cache[cache_idx], dt, cnt);
     m_cache[cache_idx].insert_or_assign(
         cnt, make_pair(
           std::move(scaling_factor), 
