@@ -107,7 +107,8 @@ void dnpsoup_exec(const std::string &spinsys_filename,
 	}
 
 	SpinType acq_t = toSpinType(j["acq"].get<string>());
-	if(task_str == "Intensity" || task_str == "BuildUp"){
+	if(task_str == "Intensity" || task_str == "BuildUp"
+      || task_str == "BuildUpEnhancement"){
 		auto magnet = Magnet(j);
 		cout << "Magnet loaded..." << endl;
 		auto gyrotron = Gyrotron(j);
@@ -136,9 +137,18 @@ void dnpsoup_exec(const std::string &spinsys_filename,
       result_stream << setprecision(numeric_limits<double>::max_digits10);
 		  result_stream << "# Intensity:\n" << result;
 		  return;
-    } else {  // "BuildUp"
-		  auto results = DnpRunner::calcBuildUp(magnet, gyrotron, probe,
-		  	spinsys, seq, acq_t, euler);
+    } else {  // "BuildUp" or "BuildUpEnhancement"
+      vector<pair<double, double>> results;
+      if(task_str == "BuildUp"){
+		    results = DnpRunner::calcBuildUp(
+            magnet, gyrotron, probe,
+		  	    spinsys, seq, acq_t, euler);
+      }
+      else {  // BuildUpEnhancement
+		    results = DnpRunner::calcBuildUpEnhancement(
+            magnet, gyrotron, probe,
+		  	    spinsys, seq, acq_t, euler);
+      }
 
       std::ofstream result_stream;
 	    result_stream.exceptions(std::ios::failbit | std::ios::badbit);

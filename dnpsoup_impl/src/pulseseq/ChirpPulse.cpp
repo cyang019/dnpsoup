@@ -94,7 +94,7 @@ namespace dnpsoup {
     {
       const double f0 = span/(-2.0);
       const double total_duration = inc * static_cast<double>(sz);
-      const double rate = span * total_duration/inc;
+      const double rate = span / total_duration;
       return make_pair(f0, rate);
     }
   } // namespace pulseseq

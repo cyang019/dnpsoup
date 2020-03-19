@@ -40,6 +40,16 @@ namespace dnpsoup {
         const SpinType &acq_spin,
         const Euler<> &spin_sys_euler);
 
+    std::vector<std::pair<double, double>> 
+      calcBuildUpEnhancement(
+        const Magnet &m, 
+        const Gyrotron &g,
+        const Probe &p,
+        const SpinSys &spin_sys,
+        PulseSequence seq,
+        const SpinType &acq_spin,
+        const Euler<> &spin_sys_euler);
+
     std::vector<std::pair<double, double>> calcPowderBuildUp(
         const Magnet &m, 
         const Gyrotron &g,

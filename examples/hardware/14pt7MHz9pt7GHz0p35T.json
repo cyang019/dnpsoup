@@ -29,7 +29,7 @@
       "mas_increment": 2e-5
   },
 
-  "task": "PowderBuildUpEnhancement",
+  "task": "BuildUpEnhancement",
   
   "task details": {
     "type": "EmrLength",
