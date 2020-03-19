@@ -17,7 +17,7 @@
     "loop":
     {
       "type": "Section",
-      "size": 500,
+      "size": 5,
       "names": ["p1", "d"],
       "params": {},
       "phase0": {
