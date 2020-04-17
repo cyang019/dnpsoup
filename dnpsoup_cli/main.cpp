@@ -2,6 +2,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <chrono>
+#include <iomanip>
 
 using namespace std;
 
@@ -31,7 +33,15 @@ int main(int argc, char **argv)
         return 1;
       }
       
+      auto start_time = chrono::high_resolution_clock::now();
 	  	dnpsoup_exec0(argv[1], argv[2]);
+      auto end_time = chrono::high_resolution_clock::now();
+      auto millis = chrono::duration_cast<chrono::milliseconds>(end_time - start_time);
+	    cout << "Total time: " 
+           << millis.count()/1000 
+           << "."
+           << millis.count()%1000
+           << " seconds." << endl;
 	  }
 	  catch(const exception &e){
 	  	std::cout << e.what() << std::endl;
@@ -52,7 +62,15 @@ int main(int argc, char **argv)
         return 1;
       }
       
+      auto start_time = chrono::high_resolution_clock::now();
 	  	dnpsoup_exec(argv[1], argv[2], argv[3], argv[4]);
+      auto end_time = chrono::high_resolution_clock::now();
+      auto millis = chrono::duration_cast<chrono::milliseconds>(end_time - start_time);
+	    cout << "Total time: " 
+           << millis.count()/1000 
+           << "."
+           << millis.count()%1000
+           << " seconds." << endl;
 	  }
 	  catch(const exception &e){
 	  	std::cout << e.what() << std::endl;

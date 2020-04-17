@@ -179,9 +179,9 @@ namespace DnpRunner {
 
       unique_ptr<EvolutionCacheStatic> uptr_cache = nullptr;
       if (p.mas_frequency < eps) {
-//#ifndef NDEBUG
-//        cout << "EvolutionCacheStatic capacity: " << seq.uniqueComponentsCount() << endl;
-//#endif
+#ifndef NDEBUG
+        cout << "EvolutionCacheStatic capacity: " << seq.uniqueEmrsCount() << endl;
+#endif
         uptr_cache = make_unique<EvolutionCacheStatic>(
             seq.uniqueEmrsCount());
       }
@@ -249,11 +249,15 @@ namespace DnpRunner {
                   rpackets, p.temperature);
             const auto super_op = calcLambdaSuper(h_super, gamma_super_internal);
             const auto scaling_factor = calcExpEvolve(super_op, inc, comp_size);
-            uptr_cache->saveCache(comp, super_op, rho_eq_super, 
-                scaling_factor, comp_size);
             rho0_evolve_super = evolve(rho0_evolve_super, rho_eq_super, 
                 scaling_factor,
                 rotate_mat_super, rotate_mat_super_inv);
+            uptr_cache->saveCache(
+                comp, 
+                std::move(super_op), 
+                std::move(rho_eq_super), 
+                std::move(scaling_factor), 
+                comp_size);
           }
           else {
             const auto &[scaling_factor, rho_eq_super] = uptr_cache->getCache(
@@ -433,6 +437,9 @@ namespace DnpRunner {
 
       unique_ptr<EvolutionCacheStatic> uptr_cache = nullptr;
       if (p.mas_frequency < eps) {
+#ifndef NDEBUG
+        cout << "EvolutionCacheStatic capacity: " << seq.uniqueEmrsCount() << endl;
+#endif
         uptr_cache = make_unique<EvolutionCacheStatic>(
             seq.uniqueEmrsCount());
       }
@@ -495,7 +502,7 @@ namespace DnpRunner {
           const auto temp_euler = spin_sys_euler * mas_angle;
           auto [cache_idx, has_super_op_section] 
             = uptr_cache->getCacheIdentity(comp, mas_inc_cnt);
-          MatrixCxDbl h_super, gamma_super_internal, rho_eq_super, super_op;
+          MatrixCxDbl h_super, gamma_super_internal, rho_eq_super;
           MatrixCxDbl scaling_factor;
           const auto ham = packets.genMatrix(temp_euler);
           const auto ham_lab = ham + hamiltonian_offset; 
@@ -504,10 +511,14 @@ namespace DnpRunner {
               calcSuperOpsForMasterEq(ham, ham_lab,
                   rotate_mat_super, rotate_mat_super_inv,
                   rpackets, p.temperature);
-            super_op = calcLambdaSuper(h_super, gamma_super_internal);
+            auto super_op = calcLambdaSuper(h_super, gamma_super_internal);
             scaling_factor = calcExpEvolve(super_op, inc, mas_inc_cnt);
-            uptr_cache->saveCache(comp, super_op, rho_eq_super, 
-                scaling_factor, mas_inc_cnt);
+            uptr_cache->saveCache(
+                comp, 
+                super_op, 
+                rho_eq_super, 
+                scaling_factor, 
+                mas_inc_cnt);
           }
           else {
             std::tie(scaling_factor, rho_eq_super) = uptr_cache->getCache(
@@ -526,6 +537,9 @@ namespace DnpRunner {
 #ifdef DNPSOUP_VERBOSE
             cout << "in static case, call evolve() with comp_size: " << comp_size << endl;
 #endif
+
+#ifndef NDEBUG
+#endif
             rho0_evolve_super = evolve(rho0_evolve_super, rho_eq_super,
                 scaling_factor,
                 rotate_mat_super, rotate_mat_super_inv);
@@ -542,7 +556,7 @@ namespace DnpRunner {
               calcSuperOpsForMasterEq(ham, ham_lab,
                   rotate_mat_super, rotate_mat_super_inv,
                   rpackets, p.temperature);
-            super_op = calcLambdaSuper(h_super, gamma_super_internal);
+            auto super_op = calcLambdaSuper(h_super, gamma_super_internal);
             scaling_factor = calcExpEvolve(
                 super_op, inc, comp_size);
             rho0_evolve_super = evolve(rho0_evolve_super, rho_eq_super, 
@@ -554,11 +568,33 @@ namespace DnpRunner {
             results.push_back(make_pair(t, val));
           }
         }
-      }
+      } // while
       std::cout << "." << std::flush;
 
       return results;
     }
+
+    std::vector<std::pair<double, double>> 
+      calcBuildUpEnhancement(
+        const Magnet &m, 
+        const Gyrotron &g,
+        const Probe &p,
+        const SpinSys &spin_sys,
+        PulseSequence seq,
+        const SpinType &acq_spin,
+        const Euler<> &spin_sys_euler)
+    {
+      auto intensities = calcBuildUp(
+          m, g, p, spin_sys, seq, acq_spin, spin_sys_euler);
+      double ref_intensity = calcIntensity(
+          m, g, p, spin_sys, PulseSequence(), acq_spin, spin_sys_euler);
+      //ref_intensity += (ref_intensity < eps);
+      for(auto &value_pair : intensities){
+        value_pair.second /= ref_intensity;
+      }
+      return intensities;
+    }
+
 
     std::vector<std::pair<double, double>> calcFieldProfile(
         const std::vector<Magnet> &fields, 
@@ -571,16 +607,40 @@ namespace DnpRunner {
         [[maybe_unused]] int ncores)
     {
       std::vector<std::pair<double, double>> result;
-      for(const auto &field : fields){
-        //constexpr double ref = 1.0;
-        const double ref = calcPowderIntensity(
-            field, g, p, spin_sys, PulseSequence(),
-            acq_spin, spin_sys_eulers, ncores);
-        const double res = calcPowderIntensity(
-            field, g, p, spin_sys, seq, acq_spin, spin_sys_eulers, ncores);
-        const double ratio = res/ref;
-        result.push_back(std::make_pair(field.b0, ratio));
-        std::cout << "." << std::flush;
+      if(spin_sys_eulers.size() == 1){
+        const auto &euler = spin_sys_eulers[0];
+        ::lean::ThreadPool<pair<double, double>> tpool(ncores);
+        for(const auto &field : fields){
+          auto task = [=](){
+            auto ref = 
+              calcIntensity(
+                  field, g, p, spin_sys, PulseSequence(), acq_spin, euler);
+            auto intensity = 
+              calcIntensity(field, g, p, spin_sys, seq, acq_spin, euler);
+            return make_pair(field.b0, intensity/ref);
+          };
+          tpool.add_task(std::move(task));
+        }
+        tpool.run();
+        result = tpool.get_results();
+        std::sort(result.begin(), result.end(),
+            [](const pair<double, double> &val1, 
+              const pair<double, double> &val2){
+              return val1.first < val2.first;
+        });
+      }
+      else {
+        for(const auto &field : fields){
+          //constexpr double ref = 1.0;
+          const double ref = calcPowderIntensity(
+              field, g, p, spin_sys, PulseSequence(),
+              acq_spin, spin_sys_eulers, ncores);
+          const double res = calcPowderIntensity(
+              field, g, p, spin_sys, seq, acq_spin, spin_sys_eulers, ncores);
+          const double ratio = res/ref;
+          result.push_back(std::make_pair(field.b0, ratio));
+          std::cout << "." << std::flush;
+        }
       }
       std::cout << std::endl;
       return result;
@@ -597,16 +657,41 @@ namespace DnpRunner {
         [[maybe_unused]] int ncores)
     {
       std::vector<std::pair<double, double>> result;
-      for(const auto g : emrs) {
-        //constexpr double ref = 1.0;
-        const double ref = calcPowderIntensity(
-            m, g, p, spin_sys, PulseSequence(),
-            acq_spin, spin_sys_eulers, ncores);
-        const double res = calcPowderIntensity(
-            m, g, p, spin_sys, seq, acq_spin, spin_sys_eulers, ncores);
-        const double ratio = res/ref;
-        result.emplace_back(make_pair(g.em_frequency, ratio));
-        std::cout << "." << std::flush;
+      if(spin_sys_eulers.size() == 1){
+        const auto &euler = spin_sys_eulers[0];
+        ::lean::ThreadPool<pair<double, double>> tpool(ncores);
+        for(const auto &emr : emrs){
+          auto task = [=](){
+            auto ref = 
+              calcIntensity(
+                  m, emr, p, spin_sys, 
+                  PulseSequence(), acq_spin, euler);
+            auto intensity = 
+              calcIntensity(m, emr, p, spin_sys, seq, acq_spin, euler);
+            return make_pair(emr.em_frequency, intensity/ref);
+          };
+          tpool.add_task(std::move(task));
+        }
+        tpool.run();
+        result = tpool.get_results();
+        std::sort(result.begin(), result.end(),
+            [](const pair<double, double> &val1, 
+              const pair<double, double> &val2){
+              return val1.first < val2.first;
+        });
+      }
+      else {
+        for(const auto g : emrs) {
+          //constexpr double ref = 1.0;
+          const double ref = calcPowderIntensity(
+              m, g, p, spin_sys, PulseSequence(),
+              acq_spin, spin_sys_eulers, ncores);
+          const double res = calcPowderIntensity(
+              m, g, p, spin_sys, seq, acq_spin, spin_sys_eulers, ncores);
+          const double ratio = res/ref;
+          result.emplace_back(make_pair(g.em_frequency, ratio));
+          std::cout << "." << std::flush;
+        }
       }
       std::cout << std::endl;
       return result;

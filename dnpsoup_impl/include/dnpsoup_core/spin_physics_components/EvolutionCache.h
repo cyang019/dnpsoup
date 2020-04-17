@@ -19,6 +19,8 @@ namespace dnpsoup {
     EvolutionCacheElement(
         const MatrixCxDbl &factor, const MatrixCxDbl &rho);
     EvolutionCacheElement(
+        MatrixCxDbl &&factor, const MatrixCxDbl &&rho);
+    EvolutionCacheElement(
         const MatrixCxDbl &factor, const MatrixCxDbl &rho,
         const MatrixCxDbl &rotate_mat_super, 
         const MatrixCxDbl &rotate_mat_super_inv);

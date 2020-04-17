@@ -79,7 +79,35 @@ namespace dnpsoup {
     //cout << "saveCache() cnt: " << cnt << endl;
 
     const auto scaling_factor = calcExpEvolve(super_op, dt, cnt);
-    m_cache[cache_idx].insert_or_assign(cnt, make_pair(scaling_factor, rho_eq_super));
+    m_cache[cache_idx].insert_or_assign(
+        cnt, make_pair(
+          std::move(scaling_factor), rho_eq_super));
+    return *this;
+  }
+
+  EvolutionCacheStatic& EvolutionCacheStatic::saveCache(
+      const pulseseq::Component &comp, 
+      MatrixCxDbl &&super_op,
+      MatrixCxDbl &&rho_eq_super,
+      std::uint64_t cnt,
+      double dt)
+  {
+    int cache_idx = getCacheIdentity(comp);
+    if(cache_idx < 0){
+      m_cache_identities[m_key] = comp;
+      m_super_op_cache[m_key] = std::move(super_op);
+      cache_idx = m_key;
+      ++m_key;
+      m_key %= m_capacity;
+    }
+    //cout << "saveCache() cnt: " << cnt << endl;
+
+    const auto scaling_factor = calcExpEvolve(
+        m_super_op_cache[cache_idx], dt, cnt);
+    m_cache[cache_idx].insert_or_assign(
+        cnt, make_pair(
+          std::move(scaling_factor), 
+          std::move(rho_eq_super)));
     return *this;
   }
 
@@ -88,8 +116,7 @@ namespace dnpsoup {
       const MatrixCxDbl &super_op,
       const MatrixCxDbl &rho_eq_super,
       const MatrixCxDbl &scaling_factor,
-      std::uint64_t cnt
-      )
+      std::uint64_t cnt)
   {
     int cache_idx = getCacheIdentity(comp);
     if(cache_idx < 0){
@@ -102,6 +129,30 @@ namespace dnpsoup {
     //cout << "saveCache() cnt: " << cnt << endl;
     m_cache[cache_idx].insert_or_assign(
         cnt, make_pair(scaling_factor, rho_eq_super));
+    return *this;
+  }
+
+  EvolutionCacheStatic& EvolutionCacheStatic::saveCache(
+      const pulseseq::Component &comp,
+      MatrixCxDbl &&super_op,
+      MatrixCxDbl &&rho_eq_super,
+      MatrixCxDbl &&scaling_factor,
+      std::uint64_t cnt)
+  {
+    int cache_idx = getCacheIdentity(comp);
+    if(cache_idx < 0){
+      m_cache_identities[m_key] = comp;
+      m_super_op_cache[m_key] = std::move(super_op);
+      cache_idx = m_key;
+      ++m_key;
+      m_key %= m_capacity;
+    }
+    //cout << "saveCache() cnt: " << cnt << endl;
+    m_cache[cache_idx].insert_or_assign(
+        cnt, 
+        make_pair(
+          std::move(scaling_factor), 
+          std::move(rho_eq_super)));
     return *this;
   }
   

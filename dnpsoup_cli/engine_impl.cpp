@@ -20,7 +20,6 @@ void dnpsoup_exec_internal(
     const nlohmann::json &settings_js,
     const std::string &result_filename)
 {
-  auto start_time = chrono::high_resolution_clock::now();
   SpinSys spinsys;
 	if(spinsys_js.find("spinsys") != spinsys_js.end()){
 	  istringstream spinsys_iss(spinsys_js["spinsys"].dump());
@@ -86,10 +85,6 @@ void dnpsoup_exec_internal(
 				result_stream << row.back() << "\n";
 			}
 		}
-    auto end_time = chrono::high_resolution_clock::now();
-	  cout << "Total time: " 
-         << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
-         << " seconds." << endl;
 		return;
 	}
 
@@ -122,10 +117,6 @@ void dnpsoup_exec_internal(
 	    result_stream.open(result_filename.c_str());
       result_stream << setprecision(numeric_limits<double>::max_digits10);
 		  result_stream << "# Intensity:\n" << result;
-      auto end_time = chrono::high_resolution_clock::now();
-	    cout << "Total time: " 
-           << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
-           << " seconds." << endl;
 		  return;
     } else {  // "BuildUp"
 		  auto results = DnpRunner::calcBuildUp(magnet, gyrotron, probe,
@@ -140,10 +131,6 @@ void dnpsoup_exec_internal(
       for(const auto &val_pair : results){
         result_stream << val_pair.first << "," << val_pair.second << "\n";
       }
-      auto end_time = chrono::high_resolution_clock::now();
-	    cout << "Total time: " 
-           << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
-           << " seconds." << endl;
 		  return;
     }
 	}
@@ -196,10 +183,6 @@ void dnpsoup_exec_internal(
 	  result_stream.open(result_filename.c_str());
     result_stream << setprecision(numeric_limits<double>::max_digits10);
 		result_stream << "# PowderIntensity:\n" << result;
-    auto end_time = chrono::high_resolution_clock::now();
-	  cout << "Total time: " 
-         << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
-         << " seconds." << endl;
 		return;
 	}
   else if(task_str == "PowderBuildUp"){
@@ -217,10 +200,6 @@ void dnpsoup_exec_internal(
     for(const auto &val_pair : results){
       result_stream << val_pair.first << "," << val_pair.second << "\n";
     }
-    auto end_time = chrono::high_resolution_clock::now();
-	  cout << "Total time: " 
-         << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
-         << " seconds." << endl;
     return;
   }
   else if(task_str == "PowderBuildUpEnhancement"){
@@ -238,10 +217,6 @@ void dnpsoup_exec_internal(
     for(const auto &val_pair : results){
       result_stream << val_pair.first << "," << val_pair.second << "\n";
     }
-    auto end_time = chrono::high_resolution_clock::now();
-	  cout << "Total time: " 
-         << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
-         << " seconds." << endl;
     return;
   }
 	else if(task_str == "FieldProfile"){
@@ -311,10 +286,6 @@ void dnpsoup_exec_internal(
 		for(size_t i = 0; i < result.size(); ++i){
 			result_stream << result[i].first << "," << result[i].second << "\n";
 		}
-    auto end_time = chrono::high_resolution_clock::now();
-	  cout << "Total time: " 
-         << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
-         << " seconds." << endl;
 		return;
 	} // field profile
   else if (task_str == "scan1d") {
@@ -375,10 +346,6 @@ void dnpsoup_exec_internal(
 		for(size_t i = 0; i < result.size(); ++i){
 			result_stream << result[i].first << "," << result[i].second << "\n";
 		}
-    auto end_time = chrono::high_resolution_clock::now();
-	  cout << "Total time: " 
-         << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
-         << " seconds." << endl;
 		return;
   }
   else if (task_str == "scan2d") {
@@ -484,10 +451,6 @@ void dnpsoup_exec_internal(
       const auto [x, y, z] = result[i];
       result_stream << x << "," << y << "," << z << "\n";
 		}
-    auto end_time = chrono::high_resolution_clock::now();
-	  cout << "Total time: " 
-         << chrono::duration_cast<chrono::seconds>(end_time - start_time).count() 
-         << " seconds." << endl;
 		return;
   }
 
@@ -498,3 +461,4 @@ void dnpsoup_exec_internal(
 	throw runtime_error(err_msg);
 	return;
 }
+

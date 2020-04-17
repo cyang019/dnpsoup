@@ -1,14 +1,22 @@
 {
   "euler": {
     "alpha": 0.0,
-    "beta": 0.6,
-    "gamma": 0.0
-  },
-  "euler_scheme":{
-    "zcw": 2
+    "beta": 0.75,
+    "gamma": 0.2
   },
 
-  "ncores": 6,
+  "euler_scheme_bak":{
+    "zcw": 1
+  },
+  "eulers" : [
+    {
+      "alpha": 0,
+      "beta": 0,
+      "gamma": 0
+    }
+  ],
+
+  "ncores": 5,
   
   "acq": "H",
 
@@ -21,15 +29,15 @@
     "b0": 3.35
   },
   "Gyrotron": {
-    "em_frequency": 93.77e9
+    "em_frequency": 94.1976e9
   },
   "Probe": {
       "mas_frequency": 0.0,
       "temperature": 80.0,
-      "mas_increment": 1e-4
+      "mas_increment": 1e-3
   },
 
-  "task": "BuildUp",
+  "task": "FieldProfile",
   
   "task details": {
     "type": "EmrLength",
