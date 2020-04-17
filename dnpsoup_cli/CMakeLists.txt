@@ -4,7 +4,7 @@ if(USE_EMCC)
   set(CMAKE_CXX_STANDARD_REQUIRED True)
 endif()
 
-add_executable(dnpsoup_exec engine.h engine.cpp main.cpp)
+add_executable(dnpsoup_exec engine.h engine_impl.h engine.cpp engine_impl.cpp main.cpp)
 
 message(STATUS "dnpsoup_exec...")
 
