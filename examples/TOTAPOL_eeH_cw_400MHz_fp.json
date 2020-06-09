@@ -121,7 +121,7 @@
     "sections": {
       "p1": {
         "type": "Pulse",
-        "size": 125e3,
+        "size": 5e6,
         "names": [
           "emr1"
         ],
@@ -144,7 +144,7 @@
       "b0": 9.394638
     },
     "Gyrotron": {
-      "em_frequency": 9.41976e9
+      "em_frequency": 263.284e9
     },
     "Probe": {
       "mas_frequency": 8000,

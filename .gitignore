@@ -13,6 +13,7 @@
 
 tags
 
+# output files
 **/*.log
 
 **/OpenBLAS/**
@@ -24,5 +25,5 @@ tags
 **/*.bc
 
 # ignore jupyter checkpoints
-**/*.ipynb
+**/.ipynb_checkpoints/*.ipynb
 
