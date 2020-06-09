@@ -23,3 +23,6 @@ tags
 **/*.wasm
 **/*.bc
 
+# ignore jupyter checkpoints
+**/*.ipynb
+
