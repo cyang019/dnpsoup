@@ -20,7 +20,11 @@ if(NOT DEFINED CMAKE_CXX_FLAGS_RELEASE)
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG")    
 endif()
 
-target_compile_options(dnpsoup_exec PUBLIC -Wall -Wextra -Wpedantic -Werror)  
+if(USE_EMCC)
+  target_compile_options(dnpsoup_exec PUBLIC -Wall -Wextra -Wpedantic)
+else()
+  target_compile_options(dnpsoup_exec PUBLIC -Wall -Wextra -Wpedantic)
+endif()
 #target_compile_options(dnpsoup_core INTERFACE -Wall -Wextra -Wpedantic -Werror)  
 
 if(USE_EMCC)

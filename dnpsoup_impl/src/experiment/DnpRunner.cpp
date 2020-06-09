@@ -681,7 +681,7 @@ namespace DnpRunner {
         });
       }
       else {
-        for(const auto g : emrs) {
+        for(const auto &g : emrs) {
           //constexpr double ref = 1.0;
           const double ref = calcPowderIntensity(
               m, g, p, spin_sys, PulseSequence(),

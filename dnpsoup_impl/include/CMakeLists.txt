@@ -26,6 +26,9 @@ target_sources(dnpsoup_core
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/pulseseq/pulse_sequence.h"
 
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/experiment/DnpRunner.h"
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/experiment/experiment_types.h"
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/experiment/hardware.h"
+  "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/experiment/NmrRunner.h"
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core/experiment/dnp/scan.h"
   PUBLIC
   "${CMAKE_CURRENT_LIST_DIR}/dnpsoup.h"

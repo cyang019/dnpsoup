@@ -21,4 +21,5 @@ tags
 **/*.js
 **/*.html
 **/*.wasm
+**/*.bc
 

@@ -21,6 +21,8 @@
 #include "dnpsoup_core/spinsys/HamiltonianPacket.h"
 #include "dnpsoup_core/spinsys/RelaxationPacket.h"
 #include "dnpsoup_core/pulseseq/pulse_sequence.h"
+#include "dnpsoup_core/experiment/experiment_types.h"
+#include "dnpsoup_core/experiment/hardware.h"
 #include "dnpsoup_core/experiment/DnpRunner.h"
 #include "dnpsoup_core/experiment/dnp/scan.h"
 
