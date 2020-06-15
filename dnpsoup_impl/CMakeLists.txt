@@ -24,7 +24,7 @@ endif()
 #else()
 #  target_compile_options(dnpsoup_core PUBLIC -Wall -Wextra -Wpedantic -Werror)  
 #endif()
-target_compile_options(dnpsoup_core PUBLIC -Wall -Wextra -Wpedantic -Werror)  
+target_compile_options(dnpsoup_core PUBLIC -Wall -Wextra -Wpedantic)
 
 target_link_libraries(dnpsoup_core PUBLIC matrix)
 message(STATUS "dnpsoup_core linked to matrix...")
