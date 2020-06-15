@@ -18,6 +18,10 @@ int main(int argc, char **argv)
   int ret_code = 0;
 	if(argc != 5 && argc != 3){
 		std::cout << "Saw " << argc - 1 << " arguments." << std::endl;
+    for(int i = 0; i < argc; ++i) {
+      std::cout << argv[i] << " ";
+    }
+    std::cout << std::endl;
 		std::cout << "Need either 2 or 4 argumments: "
               << "dnpsoup_exec [configure_file] [output file]\n"
               << "or\n"

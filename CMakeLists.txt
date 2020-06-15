@@ -21,6 +21,7 @@ endif()
 add_subdirectory("matrix/matrix_impl")
 add_subdirectory("dnpsoup_impl")
 
+set(CMAKE_VERBOSE_MAKEFILE ON)
 if(NOT USE_EMCC)
   add_subdirectory("dnpsoup_cli")
   option(BUILD_TESTS "build unittests as well for dnpsoup" ON)

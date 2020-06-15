@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+FILE=dist
+if [ -d "$FILE" ]; then
+  rm -rf $FILE
+fi
+TEMP_FILE=dnpsoup_cli/dist
+if [ -d "$TEMP_FILE" ]; then
+  rm -rf $TEMP_FILE
+fi
+rm dnpsoup_cli/*.a
 rm -rf build
 mkdir build
 cd build

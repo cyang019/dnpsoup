@@ -1,0 +1,164 @@
+{
+  "spinsys": {
+    "euler": {
+      "alpha": 0,
+      "beta": 0,
+      "gamma": 0
+    },
+    "interactions": [
+      {
+        "name": "shielding",
+        "id": 0,
+        "entries": {
+          "x": 2.009,
+          "y": 2.0061,
+          "z": 2.0021,
+          "id": 0,
+          "euler": {
+            "alpha": 0,
+            "beta": 0,
+            "gamma": 0
+          }
+        }
+      },
+      {
+        "name": "shielding",
+        "id": 1,
+        "entries": {
+          "x": 2.009,
+          "y": 2.0061,
+          "z": 2.0021,
+          "id": 1,
+          "euler": {
+            "alpha": -2.1642082724729685,
+            "beta": -1.8849555921538759,
+            "gamma": -1.8675022996339325
+          }
+        }
+      },
+      {
+        "name": "dipole",
+        "id": 2,
+        "entries": {
+          "id1": 0,
+          "id2": 1
+        }
+      },
+      {
+        "name": "csa",
+        "id": 3,
+        "entries": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "id": 2,
+          "euler": {
+            "alpha": 0,
+            "beta": 0,
+            "gamma": 0
+          }
+        }
+      },
+      {
+        "name": "hyperfine",
+        "id": 4,
+        "entries": {
+          "id1": 0,
+          "id2": 2
+        }
+      },
+      {
+        "name": "hyperfine",
+        "id": 5,
+        "entries": {
+          "id1": 1,
+          "id2": 2
+        }
+      }
+    ],
+    "spins": {
+      "0": {
+        "type": "e",
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "t1": 0.001,
+        "t2": 0.000001
+      },
+      "1": {
+        "type": "e",
+        "x": 13.1,
+        "y": 0,
+        "z": 0,
+        "t1": 0.001,
+        "t2": 0.000001
+      },
+      "2": {
+        "type": "H1",
+        "x": -2.2,
+        "y": 1.5,
+        "z": 1.5,
+        "t1": 1,
+        "t2": 0.001
+      }
+    },
+    "irradiation": [
+      "e"
+    ]
+  },
+  "pulseseq": {
+    "name": "cw",
+    "increment": 1e-9,
+    "components": {
+      "emr1": {
+        "e": {
+          "frequency": 1e6,
+          "phase": 0,
+          "offset": 0
+        }
+      }
+    },
+    "sections": {
+      "p1": {
+        "type": "Pulse",
+        "size": 5e6,
+        "names": [
+          "emr1"
+        ],
+        "params": {}
+      }
+    },
+    "sequence": [
+      "p1"
+    ]
+  },
+  "settings": {
+    "euler": {
+      "alpha": 0,
+      "beta": 0,
+      "gamma": 0
+    },
+    "ncores": 4,
+    "acq": "H1",
+    "Magnet": {
+      "b0": 9.394638
+    },
+    "Gyrotron": {
+      "em_frequency": 263.284e9
+    },
+    "Probe": {
+      "mas_frequency": 8000,
+      "temperature": 80,
+      "mas_increment": 1e-7
+    },
+    "task": "FieldProfile",
+    "euler_scheme": {
+      "zcw": 1
+    },
+    "field range": {
+      "begin": 9.36,
+      "end": 9.41,
+      "step": 0.002
+    }
+  }
+}
