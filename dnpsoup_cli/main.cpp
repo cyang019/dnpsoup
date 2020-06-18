@@ -16,13 +16,14 @@ bool fileExists(const string &filename)
 int main(int argc, char **argv)
 {
   int ret_code = 0;
-	if(argc != 5 && argc != 3){
+	if(argc != 5 && argc != 3 && argc != 2){
 		std::cout << "Saw " << argc - 1 << " arguments." << std::endl;
     for(int i = 0; i < argc; ++i) {
       std::cout << argv[i] << " ";
     }
     std::cout << std::endl;
-		std::cout << "Need either 2 or 4 argumments: "
+		std::cout << "Need 1, 2 or 4 argumments: "
+              << "dnpsoup_exec [configure_file]\n"
               << "dnpsoup_exec [configure_file] [output file]\n"
               << "or\n"
               << "dnpsoup_exec [spinsys_file] [pulseseq_file] [settings_file] [output file]\n"
@@ -30,7 +31,29 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-  if(argc == 3) {
+  if(argc == 2) {
+	  try{
+      if(!fileExists(argv[1])){
+        std::cout << "cannot find " << argv[1] << std::endl;
+        return 1;
+      }
+      
+      auto start_time = chrono::high_resolution_clock::now();
+      const string default_output_filename = "results/" + std::string(argv[1]) + ".result.log";
+	  	dnpsoup_exec0(argv[1], default_output_filename);
+      auto end_time = chrono::high_resolution_clock::now();
+      auto millis = chrono::duration_cast<chrono::milliseconds>(end_time - start_time);
+	    cout << "Total time: " 
+           << millis.count()/1000 
+           << "."
+           << millis.count()%1000
+           << " seconds." << endl;
+	  }
+	  catch(const exception &e){
+	  	std::cout << e.what() << std::endl;
+      ret_code = 1;
+	  }
+  } else if(argc == 3) {
 	  try{
       if(!fileExists(argv[1])){
         std::cout << "cannot find " << argv[1] << std::endl;

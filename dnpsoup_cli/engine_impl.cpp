@@ -288,7 +288,7 @@ void dnpsoup_exec_internal(
 		}
 		return;
 	} // field profile
-  else if (task_str == "scan1d") {
+  else if (task_str == "scan1d" || task_str == "Scan1d") {
 		auto gyrotron = Gyrotron(j);
 		auto magnet = Magnet(j);
     auto params = Parameters(magnet, gyrotron, probe,
@@ -348,7 +348,7 @@ void dnpsoup_exec_internal(
 		}
 		return;
   }
-  else if (task_str == "scan2d") {
+  else if (task_str == "scan2d" || task_str == "Scan2d") {
 		auto gyrotron = Gyrotron(j);
 		auto magnet = Magnet(j);
     auto params = Parameters(magnet, gyrotron, probe,
