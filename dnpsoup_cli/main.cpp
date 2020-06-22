@@ -39,7 +39,8 @@ int main(int argc, char **argv)
       }
       
       auto start_time = chrono::high_resolution_clock::now();
-      const string default_output_filename = "results/" + std::string(argv[1]) + ".result.log";
+      const string input_filename = argv[1];
+      const string default_output_filename = "results/" + input_filename + ".result.log";
 	  	dnpsoup_exec0(argv[1], default_output_filename);
       auto end_time = chrono::high_resolution_clock::now();
       auto millis = chrono::duration_cast<chrono::milliseconds>(end_time - start_time);

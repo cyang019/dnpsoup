@@ -1,0 +1,165 @@
+{
+  "spinsys": {
+    "euler": {
+      "alpha": 0,
+      "beta": 0,
+      "gamma": 0
+    },
+    "interactions": [
+      {
+        "name": "shielding",
+        "id": 0,
+        "entries": {
+          "x": 2.00263,
+          "y": 2.00259,
+          "z": 2.00234,
+          "id": 0,
+          "euler": {
+            "alpha": 0,
+            "beta": 0,
+            "gamma": 0
+          }
+        }
+      },
+      {
+        "name": "csa",
+        "id": 2,
+        "entries": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "id": 1,
+          "euler": {
+            "alpha": 0,
+            "beta": 0,
+            "gamma": 0
+          }
+        }
+      },
+      {
+        "name": "hyperfine",
+        "id": 4,
+        "entries": {
+          "id1": 0,
+          "id2": 1
+        }
+      }
+    ],
+    "spins": {
+      "0": {
+        "type": "e",
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "t1": 0.0003,
+        "t2": 0.000005
+      },
+      "1": {
+        "type": "H1",
+        "x": 4,
+        "y": 0,
+        "z": 0,
+        "t1": 3,
+        "t2": 0.0002
+      }
+    },
+    "irradiation": [
+      "e"
+    ]
+  },
+  "pulseseq": {
+    "name": "NOVEL",
+    "increment": 1e-9,
+    "components": {
+      "emr90": {
+        "e": {
+          "frequency": 14770000,
+          "phase": 0,
+          "offset": 0
+        }
+      },
+      "emr-mix": {
+        "e": {
+          "frequency": 14770000,
+          "phase": 90,
+          "offset": 0
+        }
+      }
+    },
+    "sections": {
+      "p-flip": {
+        "type": "Pulse",
+        "size": 16,
+        "names": [
+          "emr90"
+        ],
+        "params": {}
+      },
+      "p-mix": {
+        "type": "Pulse",
+        "size": 200,
+        "names": [
+          "emr-mix"
+        ],
+        "params": {}
+      },
+      "d": {
+        "type": "Delay",
+        "size": 150000,
+        "names": [],
+        "params": {}
+      },
+      "loop": {
+        "type": "Section",
+        "size": 15500,
+        "names": [
+          "p-flip",
+          "p-mix",
+          "d"
+        ],
+        "params": {},
+        "phase0": {
+          "reset": false,
+          "seed": 0
+        }
+      }
+    },
+    "sequence": [
+      "loop"
+    ]
+  },
+  "settings": {
+    "euler": {
+      "alpha": 0,
+      "beta": 0,
+      "gamma": 0
+    },
+    "ncores": 4,
+    "acq": "H1",
+    "Magnet": {
+      "b0": 0.34682
+    },
+    "Gyrotron": {
+      "em_frequency": 9722400000
+    },
+    "Probe": {
+      "mas_frequency": 0,
+      "temperature": 80,
+      "mas_increment": 0.000001
+    },
+    "task": "scan1d",
+    "euler_scheme": {
+      "zcw": 1
+    },
+    "task details": {
+      "type": "EmrLength",
+      "spin": "e",
+      "name": "d",
+      "range": {
+        "begin": 10000,
+        "end": 1000000,
+        "step": 10000
+      }
+    }
+  }
+}
