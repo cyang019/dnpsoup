@@ -10,7 +10,18 @@
 
 
 namespace dnpsoup {
+  enum class PowderSphere : int
+  {
+    full=1,
+    hemi=2,
+    octant=3
+  };
+
   std::vector<Euler<>> getZCWAngles(std::uint64_t m);
+
+  std::vector<Euler<>> getZCWAnglesFromConstants(std::uint64_t m, double c1, double c2, double c3);
+
+  std::vector<Euler<>> getZCWAnglesSTEP(std::uint64_t m, PowderSphere choice);
 } // namespace dnpsoup
 
 #endif

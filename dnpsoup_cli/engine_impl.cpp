@@ -140,7 +140,25 @@ void dnpsoup_exec_internal(
   if(j.find("euler_scheme") != j.end()){
     if(j["euler_scheme"].find("zcw") != j["euler_scheme"].end()){
       auto zcw_input = j["euler_scheme"]["zcw"].get<uint64_t>();
-      eulers = getZCWAngles(zcw_input);
+      if(j["euler_scheme"].find("sphere") != j["euler_scheme"].end()) {
+        auto sphere = j["euler_scheme"]["sphere"].get<uint64_t>();
+        switch(sphere){
+          case 0:
+            eulers = getZCWAnglesSTEP(zcw_input, PowderSphere::full);
+            break;
+          case 1:
+            eulers = getZCWAnglesSTEP(zcw_input, PowderSphere::hemi);
+            break;
+          case 2:
+            eulers = getZCWAnglesSTEP(zcw_input, PowderSphere::octant);
+            break;
+          default:
+            eulers = getZCWAngles(zcw_input);
+            break;
+        }
+      } else {
+        eulers = getZCWAngles(zcw_input);
+      }
       cout << "ZCW " << eulers.size() << " angles loaded..." << endl;
     }
     else{
