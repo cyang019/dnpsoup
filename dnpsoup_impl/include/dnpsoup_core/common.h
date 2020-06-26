@@ -169,16 +169,19 @@ namespace dnpsoup {
   inline double roundToCycle(double inc, double freq)
   {
     const double resonance_step = 1.0/freq;
+    double res = resonance_step;
     if (inc > resonance_step){
       std::uint64_t cnt = static_cast<std::uint64_t>(
           std::round(inc/resonance_step));
-      return resonance_step * (double)cnt;
+      res *= (double)cnt;
     }
     else {
       std::uint64_t cnt = static_cast<std::uint64_t>(
           std::round(resonance_step/inc));
-      return resonance_step/(double)cnt;
+      res /= (double)cnt;
     }
+    //std::cout << "increment: " << res * 1.0e9 << " ns." << std::endl;
+    return res;
   }
 } // namespace dnpsoup
 
