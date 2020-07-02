@@ -13,9 +13,9 @@
 
 
 namespace dnpsoup {
-  // rho_{t+dt} = E(rho_t - c1) + c1prime
-  // E = sum_i{exp(-L_idt_i)}
-  // for static case
+  /// rho_{t+dt} = E(rho_t - c1) + c1prime
+  /// E = sum_i{exp(-L_idt_i)}
+  /// for static case
   struct MasterEqTerms {
     MatrixCxDbl E;
     MatrixCxDbl c1;
@@ -32,6 +32,11 @@ namespace dnpsoup {
   };
 
   MasterEqTerms combineMasterEqTerms(const std::vector<MasterEqTerms> &terms, size_t n);
+
+  inline MatrixCxDbl evolve(const MatrixCxDbl &rho_super, const MasterEqTerms &m)
+  {
+    return m.E * (rho_super - m.c1) + m.c1prime;
+  }
 
   std::tuple<MasterEqTerms, PacketCollection*>
   genMasterEqTermsFromSingletonSeq(

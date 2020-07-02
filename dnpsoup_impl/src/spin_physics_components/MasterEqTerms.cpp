@@ -130,8 +130,9 @@ namespace dnpsoup {
         }
         break;
       default:
-#ifdef VERBOSE
+#ifndef NDEBUG
         cout << "Expecting a Pulse, Delay or Chirp, but saw " << toString(sec_type) << endl;
+        throw CalculationError("Unexpected SequenceType deriving MasterEqTerms for singleton section");
 #endif
         break;
     }
