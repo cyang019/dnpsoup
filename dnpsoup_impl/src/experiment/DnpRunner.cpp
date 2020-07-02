@@ -140,7 +140,8 @@ namespace DnpRunner {
 
       double rotor_period = 0.0;
       uint64_t total_rotor_cnt = 0u;
-      if(p.mas_frequency > eps){
+      const bool has_mas = (p.mas_frequency > eps);
+      if(has_mas) {
         rotor_period = 1.0 / p.mas_frequency;
         if(p.mas_increment > eps){
           total_rotor_cnt = static_cast<uint64_t>(
@@ -178,7 +179,7 @@ namespace DnpRunner {
       }
 
       unique_ptr<EvolutionCacheStatic> uptr_cache = nullptr;
-      if (p.mas_frequency < eps) {
+      if (!has_mas) {
 #ifndef NDEBUG
         cout << "EvolutionCacheStatic capacity: " << seq.uniqueEmrsCount() << endl;
 #endif
@@ -189,9 +190,10 @@ namespace DnpRunner {
 //      std::cout << "mas_inc_cnt: " << mas_inc_cnt << "\n";
 //#endif
 
-      MatrixCxDbl hamiltonian = packets.genMatrix(spin_sys_euler * mas_angle);
-      MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(spin_sys_euler * mas_angle);
-      auto hamiltonian_lab = hamiltonian + hamiltonian_offset;
+      const auto angle = spin_sys_euler * mas_angle;
+      MatrixCxDbl hamiltonian = packets.genMatrix(angle);
+      MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(angle);
+      const auto hamiltonian_lab = hamiltonian + hamiltonian_offset;
       MatrixCxDbl rho0_lab = genRhoEq(hamiltonian_lab, p.temperature);
       auto rho0_evolve = rho0_lab;
       auto rho0_evolve_super = ::dnpsoup::flatten(rho0_evolve, 'c');
@@ -220,16 +222,18 @@ namespace DnpRunner {
 //        cout << "comp_size " << comp_size << " \t idx " << idx << endl;
 //#endif
 //
+        // reset
         packets.updatePulseSeqComponent(default_comp);
+        // update with new value
         packets.updatePulseSeqComponent(comp);
 
-        if(p.mas_frequency > eps) { ///< with MAS
+        if(has_mas) { ///< with MAS
           /// EvolutionCache is used per comp
           rho0_evolve_super = evolveMASCnstEmr(
               rho0_evolve_super, 
               p.mas_frequency, comp, 
               packets, rpackets, hamiltonian_offset,
-              spin_sys_euler, mas_angle, g, 
+              spin_sys_euler, mas_angle, g,
               inc, comp_size, mas_inc_cnt, total_rotor_cnt, p.temperature);
           t += inc * static_cast<double>(comp_size);
           mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
@@ -267,7 +271,7 @@ namespace DnpRunner {
                 rotate_mat_super, rotate_mat_super_inv);
           }
           t += static_cast<double>(comp_size) * inc;
-          mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
+          //mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
         } ///< no MAS
       }
 

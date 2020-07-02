@@ -47,6 +47,8 @@ namespace dnpsoup {
           std::map<Name, std::unique_ptr<SubSequenceInterface>> *m_sections
           ) = 0;
       virtual SequenceType type() const = 0;   // type of interaction
+      bool isPure() const 
+      { return (this->type() != SequenceType::SectionType) && (this->type() != SequenceType::DefaultType); }
 
       virtual std::vector<Name> getNames() const = 0;
 
@@ -55,6 +57,7 @@ namespace dnpsoup {
       virtual std::uint64_t getIndex() const { return idx_; }
       virtual void resetIndex(
           std::map<Name, std::unique_ptr<SubSequenceInterface>> *m_sections) = 0;
+      void resetSelfIndex() { idx_ = 0; }
 
       double getParam(const Name &n) const { return m_params.at(n); }
       void setParam(const Name &, double);

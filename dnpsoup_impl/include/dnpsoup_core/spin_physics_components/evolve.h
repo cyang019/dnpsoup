@@ -66,6 +66,13 @@ namespace dnpsoup {
       const std::vector<RelaxationPacket> &rpackets,
       double temperature);
 
+  /// @returns h_super, gamma_super_internal, rho_eq_super
+  std::tuple<MatrixCxDbl, MatrixCxDbl, MatrixCxDbl> calcSuperOpsForMasterEq(
+      const MatrixCxDbl &ham,
+      const MatrixCxDbl &ham_lab,
+      const std::vector<RelaxationPacket> &rpackets,
+      double temperature);
+
   /// @returns rotate_mat_super, rotate_mat_super_inv
   std::pair<MatrixCxDbl, MatrixCxDbl> calcRotationSuperOps(
       const MatrixCxDbl &ham_offset,
@@ -88,6 +95,15 @@ namespace dnpsoup {
       const MatrixCxDbl &rotate_mat_super,
       const MatrixCxDbl &rotate_mat_super_inv
       );
+
+  inline MatrixCxDbl evolve(
+      const MatrixCxDbl &rho_prev_super,
+      const MatrixCxDbl &rho_eq_super,
+      const MatrixCxDbl &scaling_factor    ///< exp(-L*dt)
+  )
+  {
+    return evolveRho(rho_prev_super, rho_eq_super, scaling_factor);
+  }
 
   MatrixCxDbl evolveMASCnstEmr(
       const MatrixCxDbl &rho_prev_super,

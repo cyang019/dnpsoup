@@ -80,6 +80,26 @@ namespace dnpsoup {
                              std::move(rho_eq_super));
   }
 
+  /// @returns h_super, gamma_super_internal, rho_eq_super
+  std::tuple<MatrixCxDbl, MatrixCxDbl, MatrixCxDbl> calcSuperOpsForMasterEq(
+      const MatrixCxDbl &ham,
+      const MatrixCxDbl &ham_lab,
+      const std::vector<RelaxationPacket> &rpackets,
+      double temperature)
+  {
+    // static state thermo equilibrium
+      auto rho_ss = genRhoEq(ham_lab, temperature);
+
+      auto rho_ss_super = ::dnpsoup::flatten(rho_ss, 'c');
+      auto gamma_super = calcGammaSuper(rho_ss, rpackets);
+      auto h_super = commutationSuperOp(ham);
+      //auto super_op = complex<double>(0,1.0) * h_super + gamma_super_int;
+      auto rho_eq_super = calcRhoDynamicEq(h_super, gamma_super, rho_ss_super);
+      return std::make_tuple(std::move(h_super), 
+                             std::move(gamma_super),
+                             std::move(rho_eq_super));
+  }
+
   std::pair<MatrixCxDbl, MatrixCxDbl> calcRotationSuperOps(
       const MatrixCxDbl &ham_offset,
       const Gyrotron &g,
@@ -121,15 +141,6 @@ namespace dnpsoup {
     if(rotate_mat_super.nrows() != 0 && rotate_mat_super_inv.nrows() != 0){
       rho_super = rotate_mat_super_inv * rho_super;
     }
-    //MatrixCxDbl rho_post(rho_prev.nrows(), rho_prev.ncols());
-
-    //const auto nrows = rho_post.nrows();
-    //const auto ncols = rho_post.ncols();
-    //for(size_t i = 0; i < nrows; ++i){
-    //  for(size_t j = 0; j < ncols; ++j){
-    //    rho_post(i, j) = rho_super(j + i * ncols, 0);
-    //  }
-    //}
     return rho_super;
   }
 

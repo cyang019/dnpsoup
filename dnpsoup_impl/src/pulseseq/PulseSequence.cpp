@@ -179,6 +179,15 @@ namespace pulseseq{
     return result;
   }
 
+  const SubSequenceInterface* PulseSequence::operator[](size_t idx) const
+  {
+    if (idx >= m_sections_in_order.size()) {
+      throw PulseSequenceError("Index out of range");
+    }
+    const Name name = m_sections_in_order[idx];
+    return m_sections.at(name).get();
+  }
+
   void PulseSequence::setEmrFreq(const Name &name, SpinType t, double val)
   {
     if(m_components.find(name) == m_components.end()){

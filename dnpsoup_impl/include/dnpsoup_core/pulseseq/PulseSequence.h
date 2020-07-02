@@ -30,10 +30,15 @@ namespace dnpsoup {
       ~PulseSequence();
 
       const Component& getComponent(const Name &) const;
+      const std::map<Name, Component>* getPtrComponents() const
+      { return &m_components; }
+
       PulseSequence& set(const Name &, const Component &);
       PulseSequence& set(const Name &, std::unique_ptr<SubSequenceInterface>);
 
+      /// get names of a section name
       std::vector<Name> getNames(const Name &) const;
+      std::vector<Name> getNames() const { return m_sections_in_order; }
       std::uint64_t getIdx() const { return m_idx; }
       PulseSequence& resetIdx(); 
 
@@ -48,6 +53,7 @@ namespace dnpsoup {
       std::size_t size() const { return m_sections_in_order.size(); }
       std::size_t uniqueComponentsCount() const { return m_components.size(); }
       std::size_t uniqueEmrsCount() const;
+      const SubSequenceInterface* operator[](size_t) const;
 
       double getIncrement() const { return m_inc; }
       void setIncrement(double dt) { m_inc = dt; }
