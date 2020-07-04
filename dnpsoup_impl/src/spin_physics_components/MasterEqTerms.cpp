@@ -1,11 +1,14 @@
 #include "dnpsoup_core/common.h"
+#include "dnpsoup_core/pulseseq/SubSequenceInterface.h"
 #include "dnpsoup_core/spin_physics_components/MasterEqTerms.h"
 #include "dnpsoup_core/pulseseq/ChirpPulse.h"
 #include "dnpsoup_core/spin_physics_components/evolve.h"
 #include "dnpsoup_core/spin_physics_components/super_op.h"
 #include <vector>
 #include <string>
+#include <utility>
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
 
@@ -244,40 +247,103 @@ namespace dnpsoup {
     return result;
   }
 
+  std::vector<std::string> findSectionOrder(
+    const std::map<std::string, std::unique_ptr<pulseseq::SubSequenceInterface>> *ptr_sections  ///< all nodes
+    )
+  {
+    using SubSeqInterface = pulseseq::SubSequenceInterface;
+    vector<pair<string, int>> ranked_sections;
+
+    for(const auto &[name, ptr_section]: *ptr_sections) {
+      int score = 0;
+      if(ptr_section->isPure()) {
+        score = -1;
+        ranked_sections.push_back(make_pair(name, score));
+      } else {
+        vector<string> children = ptr_section->getNames();
+        for(const auto &child : children) {
+          const SubSeqInterface* ptr_child = ptr_sections->at(child).get();
+          if(!ptr_child->isPure()) {
+            ++score;
+          }
+        }
+        ranked_sections.push_back(make_pair(name, score));
+      }
+    }
+    std::sort(ranked_sections.begin(), ranked_sections.end(), 
+        [](const pair<string, int> &a, const pair<string, int>&b) {
+        return a.second < b.second;
+    });
+    vector<string> result;
+    for(const auto &ranked_s : ranked_sections) {
+      result.push_back(ranked_s.first);
+    }
+
+    return result;
+  }
+
   std::tuple<MasterEqTerms, PacketCollection*>
   genMasterEqTerms(
     PacketCollection *packets,
     const vector<RelaxationPacket> &rpackets,
     const MatrixCxDbl &ham_offset,
-    const pulseseq::SubSequenceInterface* ptr_section,
-    const map<string, pulseseq::Component>* ptr_components,
+    const PulseSequence &pseq,
     const vector<SpinType> &irradiated,
     const Euler<> &euler,
     double temperature,
     double inc
   )
   {
-    MasterEqTerms result;
-    using SequenceType = pulseseq::SequenceType;
-    const SequenceType sec_type = ptr_section->type();
-    switch (sec_type) {
-      case SequenceType::DelayType:
-      case SequenceType::PulseType:
-      case SequenceType::ChirpType:
-        {
-          return genMasterEqTermsFromSingletonSeq(
-              packets, rpackets, ham_offset, ptr_section, ptr_components,
+    using SubSeqInterface = pulseseq::SubSequenceInterface;
+    const map<string, pulseseq::Component>* ptr_components = pseq.getPtrComponents();
+    const map<string, std::unique_ptr<SubSeqInterface>>* ptr_sections = pseq.getPtrSections();
+
+    vector<string> sections = pseq.getNames();  ///< in pulseseq order
+    vector<string> sections_in_calc_order = findSectionOrder(ptr_sections);
+    vector<MasterEqTerms> term_per_section;
+    for(const string &name : sections_in_calc_order) {
+      const SubSeqInterface *ptr_sec = ptr_sections->at(name).get();
+      if(ptr_sec->isPure()){
+        
+        auto [term, packets_temp] = genMasterEqTermsFromSingletonSeq(
+              packets, rpackets, ham_offset, ptr_sec, ptr_components,
               irradiated, euler, temperature, inc);
+        packets = packets_temp;
+        term_per_section.push_back(std::move(term));
+      } else {
+        vector<string> children = ptr_sec->getNames();
+        vector<MasterEqTerms> child_terms;
+        for(const string &child : children) {
+          const SubSeqInterface *ptr_child = ptr_sections->at(child).get();
+          if(ptr_child->isPure()){
+            auto [term, packets_temp] = genMasterEqTermsFromSingletonSeq(
+                  packets, rpackets, ham_offset, ptr_child, ptr_components,
+                  irradiated, euler, temperature, inc);
+            packets = packets_temp;
+            child_terms.push_back(std::move(term));
+          } else {
+            auto found = std::find(sections_in_calc_order.begin(), sections_in_calc_order.end(), child); 
+            size_t idx = std::distance(sections_in_calc_order.begin(), found);
+#ifndef NDEBUG
+            if (idx >= term_per_section.size()) {
+              throw CalculationError("MasterEqTerms referenced before calculated.");
+            }
+#endif
+            child_terms.push_back(term_per_section[idx]);
+          }
         }
-        break;
-      case SequenceType::SectionType:
-        {
-          // dfs look for singleton section (pulse/delay/chirp)
-        }
-        break;
-      default:
-        break;
+        MasterEqTerms term = combineMasterEqTerms(child_terms, ptr_sec->size());
+        term_per_section.push_back(std::move(term));
+      }
     }
+    vector<MasterEqTerms> finalTerms;
+    for(const string &name : sections) {
+      auto found = std::find(sections_in_calc_order.begin(), sections_in_calc_order.end(), name);
+      size_t idx = std::distance(sections_in_calc_order.begin(), found);
+      finalTerms.push_back(term_per_section[idx]);
+    }
+    MasterEqTerms result = combineMasterEqTerms(finalTerms, 1);
+    
     return make_tuple(result, packets);
   }
 } // namespace dnpsoup

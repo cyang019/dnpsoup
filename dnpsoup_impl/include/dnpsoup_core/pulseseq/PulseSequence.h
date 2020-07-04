@@ -32,6 +32,8 @@ namespace dnpsoup {
       const Component& getComponent(const Name &) const;
       const std::map<Name, Component>* getPtrComponents() const
       { return &m_components; }
+      const std::map<Name, std::unique_ptr<SubSequenceInterface>>* getPtrSections() const
+      { return &m_sections; }
 
       PulseSequence& set(const Name &, const Component &);
       PulseSequence& set(const Name &, std::unique_ptr<SubSequenceInterface>);

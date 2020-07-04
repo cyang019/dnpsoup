@@ -33,6 +33,12 @@ namespace dnpsoup {
 
   MasterEqTerms combineMasterEqTerms(const std::vector<MasterEqTerms> &terms, size_t n);
 
+  /// find an order to calculate sections so that 
+  /// its children would have results first.
+  std::vector<std::string> findSectionOrder(
+    const std::map<std::string, std::unique_ptr<pulseseq::SubSequenceInterface>> *ptr_sections  ///< all nodes
+  );
+
   inline MatrixCxDbl evolve(const MatrixCxDbl &rho_super, const MasterEqTerms &m)
   {
     return m.E * (rho_super - m.c1) + m.c1prime;
@@ -56,8 +62,7 @@ namespace dnpsoup {
     PacketCollection *packets,
     const std::vector<RelaxationPacket> &rpackets,
     const MatrixCxDbl &ham_offset,
-    const pulseseq::SubSequenceInterface* ptr_section,
-    const std::map<std::string, pulseseq::Component>* ptr_components,
+    const PulseSequence &pseq,
     const std::vector<SpinType> &irradiated,
     const Euler<> &euler,
     double temperature,
