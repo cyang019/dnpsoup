@@ -56,6 +56,7 @@ namespace dnpsoup {
     const pulseseq::SubSequenceInterface* ptr_section,
     const map<string, pulseseq::Component>* ptr_components,
     const vector<SpinType> &irradiated,
+    const Gyrotron &g,
     const Euler<> &euler,
     double temperature,
     double inc
@@ -82,8 +83,11 @@ namespace dnpsoup {
           packets->updatePulseSeqComponent(default_comp);
           const MatrixCxDbl ham = packets->genMatrix(euler);
           const MatrixCxDbl ham_lab = ham + ham_offset;
+          auto [rotate_mat_super, rotate_mat_super_inv] = calcRotationSuperOps(
+              ham_offset, g, inc, ptr_section->size());
           auto [h_super, gamma_super, rho_eq_super] = 
             calcSuperOpsForMasterEq(ham, ham_lab,
+                rotate_mat_super, rotate_mat_super_inv,
                 rpackets, temperature);
           const auto l_super = calcLambdaSuper(h_super, gamma_super);
           result.E = calcExpEvolve(l_super, inc, ptr_section->size());
@@ -102,8 +106,11 @@ namespace dnpsoup {
 
           const MatrixCxDbl ham = packets->genMatrix(euler);
           const MatrixCxDbl ham_lab = ham + ham_offset;
+          auto [rotate_mat_super, rotate_mat_super_inv] = calcRotationSuperOps(
+              ham_offset, g, inc, ptr_section->size());
           auto [h_super, gamma_super, rho_eq_super] = 
             calcSuperOpsForMasterEq(ham, ham_lab,
+                rotate_mat_super, rotate_mat_super_inv,
                 rpackets, temperature);
           const auto l_super = calcLambdaSuper(h_super, gamma_super);
           result.E = calcExpEvolve(l_super, inc, ptr_section->size());
@@ -123,22 +130,25 @@ namespace dnpsoup {
           packets->updatePulseSeqComponent(default_comp);
           bool first_iter = true;
           MatrixCxDbl ham, ham_lab, rho_ss, rho_ss_super, gamma_super, h_super;
+          MatrixCxDbl rotate_mat_super, rotate_mat_super_inv;
           while(true) {
             auto [comp, comp_size, idx] = ptr_chirp->next(
                 &components,
                 &sections_placeholder
                 );
             if (idx >= seq_size) break;
+            if(rotate_mat_super.nelements() == 0){
+              std::tie(rotate_mat_super, rotate_mat_super_inv) = calcRotationSuperOps(
+                  ham_offset, g, inc, comp_size);
+            }
             packets->updatePulseSeqComponent(comp);
 
             ham = packets->genMatrix(euler);
             ham_lab = ham + ham_offset;
-            // static state thermo equilibrium
-            rho_ss = genRhoEq(ham_lab, temperature);
-
-            rho_ss_super = ::dnpsoup::flatten(rho_ss, 'c');
-            gamma_super = calcGammaSuper(rho_ss, rpackets);
-            h_super = commutationSuperOp(ham);
+            std::tie(h_super, gamma_super, rho_ss_super) = 
+              calcSuperOpsForMasterEq(ham, ham_lab,
+                  rotate_mat_super, rotate_mat_super_inv,
+                  rpackets, temperature);
             const auto l_super = calcLambdaSuper(h_super, gamma_super);
             if (first_iter) {
               result.E = calcExpEvolve(l_super, inc, comp_size);
@@ -149,7 +159,7 @@ namespace dnpsoup {
             }
           }
           // if at least one iteration was executed
-          if (! first_iter) {
+          if (!first_iter) {
             // calculate the last iter
             result.c1prime = calcRhoDynamicEq(h_super, gamma_super, rho_ss_super);
           }
@@ -291,6 +301,7 @@ namespace dnpsoup {
     const MatrixCxDbl &ham_offset,
     const PulseSequence &pseq,
     const vector<SpinType> &irradiated,
+    const Gyrotron &g,
     const Euler<> &euler,
     double temperature,
     double inc
@@ -308,7 +319,7 @@ namespace dnpsoup {
       if(ptr_sec->isPure()){
         auto [term, packets_temp] = genMasterEqTermsFromSingletonSeq(
               packets, rpackets, ham_offset, ptr_sec, ptr_components,
-              irradiated, euler, temperature, inc);
+              irradiated, g, euler, temperature, inc);
         packets = packets_temp;
         term_per_section.push_back(std::move(term));
       } else {
@@ -324,7 +335,7 @@ namespace dnpsoup {
             } else {
               auto [term, packets_temp] = genMasterEqTermsFromSingletonSeq(
                     packets, rpackets, ham_offset, ptr_child, ptr_components,
-                    irradiated, euler, temperature, inc);
+                    irradiated, g, euler, temperature, inc);
               packets = packets_temp;
               child_terms.push_back(std::move(term));
             }

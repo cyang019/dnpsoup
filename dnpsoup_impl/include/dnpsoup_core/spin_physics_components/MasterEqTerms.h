@@ -3,6 +3,7 @@
 
 #include "dnpsoup_core/common.h"
 #include "dnpsoup_core/experiment/experiment_types.h"
+#include "dnpsoup_core/experiment/hardware.h"
 #include "dnpsoup_core/spin_physics_components/hamiltonian/rho_eq.h"
 #include "dnpsoup_core/spinsys/HamiltonianPacket.h"
 #include "dnpsoup_core/spinsys/RelaxationPacket.h"
@@ -57,6 +58,7 @@ namespace dnpsoup {
     const pulseseq::SubSequenceInterface* ptr_section,
     const std::map<std::string, pulseseq::Component>* ptr_components,
     const std::vector<SpinType> &irradiated,
+    const Gyrotron &g,
     const Euler<> &euler,
     double temperature,
     double inc
@@ -69,6 +71,7 @@ namespace dnpsoup {
     const MatrixCxDbl &ham_offset,
     const PulseSequence &pseq,
     const std::vector<SpinType> &irradiated,
+    const Gyrotron &g,
     const Euler<> &euler,
     double temperature,
     double inc

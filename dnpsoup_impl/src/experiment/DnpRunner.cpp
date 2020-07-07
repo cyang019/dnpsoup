@@ -209,7 +209,7 @@ namespace DnpRunner {
       // --------------------------------------------------------
       if(!has_mas) {
         auto [terms, ptr_packets] = genMasterEqTerms(&packets, rpackets, 
-            hamiltonian_offset, seq, irradiated_types, angle, p.temperature, inc);
+            hamiltonian_offset, seq, irradiated_types, g, angle, p.temperature, inc);
         rho0_evolve_super = evolve(rho0_evolve_super, terms);
       } else {  // MAS
         std::uint64_t comp_size = 0u;
