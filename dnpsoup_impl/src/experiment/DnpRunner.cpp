@@ -7,6 +7,7 @@
 #include "dnpsoup_core/spin_physics_components/evolve.h"
 #include "dnpsoup_core/spin_physics_components/EvolutionCache.h"
 #include "dnpsoup_core/spin_physics_components/EvolutionCacheStatic.h"
+#include "dnpsoup_core/spin_physics_components/MasterEqTerms.h"
 #include "dnpsoup_core/errors.h"
 #include "dnpsoup_core/common.h"
 #include "dnpsoup_core/constants.h"
@@ -203,6 +204,48 @@ namespace DnpRunner {
         return result;
       }
 
+      // --------------------------------------------------------
+      /// via MasterEqTerms static case (MAS=0)
+      // --------------------------------------------------------
+      if(!has_mas) {
+        auto [terms, ptr_packets] = genMasterEqTerms(&packets, rpackets, 
+            hamiltonian_offset, seq, irradiated_types, angle, p.temperature, inc);
+        rho0_evolve_super = evolve(rho0_evolve_super, terms);
+      } else {  // MAS
+        std::uint64_t comp_size = 0u;
+        uint64_t idx = 0;
+        pulseseq::Component comp;
+//#ifndef NDEBUG
+//        cout << "seq.size() = " << seq.size() << endl;
+//#endif
+        while(idx < seq.size() || comp_size > 0) {
+          /// step-wise consume pulse sequence
+          std::tie(comp, comp_size, idx) = seq.next();
+#ifndef NDEBUG
+          //std::cout << comp << std::endl;
+#endif  
+          if(idx >= seq.size()) break;
+          // reset
+          packets.updatePulseSeqComponent(default_comp);
+          // update with new value
+          packets.updatePulseSeqComponent(comp);
+
+          /// EvolutionCache is used per comp
+          rho0_evolve_super = evolveMASCnstEmr(
+              rho0_evolve_super, 
+              p.mas_frequency, comp, 
+              packets, rpackets, hamiltonian_offset,
+              spin_sys_euler, mas_angle, g,
+              inc, comp_size, mas_inc_cnt, total_rotor_cnt, p.temperature);
+          t += inc * static_cast<double>(comp_size);
+          mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
+        }
+      }
+      
+      // --------------------------------------------------------
+      /// sequentially retrieving components from pulse sequence
+      // --------------------------------------------------------
+      /*
       std::uint64_t comp_size = 0u;
       uint64_t idx = 0;
       pulseseq::Component comp;
@@ -274,6 +317,7 @@ namespace DnpRunner {
           //mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
         } ///< no MAS
       }
+    */
 
       double result = ::dnpsoup::projectionNorm(
           rho0_evolve_super, acq_mat_super).real();

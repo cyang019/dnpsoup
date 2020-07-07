@@ -38,6 +38,16 @@ namespace dnpsoup {
     return *this;
   }
 
+  std::ostream& operator<<(std::ostream &os, const MasterEqTerms &t)
+  {
+    os << "E:\n" << t.E << "\n"
+       << "c1:\n" << t.c1 << "\n";
+    if(t.c1prime.nelements() > 0) {
+      os << "c1prime:\n" << t.c1prime << "\n";
+    }
+    return os;
+  }
+
   std::tuple<MasterEqTerms, PacketCollection*>
   genMasterEqTermsFromSingletonSeq(
     PacketCollection *packets,
@@ -52,19 +62,26 @@ namespace dnpsoup {
   )
   {
     pulseseq::Component default_comp;
-    MasterEqTerms result;
     for(const auto &t : irradiated){
       default_comp.insert_or_assign(t, pulseseq::EMRadiation());
     }
+#ifndef NDEBUG
+    cout << ptr_section->name 
+         << " ptr_section->size(): " << ptr_section->size() << endl;
+#endif
 
+    MasterEqTerms result;
     using SequenceType = pulseseq::SequenceType;
     const SequenceType sec_type = ptr_section->type();
     switch (sec_type) {
       case SequenceType::DelayType:
         {
+#ifndef NDEBUG
+          cout << "\tdelay" << "\n";
+#endif
           packets->updatePulseSeqComponent(default_comp);
-          MatrixCxDbl ham = packets->genMatrix(euler);
-          MatrixCxDbl ham_lab = ham + ham_offset;
+          const MatrixCxDbl ham = packets->genMatrix(euler);
+          const MatrixCxDbl ham_lab = ham + ham_offset;
           auto [h_super, gamma_super, rho_eq_super] = 
             calcSuperOpsForMasterEq(ham, ham_lab,
                 rpackets, temperature);
@@ -75,13 +92,16 @@ namespace dnpsoup {
         break;
       case SequenceType::PulseType:
         {
+#ifndef NDEBUG
+          cout << "\tpulse" << "\n";
+#endif
           packets->updatePulseSeqComponent(default_comp);
           const string comp_name = ptr_section->getNames()[0];
           const auto comp = ptr_components->at(comp_name);
           packets->updatePulseSeqComponent(comp);
 
-          MatrixCxDbl ham = packets->genMatrix(euler);
-          MatrixCxDbl ham_lab = ham + ham_offset;
+          const MatrixCxDbl ham = packets->genMatrix(euler);
+          const MatrixCxDbl ham_lab = ham + ham_offset;
           auto [h_super, gamma_super, rho_eq_super] = 
             calcSuperOpsForMasterEq(ham, ham_lab,
                 rpackets, temperature);
@@ -92,6 +112,9 @@ namespace dnpsoup {
         break;
       case SequenceType::ChirpType:
         {
+#ifndef NDEBUG
+          cout << "\tchirp " << "\n";
+#endif
           auto ptr_chirp = ptr_section->copy();
           const auto seq_size = ptr_chirp->size();
           ptr_chirp->resetSelfIndex();
@@ -118,11 +141,11 @@ namespace dnpsoup {
             h_super = commutationSuperOp(ham);
             const auto l_super = calcLambdaSuper(h_super, gamma_super);
             if (first_iter) {
-              result.E = calcExpEvolve(l_super, inc, ptr_section->size());
+              result.E = calcExpEvolve(l_super, inc, comp_size);
               result.c1 = calcRhoDynamicEq(h_super, gamma_super, rho_ss_super);
               first_iter = false;
             } else {
-              result.E = calcExpEvolve(l_super, inc, ptr_section->size()) * result.E;
+              result.E = calcExpEvolve(l_super, inc, comp_size) * result.E;
             }
           }
           // if at least one iteration was executed
@@ -146,40 +169,46 @@ namespace dnpsoup {
   MasterEqTerms combineMasterEqTerms(const std::vector<MasterEqTerms> &terms, size_t n)
   {
     // time complexity: log(n) * (m+1)
+#ifndef NDEBUG
+    cout << "combineMasterEqTerms " << terms.size() << " terms, of size " << n << "\n";
+#endif
     MasterEqTerms result;
     if (terms.size() == 0) return result;
+    else if(terms.size() == 1 && n == 1) return terms[0];
 
     const size_t cnt = terms.size();
     // in total terms.size() multiples + 0th term
+    // matrices
     vector<MatrixCxDbl> term_residuals;
     term_residuals.reserve(cnt);
-    // edcba, edcb, edc, ed, e
-    for(size_t i = 0; i < cnt; ++i){
-      for(size_t j = 0; j < term_residuals.size(); ++j){
-        term_residuals[j] = terms[i].E * term_residuals[j];
-      }
-      term_residuals.push_back(terms[i].E);
+    size_t idx = cnt - 1;
+    MatrixCxDbl temp_term = terms[idx].E;
+    term_residuals.push_back(temp_term);
+    while(idx != 0) {
+      temp_term *= terms[idx-1].E;
+      term_residuals.push_back(temp_term);
+      --idx;
     }
-    result.E = dnpsoup::pow(term_residuals[0], n);
+    result.E = dnpsoup::pow(temp_term, n);
     result.c1 = terms[0].c1;
+    result.c1prime = terms.back().c1prime.nelements() > 0 ? terms.back().c1prime : terms.back().c1;
 
     const size_t nrows = result.E.nrows();
     //----------
     //calculate c1prime
     //----------
-    // edcba, aedcb, baedc, cbaed, dcbae
-    vector<MatrixCxDbl> term_ratios;
-    term_ratios.reserve(cnt);
-    for(size_t i = 0; i < cnt; ++i) {
-      MatrixCxDbl temp = term_residuals[i];
-      for(size_t j = 0; j < i; ++j) {
-        temp = terms[i].E * temp;
-      }
-      term_ratios.push_back(temp);
+    vector<MatrixCxDbl> c_diffs;
+    c_diffs.reserve(cnt);
+    for(size_t i = cnt; i > 1; --i) {
+      const MatrixCxDbl &c_m = terms[i-1].c1;
+      const MatrixCxDbl &c_mn1prime = terms[i-2].c1prime.nelements() > 0 ? terms[i-2].c1prime : terms[i-2].c1;
+      c_diffs.push_back(c_mn1prime - c_m);
     }
+    for(size_t i = 0; i < c_diffs.size(); ++i){
+      result.c1prime += term_residuals[i] * c_diffs[i];
+    }
+    if (n == 1) return result;
     // geometric sequences
-    vector<MatrixCxDbl> geometric_seqs;
-    geometric_seqs.reserve(cnt);
 #ifndef NDEBUG
     auto handleStatus = [](int status) {
       if(status != 0){
@@ -196,53 +225,19 @@ namespace dnpsoup {
     };
 #endif
     //first one has n-1 terms
-    if (n == 1) {
-      geometric_seqs.push_back(zeros<cxdbl>(nrows, nrows));
-    } else {
       // c sum = y
       // c = (1 - r)
       // y = residual
       const MatrixCxDbl i0 = identity<cxdbl>(nrows);
-      MatrixCxDbl c = i0 - term_ratios[0];
-      MatrixCxDbl y = term_residuals[0] * (i0 - dnpsoup::pow(term_ratios[0], n-1));
+      const MatrixCxDbl c = i0 - temp_term;
+      const MatrixCxDbl c1_diff = result.c1prime - result.c1;
+      MatrixCxDbl y = temp_term * (i0 - dnpsoup::pow(temp_term, n-1)) * c1_diff;
 
       auto [sum, status] = matrix::lstsq(c, y);
 #ifndef NDEBUG
       handleStatus(status);
 #endif
-      geometric_seqs.push_back(sum);
-    }
-    // 1st has n-1 terms, the other have n terms
-    for(size_t i = 1; i < cnt; ++i){
-      const MatrixCxDbl i0 = identity<cxdbl>(nrows);
-      MatrixCxDbl c = i0 - term_ratios[i];
-      MatrixCxDbl y = term_residuals[i] * (i0 - dnpsoup::pow(term_ratios[i], n-1));
-
-      auto [sum, status] = matrix::lstsq(c, y);
-#ifndef NDEBUG
-      handleStatus(status);
-#endif
-      geometric_seqs.push_back(sum);
-    }
-
-    // dynamic equilibrium constants c1prime differences
-    vector<MatrixCxDbl> deq_diffs;
-    deq_diffs.reserve(cnt);
-    size_t idx1 = cnt - 1;
-    size_t idx2 = 0;
-    for(size_t i = 0; i < cnt; ++i){
-      const MasterEqTerms &term_l = terms[idx1];
-      const MasterEqTerms &term_r = terms[idx2];
-      const MatrixCxDbl& c_l = term_l.c1prime.nelements() == 0 ? term_l.c1 : term_l.c1prime;
-      const MatrixCxDbl& c_r = term_r.c1prime.nelements() == 0 ? term_r.c1 : term_r.c1prime;
-      deq_diffs.push_back(c_l - c_r);
-      idx1 = (idx1 + 1) % cnt;
-      idx2 = (idx2 + 1) % cnt;
-    }
-    result.c1prime = geometric_seqs[0] * deq_diffs[0];
-    for(size_t i = 1; i < cnt; ++i){
-      result.c1prime += geometric_seqs[i] * deq_diffs[i];
-    }
+      result.c1prime += sum;
 
     return result;
   }
@@ -278,6 +273,13 @@ namespace dnpsoup {
     for(const auto &ranked_s : ranked_sections) {
       result.push_back(ranked_s.first);
     }
+#ifndef NDEBUG
+    cout << "sections in calculation order: \n\t";
+    for(const auto &name: result) {
+      cout << name << " \t";
+    }
+    cout << endl;
+#endif
 
     return result;
   }
@@ -304,7 +306,6 @@ namespace dnpsoup {
     for(const string &name : sections_in_calc_order) {
       const SubSeqInterface *ptr_sec = ptr_sections->at(name).get();
       if(ptr_sec->isPure()){
-        
         auto [term, packets_temp] = genMasterEqTermsFromSingletonSeq(
               packets, rpackets, ham_offset, ptr_sec, ptr_components,
               irradiated, euler, temperature, inc);
@@ -316,11 +317,17 @@ namespace dnpsoup {
         for(const string &child : children) {
           const SubSeqInterface *ptr_child = ptr_sections->at(child).get();
           if(ptr_child->isPure()){
-            auto [term, packets_temp] = genMasterEqTermsFromSingletonSeq(
-                  packets, rpackets, ham_offset, ptr_child, ptr_components,
-                  irradiated, euler, temperature, inc);
-            packets = packets_temp;
-            child_terms.push_back(std::move(term));
+            auto found = std::find(sections_in_calc_order.begin(), sections_in_calc_order.end(), child); 
+            size_t idx = std::distance(sections_in_calc_order.begin(), found);
+            if(idx < term_per_section.size()) {
+              child_terms.push_back(term_per_section[idx]);
+            } else {
+              auto [term, packets_temp] = genMasterEqTermsFromSingletonSeq(
+                    packets, rpackets, ham_offset, ptr_child, ptr_components,
+                    irradiated, euler, temperature, inc);
+              packets = packets_temp;
+              child_terms.push_back(std::move(term));
+            }
           } else {
             auto found = std::find(sections_in_calc_order.begin(), sections_in_calc_order.end(), child); 
             size_t idx = std::distance(sections_in_calc_order.begin(), found);
@@ -332,6 +339,13 @@ namespace dnpsoup {
             child_terms.push_back(term_per_section[idx]);
           }
         }
+#ifndef NDEBUG
+        cout << "terms to combine: ";
+        for(const string &child : children) {
+          cout << child << " ";
+        }
+        cout << "\n";
+#endif
         MasterEqTerms term = combineMasterEqTerms(child_terms, ptr_sec->size());
         term_per_section.push_back(std::move(term));
       }
@@ -342,6 +356,13 @@ namespace dnpsoup {
       size_t idx = std::distance(sections_in_calc_order.begin(), found);
       finalTerms.push_back(term_per_section[idx]);
     }
+#ifndef NDEBUG
+        cout << "terms to combine: ";
+        for(const string &child : sections) {
+          cout << child << " ";
+        }
+        cout << "\n";
+#endif
     MasterEqTerms result = combineMasterEqTerms(finalTerms, 1);
     
     return make_tuple(result, packets);

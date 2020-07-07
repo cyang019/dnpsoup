@@ -30,6 +30,7 @@ namespace dnpsoup {
         double inc);
     ~MasterEqTerms() {}
   };
+  std::ostream& operator<<(std::ostream &os, const MasterEqTerms &);
 
   MasterEqTerms combineMasterEqTerms(const std::vector<MasterEqTerms> &terms, size_t n);
 
@@ -41,7 +42,11 @@ namespace dnpsoup {
 
   inline MatrixCxDbl evolve(const MatrixCxDbl &rho_super, const MasterEqTerms &m)
   {
-    return m.E * (rho_super - m.c1) + m.c1prime;
+    if (m.c1prime.nelements() > 0) {
+      return m.E * (rho_super - m.c1) + m.c1prime;
+    } else {
+      return m.E * (rho_super - m.c1) + m.c1;
+    }
   }
 
   std::tuple<MasterEqTerms, PacketCollection*>
