@@ -166,7 +166,7 @@ namespace DnpRunner {
         default_comp.insert_or_assign(t, pulseseq::EMRadiation());
       }
       double inc = seq.getIncrement();
-      inc = roundToCycle(inc, g.em_frequency);
+      //inc = roundToCycle(inc, g.em_frequency);
       uint64_t mas_inc_cnt = static_cast<uint64_t>(round(mas_inc/inc));
 
       packets.setPropertyValue(ValueName::b0, m.b0);

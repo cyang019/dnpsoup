@@ -195,7 +195,7 @@ namespace dnpsoup {
     MatrixCxDbl temp_term = terms[idx].E;
     term_residuals.push_back(temp_term);
     while(idx != 0) {
-      temp_term *= terms[idx-1].E;
+      temp_term = temp_term * terms[idx-1].E;
       term_residuals.push_back(temp_term);
       --idx;
     }
@@ -218,36 +218,12 @@ namespace dnpsoup {
       result.c1prime += term_residuals[i] * c_diffs[i];
     }
     if (n == 1) return result;
-    // geometric sequences
-#ifndef NDEBUG
-    auto handleStatus = [](int status) {
-      if(status != 0){
-        string err_msg = "lstsq error during combineMasterEqTerms(): ";
-        if(status < 0){
-          err_msg = "The " + std::to_string(-status) + "-th argument had an illegal value.";
-        } else {
-          err_msg = "The algorithm for computing the SVD failed to converge;\n";
-          err_msg += std::to_string(status) + "off-diagonal elements of an intermediate"
-            + "bidiagonal form did not converge to zero.";
-        }
-        throw CalculationError(err_msg);
-      }
-    };
-#endif
-    //first one has n-1 terms
-      // c sum = y
-      // c = (1 - r)
-      // y = residual
-      const MatrixCxDbl i0 = identity<cxdbl>(nrows);
-      const MatrixCxDbl c = i0 - temp_term;
-      const MatrixCxDbl c1_diff = result.c1prime - result.c1;
-      MatrixCxDbl y = temp_term * (i0 - dnpsoup::pow(temp_term, n-1)) * c1_diff;
-
-      auto [sum, status] = matrix::lstsq(c, y);
-#ifndef NDEBUG
-      handleStatus(status);
-#endif
-      result.c1prime += sum;
+    // result.E = temp_term^n
+    const MatrixCxDbl i0 = identity<cxdbl>(nrows);
+    const MatrixCxDbl c = i0 - temp_term;
+    const MatrixCxDbl c1_diff = result.c1prime - result.c1;
+    const MatrixCxDbl sum = ::matrix::geometricSum(temp_term, n-1) * c1_diff;
+    result.c1prime += sum;
 
     return result;
   }

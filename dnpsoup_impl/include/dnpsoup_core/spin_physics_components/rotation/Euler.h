@@ -28,6 +28,15 @@ namespace dnpsoup {
       Euler<T>& alpha(double a) { m_alpha = a; return *this; }
       Euler<T>& beta(double b) { m_beta = b; return *this; }
       Euler<T>& gamma(double g) { m_gamma = g; return *this; }
+      bool equals(
+          const Euler<T> &rhs,
+          double eps=std::numeric_limits<double>::epsilon()) const
+      {
+        const bool same_a = (m_alpha - rhs.alpha()) > -eps && (m_alpha - rhs.alpha()) < eps;
+        const bool same_b = (m_beta - rhs.beta()) > -eps && (m_beta - rhs.beta()) < eps;
+        const bool same_g = (m_gamma - rhs.gamma()) > -eps && (m_alpha - rhs.gamma()) < eps;
+        return same_a && same_b && same_g;
+      }
   private:
       double m_alpha;
       double m_beta;
