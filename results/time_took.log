@@ -46,7 +46,11 @@ eH_TOPDNP_xband_4MHz_loop2000_oct55_em_fp.json
 1290.536 seconds
 
 eH_TOPDNP_xband_4MHz_loop4000_oct55_em_fp.json
-2556.376 seconds
+//2556.376 seconds
+10.916 seconds
+
+eH_TOPDNP_xband_4MHz_loop4000_oct233_em_fp.json
+45.242 seconds
 
 eH_TOPDNP_800MHz_50MHz_train100_loop10_oct34_em_fp.result
 359.11 seconds
