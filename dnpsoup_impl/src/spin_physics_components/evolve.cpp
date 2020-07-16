@@ -255,7 +255,7 @@ namespace dnpsoup {
     
     std::vector<std::pair<double, double>> results;
     while(cnt > 0){
-      auto temp_euler = spin_sys_euler * mas_angle;
+      auto temp_euler = mas_angle * spin_sys_euler;
       if(cnt >= mas_inc_cnt){
         if(rotor_cnt < total_rotor_cnt) { // need to save to cache
           auto ham = packets.genMatrix(temp_euler);

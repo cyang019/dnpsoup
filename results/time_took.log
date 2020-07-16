@@ -1,25 +1,19 @@
+# Cross Effect
+results/v2/CW_CrossEffect/TOTAPOL_400MHz_fp_hemi89.result 
+3627.826 seconds
+
 # NOVEL
-# zcw34
-e_g_BDPA_1ms_5us_H_3s_1ms_NOVEL_xband_scan1d_loop.json
-147.177 seconds
+e_g_BDPA_300us_5us_H_3s_200us_NOVEL_xband_field_fp.json
+4.41 seconds
 
-e_g_BDPA_1ms_5us_H_3s_1ms_NOVEL_xband_scan1d_gammaB1.json
-161.854 seconds
+eH_NOVEL_xband_loop6k_fp.result
+33.78 seconds
 
-e_g_BDPA_1ms_5us_H_3s_1ms_NOVEL_xband_scan1d_p-mix.json
-417.96 seconds
+eH_NOVEL_xband_loop7k_fp.result
+31.702 seconds
 
-e_g_BDPA_300us_5us_H_3s_200us_NOVEL_xband_scan1d_loop.json
-57.127 seconds
-
-e_g_BDPA_300us_5us_H_3s_200us_NOVEL_xband_scan1d_pmix.json
-1342.714 seconds
-
-e_g_BDPA_300us_5us_H_3s_200us_NOVEL_xband_scan1d_d.json
-1221.74 seconds
-
-e_g_BDPA_300us_5us_H_3s_200us_NOVEL_xband_scan1d_gammaB1.json
-236.628 seconds
+eH_NOVEL_xband_loop100k_fp.result
+38.51 seconds
 
 # TOP-DNP
 eHH_TOPDNP_xband_4MHz_em_fp.json
@@ -67,6 +61,7 @@ eHH_TOPDNP_800MHz_50MHz_train8192_loop262145_hemi89_em_fp.result
 eHH oct233 trityl em fp
 21212.0 seconds
 
+# ISE SSE
 eH_gtensor_trityl_a0b40g0_wband_loop4k_chirp_300MHz_oct89_em_fp_step0p01.result
 10920.653 seconds
 

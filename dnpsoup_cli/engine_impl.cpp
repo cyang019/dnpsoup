@@ -67,6 +67,10 @@ void dnpsoup_exec_internal(
 				euler.gamma(j["euler"]["gamma"].get<double>());
 			}
 			cout << "Euler angle loaded..." << endl;
+      constexpr double PI = 3.1415927;
+      cout << "alpha: " << euler.alpha() * 180.0 / PI << "\n";
+      cout << "beta: " << euler.beta() * 180.0 / PI << "\n";
+      cout << "gamma: " << euler.gamma() * 180.0 / PI << "\n";
 		}
 
 		auto result = DnpRunner::calcEigenValues(magnet, gyrotron, probe,

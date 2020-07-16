@@ -103,8 +103,9 @@ namespace DnpRunner {
 //                << " g: " << mas_angle.gamma() << endl;
 // #endif
 
-          MatrixCxDbl hamiltonian = packets.genMatrix(spin_sys_euler * mas_angle);
-          MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(spin_sys_euler * mas_angle);
+          const auto temp_angle = mas_angle * spin_sys_euler;
+          MatrixCxDbl hamiltonian = packets.genMatrix(temp_angle);
+          MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(temp_angle);
           //auto eigen_values = ::dnpsoup::eigenVal(hamiltonian);
           auto eigen_values = ::dnpsoup::eigenVal(hamiltonian + hamiltonian_offset);
           vector<double> eigen_values_temp;
