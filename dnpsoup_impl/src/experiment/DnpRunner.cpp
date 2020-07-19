@@ -168,7 +168,7 @@ namespace DnpRunner {
       }
       double inc = seq.getIncrement();
       //inc = roundToCycle(inc, g.em_frequency);
-      uint64_t mas_inc_cnt = static_cast<uint64_t>(round(mas_inc/inc));
+      // uint64_t mas_inc_cnt = static_cast<uint64_t>(round(mas_inc/inc));
 
       packets.setPropertyValue(ValueName::b0, m.b0);
       offset_packets.setPropertyValue(ValueName::b0, m.b0);
@@ -192,7 +192,7 @@ namespace DnpRunner {
 //      std::cout << "mas_inc_cnt: " << mas_inc_cnt << "\n";
 //#endif
 
-      const auto angle = spin_sys_euler * mas_angle;
+      const auto angle = mas_angle * spin_sys_euler;
       MatrixCxDbl hamiltonian = packets.genMatrix(angle);
       MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(angle);
       const auto hamiltonian_lab = hamiltonian + hamiltonian_offset;
@@ -231,13 +231,18 @@ namespace DnpRunner {
           // update with new value
           packets.updatePulseSeqComponent(comp);
 
+          MasterEqTerms terms = genMasterEqTermsMAS(&packets, rpackets,
+              hamiltonian_offset, g, spin_sys_euler, mas_angle, comp_size,
+              p.temperature, p.mas_frequency, inc, mas_inc); 
+          rho0_evolve_super = evolve(rho0_evolve_super, terms);
+
           /// EvolutionCache is used per comp
-          rho0_evolve_super = evolveMASCnstEmr(
-              rho0_evolve_super, 
-              p.mas_frequency, comp, 
-              packets, rpackets, hamiltonian_offset,
-              spin_sys_euler, mas_angle, g,
-              inc, comp_size, mas_inc_cnt, total_rotor_cnt, p.temperature);
+          // rho0_evolve_super = evolveMASCnstEmr(
+          //     rho0_evolve_super, 
+          //     p.mas_frequency, comp, 
+          //     packets, rpackets, hamiltonian_offset,
+          //     spin_sys_euler, mas_angle, g,
+          //     inc, comp_size, mas_inc_cnt, total_rotor_cnt, p.temperature);
           t += inc * static_cast<double>(comp_size);
           mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
         }
@@ -438,10 +443,13 @@ namespace DnpRunner {
       auto offset_packets = spin_sys.summarizeOffset<DnpExperiment>();
       auto rpackets = spin_sys.summarizeRelaxation();
       auto acq_mat = spin_sys.acquireOn(acq_spin);
+      auto acq_mat_super = ::dnpsoup::flatten(acq_mat, 'c');
       double mas_inc = p.mas_increment;
+
       double rotor_period = 0.0;
       uint64_t total_rotor_cnt = 0u;
-      if(p.mas_frequency > eps){
+      const bool has_mas = (p.mas_frequency > eps);
+      if(has_mas) {
         rotor_period = 1.0 / p.mas_frequency;
         if(p.mas_increment > eps){
           total_rotor_cnt = static_cast<uint64_t>(
@@ -468,10 +476,12 @@ namespace DnpRunner {
         default_comp.insert_or_assign(t, pulseseq::EMRadiation());
       }
       double inc = seq.getIncrement();
-      inc = roundToCycle(inc, g.em_frequency);
+      //inc = roundToCycle(inc, g.em_frequency);
+#ifndef NDEBUG
       if(mas_inc < inc - eps) {
         throw InputError("For BuildUp, MAS increment is needed. (>= inc of a pulse sequence)");
       }
+#endif
       uint64_t mas_inc_cnt = static_cast<uint64_t>(round(mas_inc/inc));
 
       packets.setPropertyValue(ValueName::b0, m.b0);
@@ -485,7 +495,7 @@ namespace DnpRunner {
       }
 
       unique_ptr<EvolutionCacheStatic> uptr_cache = nullptr;
-      if (p.mas_frequency < eps) {
+      if (!has_mas) {
 #ifndef NDEBUG
         cout << "EvolutionCacheStatic capacity: " << seq.uniqueEmrsCount() << endl;
 #endif
@@ -493,18 +503,20 @@ namespace DnpRunner {
             seq.uniqueEmrsCount());
       }
 
-      MatrixCxDbl hamiltonian = packets.genMatrix(spin_sys_euler * mas_angle);
-      MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(spin_sys_euler * mas_angle);
+      const auto temp_angle = mas_angle * spin_sys_euler;
+      MatrixCxDbl hamiltonian = packets.genMatrix(temp_angle);
+      MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(temp_angle);
       auto hamiltonian_lab = hamiltonian + hamiltonian_offset;
       MatrixCxDbl rho0_lab = genRhoEq(hamiltonian_lab, p.temperature);
-      double val = ::dnpsoup::projectionNorm(rho0_lab, acq_mat).real();
+
+      auto rho0_evolve = rho0_lab;
+      auto rho0_evolve_super = ::dnpsoup::flatten(rho0_evolve, 'c');
+      double val = ::dnpsoup::projectionNorm(rho0_evolve_super, acq_mat_super).real();
+
       constexpr double result_ref = 1.0;  ///< intensity, not enhancement
       vector<pair<double, double>> results;
       results.push_back(make_pair(0.0, val));
 
-      auto rho0_evolve = rho0_lab;
-      auto rho0_evolve_super = ::dnpsoup::flatten(rho0_evolve, 'c');
-      auto acq_mat_super = ::dnpsoup::flatten(acq_mat, 'c');
       std::uint64_t comp_size = 0u;
       uint64_t idx = 0;
       pulseseq::Component comp;
@@ -523,7 +535,7 @@ namespace DnpRunner {
         packets.updatePulseSeqComponent(default_comp);
         packets.updatePulseSeqComponent(comp);
 
-        if(p.mas_frequency > eps || comp_size < mas_inc_cnt) { 
+        if(has_mas) {   ///< mas
 #ifdef DNPSOUP_VERBOSE
           cout << "call evolveMASCnstEmr()..." << "\n";
 #endif
@@ -542,13 +554,13 @@ namespace DnpRunner {
           std::copy(temp_results.begin(), temp_results.end(), 
               std::back_inserter(results));
         }
-        else {    ///< static and comp_size > mas_inc_cnt
+        else {    ///< static
 #ifdef DNPSOUP_VERBOSE
           cout << "static evolve..." << "\n";
 #endif
           auto [rotate_mat_super, rotate_mat_super_inv] = calcRotationSuperOps(
               hamiltonian_offset, g, inc, mas_inc_cnt);
-          const auto temp_euler = spin_sys_euler * mas_angle;
+          const auto temp_euler = mas_angle * spin_sys_euler;
           auto [cache_idx, has_super_op_section] 
             = uptr_cache->getCacheIdentity(comp, mas_inc_cnt);
           MatrixCxDbl h_super, gamma_super_internal, rho_eq_super;
@@ -597,7 +609,7 @@ namespace DnpRunner {
                 rho0_evolve_super, acq_mat_super).real();
             results.push_back(make_pair(t, val));
             comp_size -= mas_inc_cnt;
-          }
+          } // while
           if(comp_size > 0){
             std::tie(rotate_mat_super, rotate_mat_super_inv) = calcRotationSuperOps(
                 hamiltonian_offset, g, inc, comp_size);

@@ -33,9 +33,11 @@ namespace dnpsoup {
       const Property &g,
       const Euler<ActiveRotation> &e) const
   {
-    const double gzz = g.get(ValueName::zz);
+    // =======================================
     const double gxx = g.get(ValueName::xx);
     const double gyy = g.get(ValueName::yy);
+    const double gzz = g.get(ValueName::zz);
+    // =======================================
     const double b0 = g.get(ValueName::b0);
     const double offset = g.get(ValueName::offset);
 
@@ -66,9 +68,11 @@ namespace dnpsoup {
       const Property &g,
       const Euler<PassiveRotation> &e) const
   {
-    const double gzz = g.get(ValueName::zz);
+    // =======================================
     const double gxx = g.get(ValueName::xx);
     const double gyy = g.get(ValueName::yy);
+    const double gzz = g.get(ValueName::zz);
+    // =======================================
     const double b0 = g.get(ValueName::b0);
     const double offset = g.get(ValueName::offset);
 

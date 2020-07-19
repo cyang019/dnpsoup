@@ -9,6 +9,7 @@
 #include <utility>
 #include <iostream>
 #include <algorithm>
+#include <cmath>
 
 using namespace std;
 
@@ -183,7 +184,7 @@ namespace dnpsoup {
     cout << "combineMasterEqTerms " << terms.size() << " terms, of size " << n << "\n";
 #endif
     MasterEqTerms result;
-    if (terms.size() == 0) return result;
+    if (terms.size() == 0 || n == 0) return result;
     else if(terms.size() == 1 && n == 1) return terms[0];
 
     const size_t cnt = terms.size();
@@ -353,5 +354,71 @@ namespace dnpsoup {
     MasterEqTerms result = combineMasterEqTerms(finalTerms, 1);
     
     return make_tuple(result, packets);
+  }
+
+  MasterEqTerms genMasterEqTermsMAS(
+    PacketCollection *packets,
+    const std::vector<RelaxationPacket> &rpackets,
+    const MatrixCxDbl &ham_offset,
+    const Gyrotron &g,  // em freq
+    const Euler<> &sample_euler,
+    const Euler<> &magic_angle,
+    const size_t comp_size,
+    double temperature,
+    double mas_freq,
+    double inc,
+    double mas_inc
+  )
+  {
+    const size_t step_size = static_cast<size_t>(std::round(mas_inc/inc));
+    size_t cnt_in_one_cycle = 
+      static_cast<size_t>(std::round(1.0/(mas_freq * mas_inc)));
+    cnt_in_one_cycle = (cnt_in_one_cycle == 0u) + cnt_in_one_cycle;
+    const size_t cnt_part = comp_size % cnt_in_one_cycle;
+    const size_t n_rotor_period = comp_size / cnt_in_one_cycle;
+
+    std::vector<MasterEqTerms> terms;
+    auto calcTerms = [&](const Euler<> &euler){
+      const MatrixCxDbl ham = packets->genMatrix(euler);
+      const MatrixCxDbl ham_lab = ham + ham_offset;
+      auto [rotate_mat_super, rotate_mat_super_inv] = calcRotationSuperOps(
+          ham_offset, g, inc, step_size);
+      auto [h_super, gamma_super, rho_eq_super] = 
+        calcSuperOpsForMasterEq(ham, ham_lab,
+            rotate_mat_super, rotate_mat_super_inv,
+            rpackets, temperature);
+      const auto l_super = calcLambdaSuper(h_super, gamma_super);
+      MatrixCxDbl exp_term = calcExpEvolve(l_super, inc, step_size);
+      return MasterEqTerms(std::move(exp_term), std::move(rho_eq_super));
+    };
+
+    const size_t n_terms = 
+      (comp_size < cnt_in_one_cycle) * comp_size + (comp_size >= cnt_in_one_cycle) * cnt_in_one_cycle;
+    terms.reserve(n_terms);
+    MasterEqTerms last_term;
+    constexpr double TwoPi = 2.0 * dnpsoup::pi;
+    Euler<> temp_magic_angle = magic_angle;
+    for(size_t idx = 0; idx < n_terms; ++idx) {
+      if(idx == cnt_part) { // if cnt_part == comp_size, this condition will never trigger
+        last_term = combineMasterEqTerms(terms, 1);
+      }
+      const auto euler = temp_magic_angle * sample_euler;
+      terms.push_back(calcTerms(euler));
+      const double angle_diff = TwoPi * inc * static_cast<double>(step_size * (idx + 1)) * mas_freq;
+      const double temp_gamma = magic_angle.gamma() + angle_diff;
+      temp_magic_angle.gamma(temp_gamma);
+    }
+
+    if(n_rotor_period == 0) {
+      return combineMasterEqTerms(terms, 1);
+    } else if(cnt_part == 0) {
+      return combineMasterEqTerms(terms, n_rotor_period);
+    } else {
+      MasterEqTerms first_term = combineMasterEqTerms(terms, n_rotor_period);
+      vector<MasterEqTerms> final_terms;
+      final_terms.push_back(std::move(first_term));
+      final_terms.push_back(std::move(last_term));
+      return combineMasterEqTerms(final_terms, 1);
+    }
   }
 } // namespace dnpsoup

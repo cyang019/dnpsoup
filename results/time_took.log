@@ -1,6 +1,23 @@
 # Cross Effect
-results/v2/CW_CrossEffect/TOTAPOL_400MHz_fp_hemi89.result 
-3627.826 seconds
+.Total time: 1.368 seconds.
+input: examples/CW_CrossEffect/TOTAPOL_400MHz_buildup_xtal_9p393T_inc1us.json
+output: results/v2/CW_CrossEffect/TOTAPOL_400MHz_buildup_xtal_9p393T_inc1us.result4
+
+.Total time: 13.139 seconds.
+input: examples/CW_CrossEffect/TOTAPOL_400MHz_buildup_xtal_9p393T_inc100ns.json
+output: results/v2/CW_CrossEffect/TOTAPOL_400MHz_buildup_xtal_9p393T_inc100ns.result4
+
+.Total time: 127.610 seconds.
+input: examples/CW_CrossEffect/TOTAPOL_400MHz_buildup_xtal_9p393T_inc10ns.json
+output: results/v2/CW_CrossEffect/TOTAPOL_400MHz_buildup_xtal_9p393T_inc10ns.result4
+
+.Total time: 3715.961 seconds.
+input: examples/CW_CrossEffect/TOTAPOL_400MHz_buildup_xtal_9p393T_inc1ns.json
+output: results/v2/CW_CrossEffect/TOTAPOL_400MHz_buildup_xtal_9p393T_inc1ns.result4
+
+Total time: 3353.32 seconds.
+input: examples/CW_CrossEffect/TOTAPOL_400MHz_buildup_hemi34_9p393T_inc10ns.json
+output: results/v2/CW_CrossEffect/TOTAPOL_400MHz_buildup_hemi34_9p393T_inc10ns.result4
 
 # NOVEL
 e_g_BDPA_300us_5us_H_3s_200us_NOVEL_xband_field_fp.json

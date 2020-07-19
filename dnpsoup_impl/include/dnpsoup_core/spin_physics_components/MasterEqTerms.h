@@ -27,8 +27,10 @@ namespace dnpsoup {
     MasterEqTerms(MasterEqTerms &&) noexcept;
     MasterEqTerms& operator=(const MasterEqTerms &);
     MasterEqTerms& operator=(MasterEqTerms &&) noexcept;
-    MasterEqTerms(
-        double inc);
+    MasterEqTerms(MatrixCxDbl &&exp_term, MatrixCxDbl &&c1)
+      : E(std::move(exp_term)), c1(std::move(c1)) {}
+    MasterEqTerms(MatrixCxDbl &&exp_term, MatrixCxDbl &&c1, MatrixCxDbl &&c1prime)
+      : E(std::move(exp_term)), c1(std::move(c1)), c1prime(std::move(c1prime)) {}
     ~MasterEqTerms() {}
   };
   std::ostream& operator<<(std::ostream &os, const MasterEqTerms &);
@@ -75,6 +77,20 @@ namespace dnpsoup {
     const Euler<> &euler,
     double temperature,
     double inc
+  );
+
+  MasterEqTerms genMasterEqTermsMAS(
+    PacketCollection *packets,
+    const std::vector<RelaxationPacket> &rpackets,
+    const MatrixCxDbl &ham_offset,
+    const Gyrotron &g,  // em freq
+    const Euler<> &sample_euler,
+    const Euler<> &magic_angle,
+    const size_t comp_size,
+    double temperature,
+    double mas_freq,
+    double inc,
+    double mas_inc
   );
 }
 
