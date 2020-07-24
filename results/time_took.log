@@ -19,6 +19,10 @@ Total time: 3353.32 seconds.
 input: examples/CW_CrossEffect/TOTAPOL_400MHz_buildup_hemi34_9p393T_inc10ns.json
 output: results/v2/CW_CrossEffect/TOTAPOL_400MHz_buildup_hemi34_9p393T_inc10ns.result4
 
+Total time: 70177.253 seconds.
+input: examples/CW_CrossEffect/TOTAPOL_400MHz_fp_hemi34_9p393T_inc10ns.json
+output: results/v2/CW_CrossEffect/TOTAPOL_400MHz_fp_hemi34_9p393T_inc10ns.result8
+
 # NOVEL
 e_g_BDPA_300us_5us_H_3s_200us_NOVEL_xband_field_fp.json
 4.41 seconds

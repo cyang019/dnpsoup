@@ -168,7 +168,6 @@ namespace DnpRunner {
       }
       double inc = seq.getIncrement();
       //inc = roundToCycle(inc, g.em_frequency);
-      // uint64_t mas_inc_cnt = static_cast<uint64_t>(round(mas_inc/inc));
 
       packets.setPropertyValue(ValueName::b0, m.b0);
       offset_packets.setPropertyValue(ValueName::b0, m.b0);
@@ -232,17 +231,19 @@ namespace DnpRunner {
           packets.updatePulseSeqComponent(comp);
 
           MasterEqTerms terms = genMasterEqTermsMAS(&packets, rpackets,
-              hamiltonian_offset, g, spin_sys_euler, mas_angle, comp_size,
+              hamiltonian_offset, //g, 
+              spin_sys_euler, mas_angle, comp_size,
               p.temperature, p.mas_frequency, inc, mas_inc); 
           rho0_evolve_super = evolve(rho0_evolve_super, terms);
 
-          /// EvolutionCache is used per comp
-          // rho0_evolve_super = evolveMASCnstEmr(
-          //     rho0_evolve_super, 
-          //     p.mas_frequency, comp, 
-          //     packets, rpackets, hamiltonian_offset,
-          //     spin_sys_euler, mas_angle, g,
-          //     inc, comp_size, mas_inc_cnt, total_rotor_cnt, p.temperature);
+          //uint64_t mas_inc_cnt = static_cast<uint64_t>(round(mas_inc/inc));
+          // EvolutionCache is used per comp
+          //rho0_evolve_super = evolveMASCnstEmr(
+          //    rho0_evolve_super, 
+          //    p.mas_frequency, comp, 
+          //    packets, rpackets, hamiltonian_offset,
+          //    spin_sys_euler, mas_angle,// g,
+          //    inc, comp_size, mas_inc_cnt, total_rotor_cnt, p.temperature);
           t += inc * static_cast<double>(comp_size);
           mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
         }
@@ -546,7 +547,7 @@ namespace DnpRunner {
                 rho0_evolve_super, acq_mat_super, t, result_ref,
                 p.mas_frequency, comp, 
                 packets, rpackets, hamiltonian_offset,
-                spin_sys_euler, mas_angle, g, 
+                spin_sys_euler, mas_angle,// g, 
                 inc, comp_size, 
                 mas_inc_cnt, total_rotor_cnt, p.temperature);
           t += static_cast<double>(comp_size) * inc;
@@ -678,6 +679,7 @@ namespace DnpRunner {
                   field, g, p, spin_sys, PulseSequence(), acq_spin, euler);
             auto intensity = 
               calcIntensity(field, g, p, spin_sys, seq, acq_spin, euler);
+            std::cout << "." << std::flush;
             return make_pair(field.b0, intensity/ref);
           };
           tpool.add_task(std::move(task));

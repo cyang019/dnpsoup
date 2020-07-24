@@ -41,6 +41,11 @@ namespace dnpsoup {
   
   //acos(1.0/sqrt(3.0));  ///< in Rad
   constexpr double magic_angle = 0.9553166181245092;  ///< in Radius
+
+  // mas ratio to recalc relaxation super operator:
+  constexpr double MAS_L_RATIO = 0.01;
+  constexpr size_t MAS_CACHE_SIZE = 64;
+  constexpr double GAMMA_STEP_MIN = 1e-7;   ///< 0.1 us
 } // namespace dnpsoup
 
 #endif

@@ -4,6 +4,7 @@
 #include "dnpsoup_core/errors.h"
 #include "dnpsoup_core/spinsys/RelaxationPacket.h"
 #include "dnpsoup_core/common.h"
+#include "dnpsoup_core/constants.h"
 #include <complex>
 
 using namespace std;
@@ -153,7 +154,7 @@ namespace dnpsoup {
       const MatrixCxDbl ham_offset,
       const Euler<> &spin_sys_euler,
       Euler<> mas_angle,
-      const Gyrotron &g,
+      //const Gyrotron &g,
       double inc, 
       std::uint64_t cnt,
       std::uint64_t mas_inc_cnt,
@@ -162,13 +163,17 @@ namespace dnpsoup {
   {
     /// 2d cache
     auto cache = EvolutionCache(total_rotor_cnt, 1);
-    auto [rotate_mat_super, rotate_mat_super_inv] = 
-      calcRotationSuperOps(ham_offset, g, inc, mas_inc_cnt);
+    //auto [rotate_mat_super, rotate_mat_super_inv] = 
+    //  calcRotationSuperOps(ham_offset, g, inc, mas_inc_cnt);
+    const double mas_inc = inc * static_cast<double>(mas_inc_cnt);
     
     double t = 0.0;
     uint64_t rotor_cnt = 0u;
 
     MatrixCxDbl rho_evolve_super = rho_prev_super;
+    size_t gamma_step_size = static_cast<size_t>(std::round(GAMMA_STEP_MIN/mas_inc));
+    gamma_step_size += (gamma_step_size == 0);
+    MatrixCxDbl gamma_super;
     
     while(cnt > 0){
       auto temp_euler = mas_angle * spin_sys_euler;
@@ -176,14 +181,25 @@ namespace dnpsoup {
         if(rotor_cnt < total_rotor_cnt) { // need to save to cache
           auto ham = packets.genMatrix(temp_euler);
           auto ham_lab = ham + ham_offset;
-          auto [h_super, gamma_super_internal, rho_eq_super] =
-            calcSuperOpsForMasterEq(ham, ham_lab, 
-                rotate_mat_super, rotate_mat_super_inv, 
-                rpackets, temperature);
-          auto super_op = calcLambdaSuper(h_super, gamma_super_internal);
+          auto rho_ss = genRhoEq(ham_lab, temperature);
+          auto rho_ss_super = ::dnpsoup::flatten(rho_ss, 'c');
+          //if(rotate_mat_super.nrows() != 0 && rotate_mat_super_inv.nrows() != 0){
+          //  rho_ss_super = rotate_mat_super * rho_ss_super;
+          //}
+          if(rotor_cnt % gamma_step_size == 0) {
+            gamma_super = calcGammaSuper(rho_ss, rpackets);
+            //if (rotate_mat_super.nrows() != 0 && rotate_mat_super_inv.nrows() != 0) {
+            //  gamma_super = rotate_mat_super * gamma_super * rotate_mat_super_inv;
+            //}
+          }
+          auto h_super = commutationSuperOp(ham);
+          //auto super_op = complex<double>(0,1.0) * h_super + gamma_super_int;
+          auto super_op = calcLambdaSuper(h_super, gamma_super);
+          auto rho_eq_super = calcRhoDynamicEq(h_super, gamma_super, rho_ss_super);
           auto scaling_factor = calcExpEvolve(super_op, inc, mas_inc_cnt);
-          rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, 
-              scaling_factor, rotate_mat_super, rotate_mat_super_inv);
+          //rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, 
+          //    scaling_factor, rotate_mat_super, rotate_mat_super_inv);
+          rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, scaling_factor);
           cache.saveCache(
               comp, 
               EvolutionCacheElement(
@@ -192,9 +208,10 @@ namespace dnpsoup {
         else{ // retrieve from cache
           const auto idx = rotor_cnt % total_rotor_cnt;
           auto cache_elem = cache.getCache(0, idx);
-          rho_evolve_super = evolve(rho_evolve_super, 
-              cache_elem.rho_inf_eq, cache_elem.scaling_factor,
-              rotate_mat_super, rotate_mat_super_inv);
+          rho_evolve_super = evolve(rho_evolve_super, cache_elem.rho_inf_eq, cache_elem.scaling_factor);
+          //rho_evolve_super = evolve(rho_evolve_super, 
+          //    cache_elem.rho_inf_eq, cache_elem.scaling_factor,
+          //    rotate_mat_super, rotate_mat_super_inv);
         }
         
         ++rotor_cnt;
@@ -204,20 +221,21 @@ namespace dnpsoup {
         mas_angle.gamma(t * mas_frequency * 2.0 * pi);
       }
       else {    
-        /// if pulse length is less than an integer multiple of rotor period.
-        auto [rotate_mat_super, rotate_at_super_inv] = 
-          calcRotationSuperOps(ham_offset, g, inc, cnt);
+        /// if pulse length is less than an integer multiple of rotor step size.
+        //auto [rotate_mat_super, rotate_at_super_inv] = 
+        //  calcRotationSuperOps(ham_offset, g, inc, cnt);
 
         auto ham = packets.genMatrix(temp_euler);
         auto ham_lab = ham + ham_offset;
         auto [h_super, gamma_super_internal, rho_eq_super] =
           calcSuperOpsForMasterEq(ham, ham_lab, 
-              rotate_mat_super, rotate_mat_super_inv, 
+              //rotate_mat_super, rotate_mat_super_inv, 
               rpackets, temperature);
         auto super_op = calcLambdaSuper(h_super, gamma_super_internal);
         auto scaling_factor = calcExpEvolve(super_op, inc, cnt);
-        rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, 
-            scaling_factor, rotate_mat_super, rotate_mat_super_inv);
+        //rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, 
+        //    scaling_factor, rotate_mat_super, rotate_mat_super_inv);
+        rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, scaling_factor);
         cnt = 0;
       }
     }
@@ -237,21 +255,25 @@ namespace dnpsoup {
       const MatrixCxDbl ham_offset,
       const Euler<> &spin_sys_euler,
       Euler<> mas_angle,
-      const Gyrotron &g,
+      //const Gyrotron &g,
       double inc, 
-      std::uint64_t cnt,
+      std::uint64_t cnt,    ///< comp size
       std::uint64_t mas_inc_cnt,
-      std::uint64_t total_rotor_cnt,
+      std::uint64_t total_rotor_cnt,  ///< # of steps per rotor period
       double temperature)
   {
     auto cache = EvolutionCache(total_rotor_cnt, 1);
-    auto [rotate_mat_super, rotate_mat_super_inv] = 
-      calcRotationSuperOps(ham_offset, g, inc, mas_inc_cnt);
+    // auto [rotate_mat_super, rotate_mat_super_inv] = 
+    //   calcRotationSuperOps(ham_offset, g, inc, mas_inc_cnt);
     
     double t = 0.0;
     uint64_t rotor_cnt = 0u;
+    const double mas_inc = inc * static_cast<double>(mas_inc_cnt);
 
     MatrixCxDbl rho_evolve_super = rho_prev_super;
+    size_t gamma_step_size = static_cast<size_t>(std::round(GAMMA_STEP_MIN/mas_inc));
+    gamma_step_size += (gamma_step_size == 0);
+    MatrixCxDbl gamma_super;
     
     std::vector<std::pair<double, double>> results;
     while(cnt > 0){
@@ -260,14 +282,24 @@ namespace dnpsoup {
         if(rotor_cnt < total_rotor_cnt) { // need to save to cache
           auto ham = packets.genMatrix(temp_euler);
           auto ham_lab = ham + ham_offset;
-          auto [h_super, gamma_super_internal, rho_eq_super] =
-            calcSuperOpsForMasterEq(ham, ham_lab, 
-                rotate_mat_super, rotate_mat_super_inv, 
-                rpackets, temperature);
-          auto super_op = calcLambdaSuper(h_super, gamma_super_internal);
+          auto rho_ss = genRhoEq(ham_lab, temperature);
+          auto rho_ss_super = ::dnpsoup::flatten(rho_ss, 'c');
+          //if(rotate_mat_super.nrows() != 0 && rotate_mat_super_inv.nrows() != 0){
+          //  rho_ss_super = rotate_mat_super * rho_ss_super;
+          //}
+          if(rotor_cnt % gamma_step_size == 0) {
+            gamma_super = calcGammaSuper(rho_ss, rpackets);
+            //if (rotate_mat_super.nrows() != 0 && rotate_mat_super_inv.nrows() != 0) {
+            //  gamma_super = rotate_mat_super * gamma_super * rotate_mat_super_inv;
+            //}
+          }
+          auto h_super = commutationSuperOp(ham);
+          auto super_op = calcLambdaSuper(h_super, gamma_super);
+          auto rho_eq_super = calcRhoDynamicEq(h_super, gamma_super, rho_ss_super);
           auto scaling_factor = calcExpEvolve(super_op, inc, mas_inc_cnt);
-          rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, 
-              scaling_factor, rotate_mat_super, rotate_mat_super_inv);
+          //rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, 
+          //    scaling_factor, rotate_mat_super, rotate_mat_super_inv);
+          rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, scaling_factor);
           cache.saveCache(comp, 
               EvolutionCacheElement(
                 std::move(scaling_factor), std::move(rho_eq_super))); 
@@ -278,9 +310,11 @@ namespace dnpsoup {
         else{ // retrieve from cache
           const auto idx = rotor_cnt % total_rotor_cnt;
           auto cache_elem = cache.getCache(0, idx);
+          //rho_evolve_super = evolve(rho_evolve_super, 
+          //    cache_elem.rho_inf_eq, cache_elem.scaling_factor,
+          //    rotate_mat_super, rotate_mat_super_inv);
           rho_evolve_super = evolve(rho_evolve_super, 
-              cache_elem.rho_inf_eq, cache_elem.scaling_factor,
-              rotate_mat_super, rotate_mat_super_inv);
+              cache_elem.rho_inf_eq, cache_elem.scaling_factor);
           double result = ::dnpsoup::projectionNorm(
               rho_evolve_super, acq_mat_super).real();
           results.push_back(make_pair(t0 + t, result/result_ref));
@@ -292,20 +326,21 @@ namespace dnpsoup {
 
         mas_angle.gamma(t * mas_frequency * 2.0 * pi);
       }
-      else {    /// if pulse length is not a integer multiple of rotor period.
-        auto [rotate_mat_super, rotate_at_super_inv] = 
-          calcRotationSuperOps(ham_offset, g, inc, cnt);
+      else {    /// if pulse length is not a integer multiple of rotor period step size.
+        //auto [rotate_mat_super, rotate_at_super_inv] = 
+        //  calcRotationSuperOps(ham_offset, g, inc, cnt);
 
         auto ham = packets.genMatrix(temp_euler);
         auto ham_lab = ham + ham_offset;
         auto [h_super, gamma_super_internal, rho_eq_super] =
           calcSuperOpsForMasterEq(ham, ham_lab, 
-              rotate_mat_super, rotate_mat_super_inv, 
+              //rotate_mat_super, rotate_mat_super_inv, 
               rpackets, temperature);
         auto super_op = calcLambdaSuper(h_super, gamma_super_internal);
         auto scaling_factor = calcExpEvolve(super_op, inc, cnt);
-        rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, 
-            scaling_factor, rotate_mat_super, rotate_mat_super_inv);
+        //rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, 
+        //    scaling_factor, rotate_mat_super, rotate_mat_super_inv);
+        rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, scaling_factor);
         cnt = 0;
         double result = ::dnpsoup::projectionNorm(
             rho_evolve_super, acq_mat_super).real();

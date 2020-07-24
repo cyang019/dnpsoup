@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+#FILENAME=eH_NOVEL_xband_loop10_mas_4kHz_inc10ns
+#FILENAME=TOTAPOL_400MHz_buildup_hemi34_9p393T_inc10ns
+#FILENAME=TOTAPOL_400MHz_fp_hemi34_9p393T_inc10ns
+FILENAME=TOTAPOL_400MHz_buildup_xtal_9p393T_inc50ns
+
+#FILENAME=TOTAPOL_400MHz_fp_xtal_a0b0g0_9p393T_inc10ns
+#FILENAME=TOTAPOL_400MHz_intensity_xtal_9p388T_inc10ns
+
+#FILENAME=TOTAPOL_400MHz_buildup_xtal_9p39T_inc10ns_4ms_a0b10g0
+#FILENAME=TOTAPOL_e_T1_1ms_T2_1us_H_T1_4s_T2_1ms_400MHz_fp_hemi144_mas_inc_10ns
+#FILENAME=eH_400MHz_SE_fp
+#FILENAME=TOTAPOL_400MHz_buildup_hemi34_9p393T_inc10ns
+#FILENAME=TOTAPOL_400MHz_eigen_an80bn141gn320
+CATEGORYNAME=CW_CrossEffect
+#CATEGORYNAME=NOVEL/NOVEL_MAS
+INPUTPATH=examples/$CATEGORYNAME/$FILENAME.json
+OUTPUTPATH=results/v2/$CATEGORYNAME/$FILENAME.result8
+./fast_exec_dnpsoup $INPUTPATH $OUTPUTPATH
+echo input: $INPUTPATH
+echo output: $OUTPUTPATH

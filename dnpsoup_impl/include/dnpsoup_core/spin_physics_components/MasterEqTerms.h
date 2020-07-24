@@ -2,6 +2,7 @@
 #define DNPSOUP_MASTEREQTERMS_H
 
 #include "dnpsoup_core/common.h"
+#include "dnpsoup_core/constants.h"
 #include "dnpsoup_core/experiment/experiment_types.h"
 #include "dnpsoup_core/experiment/hardware.h"
 #include "dnpsoup_core/spin_physics_components/hamiltonian/rho_eq.h"
@@ -83,14 +84,15 @@ namespace dnpsoup {
     PacketCollection *packets,
     const std::vector<RelaxationPacket> &rpackets,
     const MatrixCxDbl &ham_offset,
-    const Gyrotron &g,  // em freq
+    //const Gyrotron &g,  // em freq
     const Euler<> &sample_euler,
     const Euler<> &magic_angle,
-    const size_t comp_size,
+    size_t comp_size,
     double temperature,
     double mas_freq,
     double inc,
-    double mas_inc
+    double mas_inc,
+    size_t cache_size = 256
   );
 }
 

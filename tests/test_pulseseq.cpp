@@ -43,7 +43,7 @@ namespace {
                 << std::numeric_limits<std::uint64_t>::max()
                 << std::endl;
       
-      ASSERT_EQ(5000000000u, comp_size);
+      ASSERT_EQ(2000000000u, comp_size);
       ASSERT_EQ(1, comp.size());
       ASSERT_EQ(0u, idx);
     }
