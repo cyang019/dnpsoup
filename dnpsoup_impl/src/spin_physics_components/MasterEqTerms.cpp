@@ -383,10 +383,14 @@ namespace dnpsoup {
 #endif
     
     size_t cnt_in_one_cycle = 
-      static_cast<size_t>(std::round(1.0/(mas_freq * mas_inc)));
-    cnt_in_one_cycle = (cnt_in_one_cycle == 0u) + cnt_in_one_cycle;
+      static_cast<size_t>(std::round(1.0/(mas_freq * inc)));
+    cnt_in_one_cycle += (cnt_in_one_cycle == 0);
     const size_t cnt_part = comp_size % cnt_in_one_cycle;
     const size_t n_rotor_period = comp_size / cnt_in_one_cycle;
+#ifndef NDEBUG
+    cout << "component size: " << comp_size << ", which is "
+         << n_rotor_period << " rotor periods." << endl;
+#endif
     //size_t gamma_step_size = static_cast<size_t>(static_cast<double>(cnt_in_one_cycle) * MAS_L_RATIO);
     //gamma_step_size += (gamma_step_size == 0);
 
@@ -394,20 +398,20 @@ namespace dnpsoup {
     //MatrixCxDbl rotate_mat_super, rotate_mat_super_inv;
     //std::tie(rotate_mat_super, rotate_mat_super_inv) = calcRotationSuperOps(
     //    ham_offset, g, inc, step_size);
-    auto calcTerms = [&](const Euler<> &euler, bool calc_gamma) {
+    auto calcTerms = [&](const Euler<> &euler, size_t sz, bool calc_gamma) {
       const MatrixCxDbl ham = packets->genMatrix(euler);
       const MatrixCxDbl ham_lab = ham + ham_offset;
-      auto rho_ss = genRhoEq(ham_lab, temperature);
-      auto rho_ss_super = ::dnpsoup::flatten(rho_ss, 'c');
+      const auto rho_ss = genRhoEq(ham_lab, temperature);
+      const auto rho_ss_super = ::dnpsoup::flatten(rho_ss, 'c');
       //gamma_super = calcGammaSuper(rho_ss, rpackets);
       if (calc_gamma) {
         gamma_super = calcGammaSuper(rho_ss, rpackets);
       }
-      auto h_super = commutationSuperOp(ham);
+      const auto h_super = commutationSuperOp(ham);
       //auto super_op = complex<double>(0,1.0) * h_super + gamma_super_int;
       auto rho_eq_super = calcRhoDynamicEq(h_super, gamma_super, rho_ss_super);
       const auto l_super = calcLambdaSuper(h_super, gamma_super);
-      MatrixCxDbl exp_term = calcExpEvolve(l_super, inc, step_size);
+      MatrixCxDbl exp_term = calcExpEvolve(l_super, inc, sz);
       return MasterEqTerms(std::move(exp_term), std::move(rho_eq_super));
     };
     std::vector<MasterEqTerms> terms;
@@ -420,21 +424,41 @@ namespace dnpsoup {
     cout << "\nentering loop" << endl;
     cout << "cnt_part: " << cnt_part << endl;
 #endif
-    for(size_t idx = 0; idx < cnt_part; ++idx) {
-      if(idx > 0 && (idx % cache_size == 0)) {
+
+    auto updateMAS = [&](double temp_t) {
+      const double angle_diff = TwoPi * temp_t * mas_freq;
+      const double temp_gamma = magic_angle.gamma() + angle_diff;
+      temp_magic_angle.gamma(temp_gamma);
+      return;
+    };
+
+    size_t part1 = cnt_part;
+    double temp_t = 0;
+    size_t mas_idx = 0;
+    while(part1 > 0) {
+      if(terms.size() >= cache_size) {
         const auto combined_terms = combineMasterEqTerms(terms, 1);
         terms.clear();
         terms.push_back(std::move(combined_terms));
-#ifndef NDEBUG
-        cout << "x" << flush;
-#endif
       }
-      const auto euler = temp_magic_angle * sample_euler;
-      const bool need_to_calc_gamma = (idx % gamma_step_size == 0);
-      terms.push_back(calcTerms(euler, need_to_calc_gamma));
-      const double angle_diff = TwoPi * inc * static_cast<double>(step_size * (idx + 1)) * mas_freq;
-      const double temp_gamma = magic_angle.gamma() + angle_diff;
-      temp_magic_angle.gamma(temp_gamma);
+      if(part1 >= step_size) {
+        const auto euler = temp_magic_angle * sample_euler;
+        const bool need_to_calc_gamma = (mas_idx % gamma_step_size == 0);
+        terms.push_back(calcTerms(euler, step_size, need_to_calc_gamma));
+
+        ++mas_idx;
+        part1 -= step_size;
+        temp_t += static_cast<double>(step_size) * inc;
+        updateMAS(temp_t);
+      } else {  // if(part1 >= step_size)
+        const auto euler = temp_magic_angle * sample_euler;
+        constexpr bool need_to_calc_gamma = true;
+        terms.push_back(calcTerms(euler, part1, need_to_calc_gamma));
+
+        temp_t += static_cast<double>(part1) * inc;
+        updateMAS(temp_t);
+        part1 = 0;
+      }
     }
     if (terms.size() > 0) {
       last_term = combineMasterEqTerms(terms, 1);
@@ -447,21 +471,32 @@ namespace dnpsoup {
     cout << "\nfinish last term\n";
 #endif
     if (n_rotor_period > 0) {
-      for(size_t idx = cnt_part; idx < cnt_in_one_cycle; ++idx) {
-        if(idx > 0 && (idx % cache_size == 0)) {
-#ifndef NDEBUG
-        cout << "x" << flush;
-#endif
+      size_t part2 = cnt_in_one_cycle;
+      mas_idx = 0;
+      while(part2 > cnt_part) {
+        if(terms.size() >= cache_size) {
           const auto combined_terms = combineMasterEqTerms(terms, 1);
           terms.clear();
           terms.push_back(std::move(combined_terms));
         }
-        const auto euler = temp_magic_angle * sample_euler;
-        const bool need_to_calc_gamma = (idx % gamma_step_size == 0);
-        terms.push_back(calcTerms(euler, need_to_calc_gamma));
-        const double angle_diff = TwoPi * inc * static_cast<double>(step_size * (idx + 1)) * mas_freq;
-        const double temp_gamma = magic_angle.gamma() + angle_diff;
-        temp_magic_angle.gamma(temp_gamma);
+        if(part2 >= step_size + cnt_part) {
+          const auto euler = temp_magic_angle * sample_euler;
+          const bool need_to_calc_gamma = (mas_idx % gamma_step_size == 0);
+          terms.push_back(calcTerms(euler, step_size, need_to_calc_gamma));
+
+          ++mas_idx;
+          part2 -= step_size;
+          temp_t += static_cast<double>(step_size) * inc;
+          updateMAS(temp_t);
+        } else {  // if(part2 >= step_size + cnt_part)
+          const auto euler = temp_magic_angle * sample_euler;
+          constexpr bool need_to_calc_gamma = true;
+          terms.push_back(calcTerms(euler, part2 - cnt_part, need_to_calc_gamma));
+
+          temp_t += static_cast<double>(part2 - cnt_part) * inc;
+          updateMAS(temp_t);
+          part2 = cnt_part;
+        }
       }
     }
 #ifndef NDEBUG

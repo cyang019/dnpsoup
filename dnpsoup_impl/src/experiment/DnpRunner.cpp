@@ -344,9 +344,14 @@ namespace DnpRunner {
       auto results = calcPowderBuildUp(
           m, g, p, spin_sys, seq, 
           acq_spin, spin_sys_eulers, ncores);
-      const double ref_intensity = calcPowderIntensity(
+      double ref_intensity = calcPowderIntensity(
             m, g, p, spin_sys, PulseSequence(), 
             acq_spin, spin_sys_eulers, ncores);
+      /// to avoid divide by zero error
+      ref_intensity += std::abs(ref_intensity) < eps;
+#ifndef NDEBUG
+      cout << "ref intensity: " << ref_intensity << endl;
+#endif
       for(size_t i = 0; i < results.size(); ++i){
         results[i].second /= ref_intensity;
       }
@@ -365,6 +370,9 @@ namespace DnpRunner {
     {
       std::vector<std::pair<double, double>> results;
       const double scaling_factor = 1.0 / static_cast<double>(spin_sys_eulers.size());
+#ifndef NDEBUG
+      cout << "powder scaling factor: " << scaling_factor << endl;
+#endif
       if(ncores == 1) {
         for(const auto &e : spin_sys_eulers){
           auto xtal_results = calcBuildUp(m, g, p, spin_sys, seq,
@@ -695,9 +703,10 @@ namespace DnpRunner {
       else {
         for(const auto &field : fields){
           //constexpr double ref = 1.0;
-          const double ref = calcPowderIntensity(
+          double ref = calcPowderIntensity(
               field, g, p, spin_sys, PulseSequence(),
               acq_spin, spin_sys_eulers, ncores);
+          ref += std::abs(ref) < eps;
           const double res = calcPowderIntensity(
               field, g, p, spin_sys, seq, acq_spin, spin_sys_eulers, ncores);
           const double ratio = res/ref;

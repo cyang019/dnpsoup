@@ -92,7 +92,7 @@ namespace dnpsoup {
     double mas_freq,
     double inc,
     double mas_inc,
-    size_t cache_size = 256
+    size_t cache_size = 128
   );
 }
 

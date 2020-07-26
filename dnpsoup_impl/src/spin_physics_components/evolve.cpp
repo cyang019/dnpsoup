@@ -280,10 +280,10 @@ namespace dnpsoup {
       auto temp_euler = mas_angle * spin_sys_euler;
       if(cnt >= mas_inc_cnt){
         if(rotor_cnt < total_rotor_cnt) { // need to save to cache
-          auto ham = packets.genMatrix(temp_euler);
-          auto ham_lab = ham + ham_offset;
-          auto rho_ss = genRhoEq(ham_lab, temperature);
-          auto rho_ss_super = ::dnpsoup::flatten(rho_ss, 'c');
+          const auto ham = packets.genMatrix(temp_euler);
+          const auto ham_lab = ham + ham_offset;
+          const auto rho_ss = genRhoEq(ham_lab, temperature);
+          const auto rho_ss_super = ::dnpsoup::flatten(rho_ss, 'c');
           //if(rotate_mat_super.nrows() != 0 && rotate_mat_super_inv.nrows() != 0){
           //  rho_ss_super = rotate_mat_super * rho_ss_super;
           //}
@@ -293,10 +293,10 @@ namespace dnpsoup {
             //  gamma_super = rotate_mat_super * gamma_super * rotate_mat_super_inv;
             //}
           }
-          auto h_super = commutationSuperOp(ham);
-          auto super_op = calcLambdaSuper(h_super, gamma_super);
-          auto rho_eq_super = calcRhoDynamicEq(h_super, gamma_super, rho_ss_super);
-          auto scaling_factor = calcExpEvolve(super_op, inc, mas_inc_cnt);
+          const auto h_super = commutationSuperOp(ham);
+          const auto super_op = calcLambdaSuper(h_super, gamma_super);
+          const auto rho_eq_super = calcRhoDynamicEq(h_super, gamma_super, rho_ss_super);
+          const auto scaling_factor = calcExpEvolve(super_op, inc, mas_inc_cnt);
           //rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, 
           //    scaling_factor, rotate_mat_super, rotate_mat_super_inv);
           rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, scaling_factor);
@@ -330,14 +330,14 @@ namespace dnpsoup {
         //auto [rotate_mat_super, rotate_at_super_inv] = 
         //  calcRotationSuperOps(ham_offset, g, inc, cnt);
 
-        auto ham = packets.genMatrix(temp_euler);
-        auto ham_lab = ham + ham_offset;
+        const auto ham = packets.genMatrix(temp_euler);
+        const auto ham_lab = ham + ham_offset;
         auto [h_super, gamma_super_internal, rho_eq_super] =
           calcSuperOpsForMasterEq(ham, ham_lab, 
               //rotate_mat_super, rotate_mat_super_inv, 
               rpackets, temperature);
-        auto super_op = calcLambdaSuper(h_super, gamma_super_internal);
-        auto scaling_factor = calcExpEvolve(super_op, inc, cnt);
+        const auto super_op = calcLambdaSuper(h_super, gamma_super_internal);
+        const auto scaling_factor = calcExpEvolve(super_op, inc, cnt);
         //rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, 
         //    scaling_factor, rotate_mat_super, rotate_mat_super_inv);
         rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, scaling_factor);
