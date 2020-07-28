@@ -103,6 +103,16 @@ namespace dnpsoup {
     return res;
   }
 
+  template<typename T>
+  inline
+  bool commuteIsZero(const matrix::Matrix<T> &m1, const matrix::Matrix<T> &m2, double atol, double rtol)
+  {
+    matrix::Matrix<T> mat = commute(m1, m2);
+    matrix::Matrix<T> zero_mat = zeros(mat.nrows(), mat.ncols());
+    if (allclose(zero_mat, mat, atol, rtol)) return true;
+    return false;
+  }
+
   using std::sqrt;
 
   /// arctan val1/val2

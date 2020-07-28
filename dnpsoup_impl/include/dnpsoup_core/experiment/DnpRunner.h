@@ -29,7 +29,8 @@ namespace dnpsoup {
         const SpinSys &spin_sys,
         PulseSequence seq,
         const SpinType &acq_spin,
-        const Euler<> &spin_sys_euler);
+        const Euler<> &spin_sys_euler,
+        bool ignore_all_power=false);
 
     std::vector<std::pair<double, double>> calcBuildUp(
         const Magnet &m, 
@@ -38,7 +39,8 @@ namespace dnpsoup {
         const SpinSys &spin_sys,
         PulseSequence seq,
         const SpinType &acq_spin,
-        const Euler<> &spin_sys_euler);
+        const Euler<> &spin_sys_euler,
+        bool ignore_all_power=false);
 
     std::vector<std::pair<double, double>> 
       calcBuildUpEnhancement(
@@ -58,7 +60,8 @@ namespace dnpsoup {
         PulseSequence seq,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
-        int ncores=1);
+        int ncores=1,
+        bool ignore_all_power=false);
 
     std::vector<std::pair<double, double>> calcPowderBuildUpEnhancement(
         const Magnet &m, 
@@ -98,7 +101,8 @@ namespace dnpsoup {
         PulseSequence seq,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
-        int ncores=1);
+        int ncores=1,
+        bool ignore_all_power=false);
 
     MatrixCxDbl propagate(
         const MatrixCxDbl &rho_prev_super, 
