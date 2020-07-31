@@ -29,7 +29,7 @@ namespace dnpsoup {
         const SpinSys &spin_sys,
         PulseSequence seq,
         const SpinType &acq_spin,
-        const Euler<> &spin_sys_euler,
+        const Euler<> &sample_euler,
         bool ignore_all_power=false);
 
     std::vector<std::pair<double, double>> calcBuildUp(
@@ -39,7 +39,7 @@ namespace dnpsoup {
         const SpinSys &spin_sys,
         PulseSequence seq,
         const SpinType &acq_spin,
-        const Euler<> &spin_sys_euler,
+        const Euler<> &sample_euler,
         bool ignore_all_power=false);
 
     std::vector<std::pair<double, double>> 
@@ -50,7 +50,7 @@ namespace dnpsoup {
         const SpinSys &spin_sys,
         PulseSequence seq,
         const SpinType &acq_spin,
-        const Euler<> &spin_sys_euler);
+        const Euler<> &sample_euler);
 
     std::vector<std::pair<double, double>> calcPowderBuildUp(
         const Magnet &m, 

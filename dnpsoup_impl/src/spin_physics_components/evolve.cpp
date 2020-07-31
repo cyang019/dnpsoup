@@ -96,6 +96,7 @@ namespace dnpsoup {
       auto h_super = commutationSuperOp(ham);
       //auto super_op = complex<double>(0,1.0) * h_super + gamma_super_int;
       auto rho_eq_super = calcRhoDynamicEq(h_super, gamma_super, rho_ss_super);
+      //return std::make_tuple(h_super, gamma_super, rho_eq_super);
       return std::make_tuple(std::move(h_super), 
                              std::move(gamma_super),
                              std::move(rho_eq_super));
@@ -325,32 +326,39 @@ namespace dnpsoup {
           if(rotor_cnt % gamma_step_size == 0) {
             gamma_super = calcGammaSuper(rho_ss, rpackets);
           }
+          //gamma_super = calcGammaSuper(rho_ss, rpackets);
           const auto h_super = commutationSuperOp(ham);
           const auto super_op = calcLambdaSuper(h_super, gamma_super);
           const auto rho_eq_super = calcRhoDynamicEq(h_super, gamma_super, rho_ss_super);
           const auto scaling_factor = calcExpEvolve(super_op, inc, mas_inc_cnt);
           //rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, 
           //    scaling_factor, rotate_mat_super, rotate_mat_super_inv);
-          //rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, scaling_factor);
-          rho_evolve_super = rho_eq_super;
+          rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, scaling_factor);
           cache_rho.push_back(rho_eq_super);
           cache_scaling_factor.push_back(scaling_factor);
           //cache.saveCache(comp, 
           //    EvolutionCacheElement(
           //      std::move(scaling_factor), std::move(rho_eq_super))); 
+          //rho_evolve_super = rho_eq_super;
           double result = ::dnpsoup::projectionNorm(
               rho_evolve_super, acq_mat_super).real();
           results.push_back(make_pair(t0 + t, result/result_ref));
         }
         else{ // retrieve from cache
+          // cache can be big, avoid using it
           const auto idx = rotor_cnt % total_rotor_cnt;
+          if(idx >= cache_rho.size()) {
+            cout << "overflow cache_row: " << idx << endl;
+          }
+          if(idx >= cache_scaling_factor.size()) {
+            cout << "overflow cache_scaling_factor: " << idx << endl;
+          }
           //auto cache_elem = cache.getCache(0, idx);
           //rho_evolve_super = evolve(rho_evolve_super, 
           //    cache_elem.rho_inf_eq, cache_elem.scaling_factor,
           //    rotate_mat_super, rotate_mat_super_inv);
-          //rho_evolve_super = evolve(rho_evolve_super, 
-          //    cache_rho[idx], cache_scaling_factor[idx]);
-          rho_evolve_super = cache_rho[idx];
+          rho_evolve_super = evolve(rho_evolve_super, 
+              cache_rho[idx], cache_scaling_factor[idx]);
           double result = ::dnpsoup::projectionNorm(
               rho_evolve_super, acq_mat_super).real();
           results.push_back(make_pair(t0 + t, result/result_ref));
@@ -373,8 +381,8 @@ namespace dnpsoup {
         const auto scaling_factor = calcExpEvolve(super_op, inc, cnt);
         //rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, 
         //    scaling_factor, rotate_mat_super, rotate_mat_super_inv);
-        //rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, scaling_factor);
-        rho_evolve_super = rho_eq_super;
+        rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, scaling_factor);
+        //rho_evolve_super = rho_eq_super;
         cnt = 0;
         double result = ::dnpsoup::projectionNorm(
             rho_evolve_super, acq_mat_super).real();

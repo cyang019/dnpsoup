@@ -49,12 +49,8 @@ void dnpsoup_exec_internal(
 		throw std::runtime_error("Cannot find acq in the input json.");
 	}
 	cout << "Probe loaded..." << endl;
-	
-	if(task_str == "EigenValues") {
-		auto magnet = Magnet(j);
-		cout << "Magnet loaded..." << endl;
-		auto gyrotron = Gyrotron(j);
-		cout << "Gyrotron loaded..." << endl;
+
+  auto getEulerFromJson = [](const json &j) {
 		auto euler = Euler<>(0.0, 0.0, 0.0);
 		if(j.find("euler") != j.end()){
 			if(j["euler"].find("alpha") != j["euler"].end()){
@@ -72,6 +68,15 @@ void dnpsoup_exec_internal(
       cout << "beta: " << euler.beta() * 180.0 / PI << "\n";
       cout << "gamma: " << euler.gamma() * 180.0 / PI << "\n";
 		}
+    return euler;
+  };
+	
+	if(task_str == "EigenValues") {
+		auto magnet = Magnet(j);
+		cout << "Magnet loaded..." << endl;
+		auto gyrotron = Gyrotron(j);
+		cout << "Gyrotron loaded..." << endl;
+    auto euler = getEulerFromJson(j);
 
 		auto result = DnpRunner::calcEigenValues(magnet, gyrotron, probe,
 			spinsys, seq, euler);
@@ -98,19 +103,7 @@ void dnpsoup_exec_internal(
 		cout << "Magnet loaded..." << endl;
 		auto gyrotron = Gyrotron(j);
 		cout << "Gyrotron loaded..." << endl;
-		auto euler = Euler<>(0.0, 0.0, 0.0);
-		if(j.find("euler") != j.end()){
-			if(j["euler"].find("alpha") != j["euler"].end()){
-				euler.alpha(j["euler"]["alpha"].get<double>());
-			}
-			if(j["euler"].find("beta") != j["euler"].end()){
-				euler.beta(j["euler"]["beta"].get<double>());
-			}
-			if(j["euler"].find("gamma") != j["euler"].end()){
-				euler.gamma(j["euler"]["gamma"].get<double>());
-			}
-			cout << "Euler angle loaded..." << endl;
-		}
+    auto euler = getEulerFromJson(j);
 
     if(task_str == "Intensity"){
 		  auto result = DnpRunner::calcIntensity(magnet, gyrotron, probe,
@@ -140,6 +133,10 @@ void dnpsoup_exec_internal(
 	}
 
   /// otherwise simulating powder
+  // sample euler is actually in settings_js
+  auto sample_euler = getEulerFromJson(j);
+  spinsys.setEuler(sample_euler);
+  
 	auto eulers = vector<Euler<>>();
   if(j.find("euler_scheme") != j.end()){
     if(j["euler_scheme"].find("zcw") != j["euler_scheme"].end()){
