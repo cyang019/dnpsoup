@@ -1,21 +1,51 @@
 #!/usr/bin/env bash
-#FILENAME=eH_NOVEL_xband_loop10_mas_4kHz_inc10ns
-#FILENAME=TOTAPOL_400MHz_buildup_hemi34_9p393T_inc10ns
-#FILENAME=TOTAPOL_400MHz_fp_hemi34_9p393T_inc10ns
-FILENAME=TOTAPOL_400MHz_buildup_xtal_9p393T_inc50ns
 
-#FILENAME=TOTAPOL_400MHz_fp_xtal_a0b0g0_9p393T_inc10ns
-#FILENAME=TOTAPOL_400MHz_intensity_xtal_9p388T_inc10ns
+# SE Powder Line Shape
+#FILENAME=eeH_1hf_p100ms_1MHz_inc40ns_a0b0g0_static_buildup
+#FILENAME=eeH_1hf_p50ms_1MHz_inc40ns_a0b0g0_static_oct233_9p34_to_9p42_step0p001_fp
+#FILENAME=eeH_1hf_p50ms_1MHz_inc40ns_a0b90g0_static_oct34_9p34_to_9p42_step0p001_fp
 
-#FILENAME=TOTAPOL_400MHz_buildup_xtal_9p39T_inc10ns_4ms_a0b10g0
-#FILENAME=TOTAPOL_e_T1_1ms_T2_1us_H_T1_4s_T2_1ms_400MHz_fp_hemi144_mas_inc_10ns
-#FILENAME=eH_400MHz_SE_fp
-#FILENAME=TOTAPOL_400MHz_buildup_hemi34_9p393T_inc10ns
-#FILENAME=TOTAPOL_400MHz_eigen_an80bn141gn320
-CATEGORYNAME=CW_CrossEffect
-#CATEGORYNAME=NOVEL/NOVEL_MAS
+# cross effect
+#FILENAME=eeH_1hf_p5ms_1MHz_inc40ns_a0b90g0_MAS8kHz_buildup
+#FILENAME=eeH_1hf_p5ms_0MHz_inc40ns_an80bn141gn320_MAS8kHz_buildup
+#FILENAME=eeH_1hf_p150us_1MHz_inc40ns_an80bn141gn320_MAS8kHz_9p394T_eigenvals
+#FILENAME=eeH_1hf_p5ms_1MHz_inc20ns_a0b0g0_MAS8kHz_buildup
+#FILENAME=eeH_1hf_p2ms_1MHz_inc40ns_a0b0g0_hemi21_9p36_to_9p41_step0p001_fp
+#FILENAME=eeH_1hf_p150us_1MHz_inc40ns_a0b0g0_a0b90g0_MAS8kHz_scan1d_p
+#FILENAME=eeH_1hf_p2ms_1MHz_inc40ns_a0b0g0_static_hemi144_9p36_to_9p41_step0p001_fp
+#FILENAME=eeH_1hf_p2ms_1MHz_inc40ns_a0b0g0_mas8kHz_a0b90g0_9p36_to_9p41_step0p001_fp
+#FILENAME=eeH_1hf_p1p6ms_1MHz_inc100ns_a0b0g0_mas8kHz_hemi34_9p36_to_9p41_step0p001_fp
+
+#FILENAME=eeH_1hf_p2ms_1MHz_inc100ns_a0b120g0_mas8kHz_a0b0g0_9p36_to_9p41_step0p001_fp
+#FILENAME=eeH_1hf_p2ms_1MHz_inc100ns_a0b135g0_mas8kHz_a0b0g0_9p36_to_9p41_step0p001_fp
+#FILENAME=eeH_1hf_p500us_1MHz_inc40ns_a0b0g0_mas8kHz_a0b0g0_9p363T_intensity
+
+# Trouble shooting around 9.385T no enhancement reasons
+#FILENAME=eeH_1hf_p500us_1MHz_inc20ns_a0b45g0_9p385T_buildup
+FILENAME=eeH_e_T1_300us_T2_1us_H_T1_4s_T2_200us_1hf_p3ms_1MHz_inc40ns_a0b0g0_9p385T_zcw34_buildup
+#FILENAME=eeH_1hf_p300us_1MHz_inc40ns_an80bn141gn320_MAS8kHz_9p394T_buildup
+
+
+CATEGORYNAME=CW_CrossEffect/v3
+
+
+#FILENAME=eH_NOVEL_xband_loop100k_fp
+#CATEGORYNAME=NOVEL
+
+
 INPUTPATH=examples/$CATEGORYNAME/$FILENAME.json
-OUTPUTPATH=results/v2/$CATEGORYNAME/$FILENAME.result8
+VERSION=2
+APPENDIX=""
+#APPENDIX=.eigen
+
+OUTPUTPATH=results/v2/$CATEGORYNAME/$FILENAME.result$VERSION$APPENDIX
+date
+echo input: $INPUTPATH
 ./fast_exec_dnpsoup $INPUTPATH $OUTPUTPATH
 echo input: $INPUTPATH
 echo output: $OUTPUTPATH
+echo "finished."
+date
+
+echo "./plot_results.py $OUTPUTPATH"
+./plot_results.py $OUTPUTPATH
