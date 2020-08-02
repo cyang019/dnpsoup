@@ -1,6 +1,8 @@
 #include "dnpsoup_core/spinsys/HamiltonianPacket.h"
 #include "dnpsoup_core/common.h"
+#include <iostream>
 
+using namespace std;
 
 namespace dnpsoup {
   HamiltonianPacket::HamiltonianPacket(
@@ -47,7 +49,14 @@ namespace dnpsoup {
 
   MatrixCxDbl HamiltonianPacket::genMatrix(const Euler<> &e) const
   {
-    auto angle = m_e * e;
+    /// active rotation
+    /// The order: [magic angle] * [sample angle] * [spin sys angle] * m_e
+    ///                                                                 ^
+    ///                                                           Observation Angle
+    auto angle = e * m_e;
+		//cout << "euler1: " << e << "\n"
+    //     << "euler2: " << m_e << "\n"
+    //     << "euler1 * euler2: " << angle << "\n" << endl;
     return m_ptr_interface->genMatrix(m_property, angle);
   }
 

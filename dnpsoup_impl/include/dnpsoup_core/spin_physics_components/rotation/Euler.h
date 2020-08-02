@@ -5,6 +5,7 @@
 #include "dnpsoup_core/spin_physics_components/rotation/Quaternion.h"
 #include <type_traits>
 #include <iostream>
+#include <iomanip>		// setprecision
 
 
 namespace dnpsoup {

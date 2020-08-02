@@ -36,9 +36,10 @@ namespace DnpRunner {
         const Probe &p,
         const SpinSys &spin_sys,
         PulseSequence seq,
-        const Euler<> &spin_sys_euler
+        const Euler<> &sample_euler
         )
     {
+			const Euler<> spin_sys_euler = sample_euler * spin_sys.getEuler();
       auto irradiated_types = spin_sys.irradiated();
       pulseseq::Component default_comp;
       for(const auto &t : irradiated_types){
@@ -193,8 +194,14 @@ namespace DnpRunner {
       MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(angle);
       const auto hamiltonian_lab = hamiltonian + hamiltonian_offset;
       MatrixCxDbl rho0_lab = genRhoEq(hamiltonian_lab, p.temperature);
-      auto rho0_evolve = rho0_lab;
-      auto rho0_evolve_super = ::dnpsoup::flatten(rho0_evolve, 'c');
+			const auto rho_ss_super = ::dnpsoup::flatten(rho0_lab, 'c');
+      //auto rho0_evolve = rho0_lab;
+      //auto rho0_evolve_super = ::dnpsoup::flatten(rho0_evolve, 'c');
+      const auto gamma_super = calcGammaSuper(rho0_lab, rpackets);
+      const auto h_super = commutationSuperOp(hamiltonian);
+      const auto super_op = calcLambdaSuper(h_super, gamma_super);
+      const auto rho_eq_super = calcRhoDynamicEq(h_super, gamma_super, rho_ss_super);
+			auto rho0_evolve_super = rho_eq_super;
       if(seq.size() == 0){
         double result = 
           ::dnpsoup::projectionNorm(rho0_evolve_super, acq_mat_super).real();
@@ -460,13 +467,13 @@ namespace DnpRunner {
       auto hamiltonian_lab = hamiltonian + hamiltonian_offset;
       MatrixCxDbl rho0_lab = genRhoEq(hamiltonian_lab, p.temperature);
       const auto rho_ss_super = ::dnpsoup::flatten(rho0_lab, 'c');
-      auto rho0_evolve = rho0_lab;
-      auto rho0_evolve_super = ::dnpsoup::flatten(rho0_evolve, 'c');
-      //MatrixCxDbl gamma_super = calcGammaSuper(rho0_lab, rpackets);
-      //const auto h_super = commutationSuperOp(hamiltonian);
-      //const auto super_op = calcLambdaSuper(h_super, gamma_super);
-      //const auto rho_eq_super = calcRhoDynamicEq(h_super, gamma_super, rho_ss_super);
-      //MatrixCxDbl rho0_evolve_super = rho_eq_super;
+      //auto rho0_evolve = rho0_lab;
+      //auto rho0_evolve_super = ::dnpsoup::flatten(rho0_evolve, 'c');
+      MatrixCxDbl gamma_super = calcGammaSuper(rho0_lab, rpackets);
+      const auto h_super = commutationSuperOp(hamiltonian);
+      const auto super_op = calcLambdaSuper(h_super, gamma_super);
+      const auto rho_eq_super = calcRhoDynamicEq(h_super, gamma_super, rho_ss_super);
+      MatrixCxDbl rho0_evolve_super = rho_eq_super;
 
       double val = ::dnpsoup::projectionNorm(rho0_evolve_super, acq_mat_super).real();
 
@@ -488,6 +495,7 @@ namespace DnpRunner {
         if(!ignore_all_power) {
           packets.updatePulseSeqComponent(comp);
         } else {
+          //cout << "Ignore all EM Power" << endl;
           comp = default_comp;
         }
         if(has_mas) {   ///< mas

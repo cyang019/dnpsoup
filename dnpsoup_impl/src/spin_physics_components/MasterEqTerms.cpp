@@ -417,7 +417,6 @@ namespace dnpsoup {
     std::vector<MasterEqTerms> terms;
     terms.reserve(cache_size + 1);  ///< slot zero reserved for final result
     MasterEqTerms last_term;
-    constexpr double TwoPi = 2.0 * dnpsoup::pi;
     Euler<> temp_magic_angle = magic_angle;
 #ifndef NDEBUG
     cout << "rotor period: " << cnt_in_one_cycle << endl;
@@ -425,17 +424,20 @@ namespace dnpsoup {
     cout << "cnt_part: " << cnt_part << endl;
 #endif
 
-    auto updateMAS = [&](double temp_t) {
-      const double angle_diff = TwoPi * temp_t * mas_freq;
-      const double temp_gamma = magic_angle.gamma() + angle_diff;
-      temp_magic_angle.gamma(temp_gamma);
-      return;
+    auto calcGamma = [](double dt, double mas_freq, double gamma0){
+      constexpr double TwoPi = 2.0 * dnpsoup::pi;
+      double new_gamma = TwoPi * dt * mas_freq + gamma0;
+      while (new_gamma > TwoPi) {
+        new_gamma -= TwoPi;
+      }
+      return new_gamma;
     };
 
     size_t part1 = cnt_part;
     double temp_t = 0;
     size_t mas_idx = 0;
     while(part1 > 0) {
+			//cout << "[euler]: " << temp_magic_angle << endl;
       if(terms.size() >= cache_size) {
         const auto combined_terms = combineMasterEqTerms(terms, 1);
         terms.clear();
@@ -449,14 +451,18 @@ namespace dnpsoup {
         ++mas_idx;
         part1 -= step_size;
         temp_t += static_cast<double>(step_size) * inc;
-        updateMAS(temp_t);
-      } else {  // if(part1 >= step_size)
+        const double new_gamma = calcGamma(temp_t, mas_freq, magic_angle.gamma());
+        //const double new_gamma = TwoPi * temp_t * mas_freq + magic_angle.gamma();
+        temp_magic_angle.gamma(new_gamma);
+      } else {  // if(part1 < step_size)
         const auto euler = temp_magic_angle * sample_euler;
         constexpr bool need_to_calc_gamma = true;
         terms.push_back(calcTerms(euler, part1, need_to_calc_gamma));
 
         temp_t += static_cast<double>(part1) * inc;
-        updateMAS(temp_t);
+        //const double new_gamma = TwoPi * temp_t * mas_freq + magic_angle.gamma();
+        const double new_gamma = calcGamma(temp_t, mas_freq, magic_angle.gamma());
+        temp_magic_angle.gamma(new_gamma);
         part1 = 0;
       }
     }
@@ -474,6 +480,7 @@ namespace dnpsoup {
       size_t part2 = cnt_in_one_cycle;
       mas_idx = 0;
       while(part2 > cnt_part) {
+				//cout << "[euler]: " << temp_magic_angle << endl;
         if(terms.size() >= cache_size) {
           const auto combined_terms = combineMasterEqTerms(terms, 1);
           terms.clear();
@@ -487,14 +494,18 @@ namespace dnpsoup {
           ++mas_idx;
           part2 -= step_size;
           temp_t += static_cast<double>(step_size) * inc;
-          updateMAS(temp_t);
+          const double new_gamma = calcGamma(temp_t, mas_freq, magic_angle.gamma());
+          //const double new_gamma = TwoPi * temp_t * mas_freq + magic_angle.gamma();
+          temp_magic_angle.gamma(new_gamma);
         } else {  // if(part2 >= step_size + cnt_part)
           const auto euler = temp_magic_angle * sample_euler;
           constexpr bool need_to_calc_gamma = true;
           terms.push_back(calcTerms(euler, part2 - cnt_part, need_to_calc_gamma));
 
           temp_t += static_cast<double>(part2 - cnt_part) * inc;
-          updateMAS(temp_t);
+          const double new_gamma = calcGamma(temp_t, mas_freq, magic_angle.gamma());
+          //const double new_gamma = TwoPi * temp_t * mas_freq + magic_angle.gamma();
+          temp_magic_angle.gamma(new_gamma);
           part2 = cnt_part;
         }
       }

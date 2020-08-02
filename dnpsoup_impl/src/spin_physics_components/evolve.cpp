@@ -323,6 +323,7 @@ namespace dnpsoup {
           //if(rotate_mat_super.nrows() != 0 && rotate_mat_super_inv.nrows() != 0){
           //  rho_ss_super = rotate_mat_super * rho_ss_super;
           //}
+          //gamma_super = calcGammaSuper(rho_ss, rpackets);
           if(rotor_cnt % gamma_step_size == 0) {
             gamma_super = calcGammaSuper(rho_ss, rpackets);
           }
@@ -373,11 +374,11 @@ namespace dnpsoup {
         t += static_cast<double>(cnt) * inc;
         const auto ham = packets.genMatrix(temp_euler);
         const auto ham_lab = ham + ham_offset;
-        auto [h_super, gamma_super_internal, rho_eq_super] =
+        auto [h_super, gamma_super, rho_eq_super] =
           calcSuperOpsForMasterEq(ham, ham_lab, 
               //rotate_mat_super, rotate_mat_super_inv, 
               rpackets, temperature);
-        const auto super_op = calcLambdaSuper(h_super, gamma_super_internal);
+        const auto super_op = calcLambdaSuper(h_super, gamma_super);
         const auto scaling_factor = calcExpEvolve(super_op, inc, cnt);
         //rho_evolve_super = evolve(rho_evolve_super, rho_eq_super, 
         //    scaling_factor, rotate_mat_super, rotate_mat_super_inv);
@@ -388,7 +389,7 @@ namespace dnpsoup {
             rho_evolve_super, acq_mat_super).real();
         results.push_back(make_pair(t0 + t, result/result_ref));
       }
-    }
+    } // while
     return make_pair(results, rho_evolve_super);
   }
 } // namespace dnpsoup

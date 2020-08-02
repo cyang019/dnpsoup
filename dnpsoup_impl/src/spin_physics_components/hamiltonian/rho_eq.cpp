@@ -14,7 +14,7 @@ namespace dnpsoup {
 #endif
 
     const double prefix = -dnpsoup::h / (dnpsoup::kb * temperature);
-    auto energy_mat = hamiltonian * prefix;
+    const auto energy_mat = hamiltonian * prefix;
     const double n1 = matrix::norm1(energy_mat);
     if(n1 > 1.0 - dnpsoup::eps){
       MatrixCxDbl rho_pre = ::dnpsoup::exp(energy_mat);

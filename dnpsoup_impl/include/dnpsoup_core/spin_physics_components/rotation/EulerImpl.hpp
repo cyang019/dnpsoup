@@ -95,7 +95,10 @@ namespace dnpsoup {
   inline
   std::ostream& operator<<(std::ostream &os, const Euler<T> &euler)
   {
-    os << euler.alpha() << ", " << euler.beta() << ", " << euler.gamma();
+		std::streamsize ss = std::cout.precision();
+		os << std::setprecision(14)
+       << euler.alpha() << ", " << euler.beta() << ", " << euler.gamma();
+		os << std::setprecision(ss);
     return os;
   }
 } // namespace dnpsoup
