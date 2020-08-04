@@ -140,13 +140,14 @@ namespace {
           magnet, gyrotron, probe, spins, 
           buffer.str(), 
           SpinType::H, eulers);
+      std::cout << "Intensity with DNP sequential: " << res << std::endl;
       auto res_concurrent = dnpsoup::DnpRunner::calcPowderIntensity(
           magnet, gyrotron, probe, spins, 
           buffer.str(), 
           SpinType::H, eulers, 4);
       ASSERT_DOUBLE_EQ(res, res_concurrent);
 
-      std::cout << "Intensity with DNP: " << res << std::endl;
+      std::cout << "Intensity with DNP using multiple cores: " << res_concurrent << std::endl;
 
       c[SpinType::e].freq = 0.0;
       p.set("emr", c);

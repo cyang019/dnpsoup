@@ -13,11 +13,11 @@ configure_file(${CMAKE_CURRENT_LIST_DIR}/configure_dnpsoup.h.in ${PROJECT_BINARY
 message( STATUS "configure_dnpsoup.h => ${PROJECT_BINARY_DIR}" )
 include_directories(${PROJECT_BINARY_DIR})
 
-if(USE_EMCC)
+#if(USE_EMCC)
   #message(STATUS "build OpenBLAS from source...")
   #set(OpenBLAS_VERSION "0.3.7")
   #add_subdirectory("OpenBLAS-${OpenBLAS_VERSION}")
-endif()
+#endif()
 add_subdirectory("matrix/matrix_impl")
 add_subdirectory("dnpsoup_impl")
 

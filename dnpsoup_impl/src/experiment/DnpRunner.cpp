@@ -12,6 +12,7 @@
 #include "dnpsoup_core/common.h"
 #include "dnpsoup_core/constants.h"
 #include "lean/threadpool.h"
+#include "lean/taskqueue.h"
 #include <complex>
 #include <vector>
 #include <algorithm>
@@ -343,6 +344,7 @@ namespace DnpRunner {
       }
       else {  // multithreading
         ::lean::ThreadPool<std::vector<std::pair<double, double>>> tpool(ncores);
+        //::lean::TaskQueue<std::vector<std::pair<double, double>>> tqueue;
         for(const auto &euler : eulers){
           auto task = [=](){
             auto xtal_results = 
@@ -355,8 +357,11 @@ namespace DnpRunner {
             return xtal_results;
           };
           tpool.add_task(std::move(task));
+          //tqueue.add_task(std::move(task));
         }
         tpool.run();
+        //cout << "run queue with " << ncores << "ncores." << endl;
+        //auto intensities = tqueue.run(ncores);
         auto intensities = tpool.get_results();
         for(auto &xtal_results : intensities){
           if(results.size() == 0) {
@@ -645,6 +650,7 @@ namespace DnpRunner {
       if(eulers.size() == 1){
         const auto &euler = eulers[0];
         ::lean::ThreadPool<pair<double, double>> tpool(ncores);
+        //::lean::TaskQueue<pair<double, double>> tqueue;
         for(const auto &field : fields){
           auto task = [=](){
             double ref = 0.0;
@@ -662,9 +668,12 @@ namespace DnpRunner {
             return make_pair(field.b0, intensity/ref);
           };
           tpool.add_task(std::move(task));
+          //tqueue.add_task(std::move(task));
         }
         tpool.run();
         result = tpool.get_results();
+        //cout << "run queue with " << ncores << "ncores." << endl;
+        //result = tqueue.run(ncores);
         std::sort(result.begin(), result.end(),
             [](const pair<double, double> &val1, 
               const pair<double, double> &val2){
@@ -711,6 +720,7 @@ namespace DnpRunner {
       if(eulers.size() == 1){
         const auto &euler = eulers[0];
         ::lean::ThreadPool<pair<double, double>> tpool(ncores);
+        //::lean::TaskQueue<pair<double, double>> tqueue;
         for(const auto &emr : emrs){
           auto task = [=](){
             double ref = 0.0;
@@ -725,9 +735,12 @@ namespace DnpRunner {
             return make_pair(emr.em_frequency, intensity/ref);
           };
           tpool.add_task(std::move(task));
+          //tqueue.add_task(std::move(task));
         }
         tpool.run();
         result = tpool.get_results();
+        //cout << "run queue with " << ncores << "ncores." << endl;
+        //result = tqueue.run(ncores);
         std::sort(result.begin(), result.end(),
             [](const pair<double, double> &val1, 
               const pair<double, double> &val2){
@@ -781,6 +794,7 @@ namespace DnpRunner {
       }
       else {
         ::lean::ThreadPool<double> tpool(ncores);
+        //::lean::TaskQueue<double> tqueue;
         for(const auto &e : eulers){
           auto task = [=](){
             auto xtal_intensity = 
@@ -788,9 +802,12 @@ namespace DnpRunner {
             return xtal_intensity * std::sin(e.beta());
           };
           tpool.add_task(std::move(task));
+          //tqueue.add_task(std::move(task));
         }
         tpool.run();
         auto intensities = tpool.get_results();
+        //cout << "run queue with " << ncores << "cores." << endl;
+        //auto intensities = tqueue.run(ncores);
         for(auto &intensity : intensities){
           result += intensity;
         }

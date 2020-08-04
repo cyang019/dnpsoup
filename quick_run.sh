@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
 # SE Powder Line Shape
-#FILENAME=eeH_1hf_p100ms_1MHz_inc40ns_a0b0g0_static_buildup
-#FILENAME=eeH_1hf_p50ms_1MHz_inc40ns_a0b0g0_static_oct233_9p34_to_9p42_step0p001_fp
-#FILENAME=eeH_1hf_p50ms_1MHz_inc40ns_a0b90g0_static_oct34_9p34_to_9p42_step0p001_fp
+#FILENAME=eeH_e_T1_300us_T2_1us_H_T1_4s_T2_200us_1hf_p3ms_1MHz_static_inc40ns_a0b0g0_9p385T_buildup
+FILENAME=eeH_e_T1_300us_T2_1us_H_T1_4s_T2_200us_1hf_p3ms_1MHz_static_inc40ns_a0b0g0_zcw233_9p36T_to_9p41T_fp
 
 # cross effect
 #FILENAME=eeH_1hf_p5ms_1MHz_inc40ns_a0b90g0_MAS8kHz_buildup
@@ -22,7 +21,7 @@
 
 # Trouble shooting around 9.385T no enhancement reasons
 #FILENAME=eeH_1hf_p500us_1MHz_inc20ns_a0b45g0_9p385T_buildup
-FILENAME=eeH_e_T1_300us_T2_1us_H_T1_4s_T2_200us_1hf_p3ms_1MHz_inc40ns_a0b0g0_9p385T_zcw34_buildup
+#FILENAME=eeH_e_T1_300us_T2_1us_H_T1_4s_T2_200us_1hf_p3ms_1MHz_inc40ns_a0b0g0_9p38T_zcw34_buildup
 #FILENAME=eeH_1hf_p300us_1MHz_inc40ns_an80bn141gn320_MAS8kHz_9p394T_buildup
 
 
