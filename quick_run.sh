@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 
+# =====================================
+#   FILENAME | CATECORYNAME | VERSION
+# =====================================
+
 # SE Powder Line Shape
 #FILENAME=eeH_e_T1_300us_T2_1us_H_T1_4s_T2_200us_1hf_p3ms_1MHz_static_inc40ns_a0b0g0_9p385T_buildup
-FILENAME=eeH_e_T1_300us_T2_1us_H_T1_4s_T2_200us_1hf_p3ms_1MHz_static_inc40ns_a0b0g0_zcw233_9p36T_to_9p41T_fp
+#FILENAME=eeH_e_T1_300us_T2_1us_H_T1_4s_T2_200us_1hf_p3ms_1MHz_static_inc40ns_a0b0g0_zcw233_9p36T_to_9p41T_fp
 
 # cross effect
 #FILENAME=eeH_1hf_p5ms_1MHz_inc40ns_a0b90g0_MAS8kHz_buildup
@@ -23,28 +27,20 @@ FILENAME=eeH_e_T1_300us_T2_1us_H_T1_4s_T2_200us_1hf_p3ms_1MHz_static_inc40ns_a0b
 #FILENAME=eeH_1hf_p500us_1MHz_inc20ns_a0b45g0_9p385T_buildup
 #FILENAME=eeH_e_T1_300us_T2_1us_H_T1_4s_T2_200us_1hf_p3ms_1MHz_inc40ns_a0b0g0_9p38T_zcw34_buildup
 #FILENAME=eeH_1hf_p300us_1MHz_inc40ns_an80bn141gn320_MAS8kHz_9p394T_buildup
-
-
+FILENAME=eeH_test_coord_e2_a0b50g40_H_xn2y2z1_a0b0g0_zcw34_9p36T_to_9p41T_fp
 CATEGORYNAME=CW_CrossEffect/v3
-
+VERSION=2
 
 #FILENAME=eH_NOVEL_xband_loop100k_fp
 #CATEGORYNAME=NOVEL
+#===========================================================
 
 
-INPUTPATH=examples/$CATEGORYNAME/$FILENAME.json
-VERSION=2
 APPENDIX=""
-#APPENDIX=.eigen
+
+./take_one_input.sh $FILENAME $CATEGORYNAME $VERSION
 
 OUTPUTPATH=results/v2/$CATEGORYNAME/$FILENAME.result$VERSION$APPENDIX
-date
-echo input: $INPUTPATH
-./fast_exec_dnpsoup $INPUTPATH $OUTPUTPATH
-echo input: $INPUTPATH
-echo output: $OUTPUTPATH
-echo "finished."
-date
-
 echo "./plot_results.py $OUTPUTPATH"
 ./plot_results.py $OUTPUTPATH
+
