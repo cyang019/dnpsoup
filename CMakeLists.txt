@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.14)
+cmake_minimum_required (VERSION 3.0.2)
 project (dnpsoup 
   LANGUAGES CXX
   VERSION 0.1)
