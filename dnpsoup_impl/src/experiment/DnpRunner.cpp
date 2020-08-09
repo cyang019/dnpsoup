@@ -665,6 +665,14 @@ namespace DnpRunner {
             auto intensity = 
               calcIntensity(field, g, p, spin_sys, seq, acq_spin, euler);
             std::cout << "." << std::flush;
+            const auto temp_val = intensity / ref;
+            if(std::isnan(temp_val)) {
+              cout << "\n[NAN] for " << field.b0 
+                   << " T with Gyrotron Frequency "
+                   << g.em_frequency / 1e9 << " GHz: "
+                   << "intensity: " << intensity << ", ref: "
+                   << ref << endl;
+            }
             return make_pair(field.b0, intensity/ref);
           };
           tpool.add_task(std::move(task));
