@@ -27,3 +27,7 @@ tags
 # ignore jupyter checkpoints
 **/.ipynb_checkpoints/*.ipynb
 
+results/v2/**
+
+perf.data
+perf.data.old
