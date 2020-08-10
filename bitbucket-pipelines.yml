@@ -14,7 +14,9 @@ pipelines:
           - apt-get install -y cmake
           - apt-get install -y ninja-build
           - apt-get install -y libopenblas-dev
+          - apt-get install -y libpthread-stubs0-dev
           - mkdir build
           - cd build
           - cmake ..
           - make
+          - ./tests/test_dnpsoup_core
