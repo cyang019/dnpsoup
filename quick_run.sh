@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+export OMP_NUM_THREADS=1
+
 # =====================================
 #   FILENAME | CATECORYNAME | VERSION
 # =====================================
@@ -27,7 +29,8 @@
 #FILENAME=eeH_1hf_p500us_1MHz_inc20ns_a0b45g0_9p385T_buildup
 #FILENAME=eeH_e_T1_300us_T2_1us_H_T1_4s_T2_200us_1hf_p3ms_1MHz_inc40ns_a0b0g0_9p38T_zcw34_buildup
 #FILENAME=eeH_1hf_p300us_1MHz_inc40ns_an80bn141gn320_MAS8kHz_9p394T_buildup
-FILENAME=eeH_test_coord_e2_a0b55g210_H_xn2y2z1_a0b0g0_zcw34_9p36T_to_9p41T_fp
+
+
 CATEGORYNAME=CW_CrossEffect/v3
 VERSION=2
 
@@ -38,12 +41,16 @@ VERSION=2
 
 APPENDIX=""
 
+FILENAME=eeH_test_coord_e2_a0b55g140_H_xn2y2z1_a0b0g0_zcw34_9p36T_to_9p41T_fp
 ./take_one_input.sh $FILENAME $CATEGORYNAME $VERSION
 
-FILENAME2=eeH_test_coord_e2_a0b55g150_H_xn2y2z1_a0b0g0_zcw34_9p36T_to_9p41T_fp
+FILENAME2=eeH_test_coord_e2_a0b55g160_H_xn2y2z1_a0b0g0_zcw34_9p36T_to_9p41T_fp
 ./take_one_input.sh $FILENAME2 $CATEGORYNAME $VERSION
 
-FILENAME3=eeH_test_coord_e2_a0b52g150_H_xn2y2z1_a0b0g0_zcw34_9p36T_to_9p41T_fp
+FILENAME3=eeH_test_coord_e2_a0b52g140_H_xn2y2z1_a0b0g0_zcw34_9p36T_to_9p41T_fp
+./take_one_input.sh $FILENAME3 $CATEGORYNAME $VERSION
+
+FILENAME4=eeH_test_coord_e2_a0b52g160_H_xn2y2z1_a0b0g0_zcw34_9p36T_to_9p41T_fp
 ./take_one_input.sh $FILENAME3 $CATEGORYNAME $VERSION
 
 
