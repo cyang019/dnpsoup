@@ -9,9 +9,9 @@ pipelines:
   default:
     - step:
         script: # Modify the commands below to build your repository.
-          - git submodule update --recursive --init
           - apt-get update
-          - apt-get install -y cmake ninja-build libopenblas-dev liblapack-dev libpthread-stubs0-dev
+          - apt-get install -y build-essentials git cmake ninja-build libopenblas-dev liblapack-dev libpthread-stubs0-dev
+          - git submodule update --recursive --init
           - mkdir build
           - cd build
           - cmake .. -GNinja
