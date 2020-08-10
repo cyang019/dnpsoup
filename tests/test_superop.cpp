@@ -13,7 +13,14 @@ namespace {
   TEST(TestDnpsoup, SuperOperator){
     auto mat = spin<Z>(2);
     auto u = dnpsoup::exp(cxdbl(0,-1.0) * mat);
+#ifndef NDEBUG
+    std::cout << "u:\n" << u << std::endl;
+#endif
     auto u_inv = dnpsoup::exp(cxdbl(0,1.0) * mat);
+#ifndef NDEBUG
+    std::cout << "u_inv:\n" << u_inv << std::endl;
+#endif
+
     auto d_super = rotationSuperOp(u);
     auto d_super_inv = rotationSuperOp(u_inv);
     auto desired = identity<cxdbl>(d_super.nrows());

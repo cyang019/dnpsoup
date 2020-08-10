@@ -54,7 +54,13 @@ namespace {
       cout << "hamiltonian:\n" << ham << "\n";
       constexpr double dt = 1.0e-4;
       auto U = dnpsoup::exp((cxdbl(0,-1) * 2.0 * pi * dt) * ham);
+#ifndef NDEBUG
+      cout << "U:\n" << U << "\n";
+#endif
       auto U_inv = dnpsoup::exp((cxdbl(0,1) * 2.0 * pi * dt) * ham);
+#ifndef NDEBUG
+      cout << "U_inv:\n" << U_inv << "\n";
+#endif
       
       ASSERT_TRUE(allclose(U.adjoint(), U_inv, 1.0e-14));
       auto intensity0 = dnpsoup::projectionNorm(rho0, acq);
