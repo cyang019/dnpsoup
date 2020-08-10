@@ -29,10 +29,10 @@ target_compile_options(dnpsoup_core PUBLIC -Wall -Wextra -Wpedantic)
 target_link_libraries(dnpsoup_core PUBLIC matrix)
 message(STATUS "dnpsoup_core linked to matrix...")
 
-#if (UNIX AND NOT APPLE)
-#  message(STATUS "link pthread...")
-#  target_link_libraries(dnpsoup_core PUBLIC pthread)
-#endif ()
+if (UNIX AND NOT APPLE)
+  message(STATUS "link pthread...")
+  target_link_libraries(dnpsoup_core PUBLIC pthread)
+endif ()
 
 target_include_directories(dnpsoup_core
   PRIVATE
