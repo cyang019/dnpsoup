@@ -14,7 +14,8 @@ pipelines:
           - export DEBIAN_FRONTEND=noninteractive
           - apt-get install -y tzdata
           - dpkg-reconfigure --frontend noninteractive tzdata
-          - apt-get install -y g++ git cmake ninja-build libblas* liblapack* libpthread-stubs0-dev gfortran
+          - apt-get install -y g++ git cmake ninja-build libopenblas-dev liblapack* libpthread-stubs0-dev gfortran
+          - apt-get install -y libatlas-base-dev
           - git submodule update --recursive --init
           - mkdir build
           - cd build
