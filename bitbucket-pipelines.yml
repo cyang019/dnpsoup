@@ -11,12 +11,9 @@ pipelines:
         script: # Modify the commands below to build your repository.
           - git submodule update --recursive --init
           - apt-get update
-          - apt-get install -y cmake
-          - apt-get install -y ninja-build
-          - apt-get install -y libopenblas-dev
-          - apt-get install -y libpthread-stubs0-dev
+          - apt-get install -y cmake ninja-build libopenblas-dev liblapack-dev libpthread-stubs0-dev
           - mkdir build
           - cd build
-          - cmake ..
-          - make
+          - cmake .. -GNinja
+          - ninja
           - ./tests/test_dnpsoup_core
