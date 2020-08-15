@@ -1,3 +1,6 @@
 [submodule "matrix"]
 	path = matrix
 	url = git@bitbucket.org:cyang019/matrix.git
+[submodule "dnpsoup_analytics"]
+	path = dnpsoup_analytics
+	url = git@bitbucket.org:cyang019/dnpsoup_analytics.git
