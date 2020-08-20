@@ -11,7 +11,7 @@ def plot_data(datafile):
     """Plot data file with the 1st column x, other columns y.
     """
     df = pd.read_csv(datafile, sep=',', comment='#', header=None)
-    if df.shape[0] == 0:
+    if df.shape[0] < 2:
         with open(datafile, 'r', encoding='utf-8') as f:
             for line in f:
                 print(line)

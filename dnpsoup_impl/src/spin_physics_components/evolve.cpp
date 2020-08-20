@@ -5,6 +5,7 @@
 #include "dnpsoup_core/common.h"
 #include "dnpsoup_core/constants.h"
 #include <complex>
+#include <cmath>
 
 using namespace std;
 
@@ -18,17 +19,25 @@ namespace dnpsoup {
     const auto rho_right = gamma_super * rho_ss_super;
     auto [rho_eq_super, status] = matrix::lstsq(super_op, rho_right);
 #ifndef NDEBUG
-      if(status != 0){
-        string err_msg = "lstsq error: ";
-        if(status < 0){
-          err_msg = "The " + std::to_string(-status) + "-th argument had an illegal value.";
-        } else {
-          err_msg = "The algorithm for computing the SVD failed to converge;\n";
-          err_msg += std::to_string(status) + "off-diagonal elements of an intermediate"
-            + "bidiagonal form did not converge to zero.";
-        }
-        throw CalculationError(err_msg);
+    if(isnan(rho_eq_super(0,0).real())) {
+      cout << "[WARNING] calcRhoDynamicEq() saw nan." << endl;
+      cout << "status: " << status << "\n";
+      cout << "super_op:\n";
+      super_op.print();
+      cout << "rho_right:\n";
+      rho_right.print();
+    }
+    if(status != 0){
+      string err_msg = "lstsq error: ";
+      if(status < 0){
+        err_msg = "The " + std::to_string(-status) + "-th argument had an illegal value.";
+      } else {
+        err_msg = "The algorithm for computing the SVD failed to converge;\n";
+        err_msg += std::to_string(status) + "off-diagonal elements of an intermediate"
+          + "bidiagonal form did not converge to zero.";
       }
+      throw CalculationError(err_msg);
+    }
 #endif
     return rho_eq_super;
   }

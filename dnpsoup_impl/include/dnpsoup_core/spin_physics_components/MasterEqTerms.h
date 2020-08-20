@@ -12,6 +12,7 @@
 #include <vector>
 #include <tuple>
 #include <cstdint>
+#include <string>
 
 
 namespace dnpsoup {
@@ -28,8 +29,8 @@ namespace dnpsoup {
     MasterEqTerms(MasterEqTerms &&) noexcept;
     MasterEqTerms& operator=(const MasterEqTerms &);
     MasterEqTerms& operator=(MasterEqTerms &&) noexcept;
-    MasterEqTerms(MatrixCxDbl &&exp_term, MatrixCxDbl &&c1)
-      : E(std::move(exp_term)), c1(std::move(c1)) {}
+    MasterEqTerms(MatrixCxDbl &&exp_term, MatrixCxDbl &&c1_rhs)
+      : E(std::move(exp_term)), c1(std::move(c1_rhs)) {}
     MasterEqTerms(MatrixCxDbl &&exp_term, MatrixCxDbl &&c1, MatrixCxDbl &&c1prime)
       : E(std::move(exp_term)), c1(std::move(c1)), c1prime(std::move(c1prime)) {}
     ~MasterEqTerms() {}
@@ -46,10 +47,35 @@ namespace dnpsoup {
 
   inline MatrixCxDbl evolve(const MatrixCxDbl &rho_super, const MasterEqTerms &m)
   {
+#ifndef NDEBUG
+    if(rho_super.nrows() != m.c1.nrows()) {
+      std::string err_msg = "evolve(rho, terms) rho_super and c1 # of rows mismatch: " 
+        + std::to_string(rho_super.nrows()) + " vs " + std::to_string(m.c1.nrows());
+      std::cout << err_msg << std::endl;
+      throw SizeMismatchError(err_msg);
+    }
+    if(rho_super.ncols() != m.c1.ncols()) {
+      std::string err_msg = "evolve(rho, terms) rho_super and c1 # of columns mismatch: " 
+        + std::to_string(rho_super.ncols()) + " vs " + std::to_string(m.c1.ncols());
+      std::cout << err_msg << std::endl;
+      throw SizeMismatchError(err_msg);
+    }
+#endif
+    const auto rho_diff = rho_super - m.c1;
+#ifndef NDEBUG
+    if (m.E.ncols() != rho_diff.nrows()) {
+      std::string err_msg = "evolve(rho, terms) E and rho_diff size mismatch: E "
+        + std::to_string(m.E.nrows()) + "x" + std::to_string(m.E.ncols()) 
+        + " vs rho_diff " 
+        + std::to_string(rho_diff.nrows()) + "x" + std::to_string(rho_diff.ncols());
+      std::cout << err_msg << std::endl;
+      throw SizeMismatchError(err_msg);
+    }
+#endif
     if (m.c1prime.nelements() > 0) {
-      return m.E * (rho_super - m.c1) + m.c1prime;
+      return m.E * rho_diff + m.c1prime;
     } else {
-      return m.E * (rho_super - m.c1) + m.c1;
+      return m.E * rho_diff + m.c1;
     }
   }
 
@@ -94,6 +120,27 @@ namespace dnpsoup {
     double mas_inc,
     size_t cache_size = 128
   );
+
+  // if the entire mat is nan, just need to check the first element
+  inline bool hasNan(const MatrixCxDbl &mat)
+  {
+    if(mat.nelements() > 0) {
+      if(std::isnan(mat(0,0).real()) || std::isnan(mat(0,0).imag())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  inline bool hasNan(const MasterEqTerms &term)
+  {
+    return hasNan(term.E) || hasNan(term.c1) || hasNan(term.c1prime);
+  }
+
+  inline bool hasNanInC1prime(const MasterEqTerms &term)
+  {
+    return hasNan(term.c1prime);
+  }
 }
 
 #endif

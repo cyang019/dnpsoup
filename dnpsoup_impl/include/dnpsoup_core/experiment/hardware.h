@@ -4,6 +4,8 @@
 #include "dnpsoup_core/constants.h"
 #include "dnpsoup_core/common.h"
 #include "dnpsoup_core/spin_physics_components/rotation/Euler.h"
+#include <iostream>
+#include <iomanip>
 
 
 namespace dnpsoup {
@@ -54,6 +56,18 @@ namespace dnpsoup {
     double mas_increment;
     double temperature;
   };
+
+  inline std::ostream& operator<<(std::ostream &os, const Probe &p)
+  {
+    auto ss = os.precision();
+    os << std::setprecision(16);
+    os << "mas_frequency: " << p.mas_frequency / 1e3 << " kHz; \t"
+       << "magic_angle: " << p.magic_angle << "; \t"
+       << "mas_increment: " << p.mas_increment * 1.0e9 << " ns; \t"
+       << "temperature: " << p.temperature << " K.";
+    os << std::setprecision(ss);
+    return os;
+  }
 } // namespace dnpsoup
 
 #endif

@@ -163,6 +163,14 @@ namespace dnpsoup {
           if (!first_iter) {
             // calculate the last iter
             result.c1prime = calcRhoDynamicEq(h_super, gamma_super, rho_ss_super);
+#ifndef NDEBUG
+            if (isnan(result.c1prime(0,0).real())) {
+              cout << "calcRhoDynamicEq() resulted in NAN.\ninputs:\n"
+                   << "h_super:\n" << h_super
+                   << "gamma_super:\n" << gamma_super
+                   << "rho_ss_super:\n" << rho_ss_super << endl;
+#endif
+            }
           }
         }
         break;
@@ -203,6 +211,11 @@ namespace dnpsoup {
     result.E = dnpsoup::pow(temp_term, n);
     result.c1 = terms[0].c1;
     result.c1prime = terms.back().c1prime.nelements() > 0 ? terms.back().c1prime : terms.back().c1;
+#ifndef NDEBUG
+    if(hasNanInC1prime(result)) {
+      cout << "[WARNING] combineMasterEqTerms() c1prime is nan." << endl;
+    }
+#endif
 
     const size_t nrows = result.E.nrows();
     //----------
@@ -217,12 +230,23 @@ namespace dnpsoup {
     }
     for(size_t i = 0; i < c_diffs.size(); ++i){
       result.c1prime += term_residuals[i] * c_diffs[i];
+#ifndef NDEBUG
+      if(hasNanInC1prime(result)) {
+        cout << "[WARNING] combineMasterEqTerms() adding residuals saw nan at [" << i << "]:\n"
+             << "c_diffs[i]:\n" << c_diffs[i] << endl;
+      }
+#endif
     }
     if (n == 1) return result;
     // result.E = temp_term^n
     const MatrixCxDbl i0 = identity<cxdbl>(nrows);
     const MatrixCxDbl c = i0 - temp_term;
     const MatrixCxDbl c1_diff = result.c1prime - result.c1;
+#ifndef NDEBUG
+    if (isnan(c1_diff(0,0).real()) || isnan(c1_diff(0,0).imag())) {
+      cout << "[Warning] combineMasterEqTerms() c1_diff is nan." << endl;
+    }
+#endif
     const MatrixCxDbl sum = ::matrix::geometricSum(temp_term, n-1) * c1_diff;
     result.c1prime += sum;
 
@@ -352,6 +376,27 @@ namespace dnpsoup {
         cout << "\n";
 #endif
     MasterEqTerms result = combineMasterEqTerms(finalTerms, 1);
+
+#ifndef NDEBUG
+    if(std::isnan(result.c1(0,0).real())) {
+      cout << "[WARNING] genMasterEqTerms result.c1 realpart has nan..." << endl;
+    }
+    if(std::isnan(result.c1(0,0).imag())) {
+      cout << "[WARNING] genMasterEqTerms result.c1 imagpart has nan..." << endl;
+    }
+    if(std::isnan(result.c1prime(0,0).real())) {
+      cout << "[WARNING] genMasterEqTerms result.c1prime realpart has nan..." << endl;
+    }
+    if(std::isnan(result.c1prime(0,0).imag())) {
+      cout << "[WARNING] genMasterEqTerms result.c1prime imagpart has nan..." << endl;
+    }
+    if(std::isnan(result.E(0,0).real())) {
+      cout << "[WARNING] genMasterEqTerms result.E realpart has nan..." << endl;
+    }
+    if(std::isnan(result.E(0,0).imag())) {
+      cout << "[WARNING] genMasterEqTerms result.E imagpart has nan..." << endl;
+    }
+#endif
     
     return make_tuple(result, packets);
   }
@@ -424,6 +469,7 @@ namespace dnpsoup {
     cout << "cnt_part: " << cnt_part << endl;
 #endif
 
+    // euler angle gamma
     auto calcGamma = [](double dt, double mas_freq, double gamma0){
       constexpr double TwoPi = 2.0 * dnpsoup::pi;
       double new_gamma = TwoPi * dt * mas_freq + gamma0;
@@ -440,6 +486,11 @@ namespace dnpsoup {
 			//cout << "[euler]: " << temp_magic_angle << endl;
       if(terms.size() >= cache_size) {
         const auto combined_terms = combineMasterEqTerms(terms, 1);
+#ifndef NDEBUG
+        if(hasNan(combined_terms)) {
+          cout << "[WARNING] genMasterEqTermsMAS() saw nan when reducing cache." << endl;
+        }
+#endif
         terms.clear();
         terms.push_back(std::move(combined_terms));
       }
@@ -468,6 +519,11 @@ namespace dnpsoup {
     }
     if (terms.size() > 0) {
       last_term = combineMasterEqTerms(terms, 1);
+#ifndef NDEBUG
+      if(hasNan(last_term)) {
+        cout << "[WARNING] genMasterEqTermsMAS() last_term saw nan." << endl;
+      }
+#endif
       if(terms.size() > 1 && n_rotor_period > 0) {
         terms.clear();
         terms.push_back(last_term);

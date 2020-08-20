@@ -1,4 +1,6 @@
 **/build/**
+dnpsoup_exec
+fast_exec_dnpsoup
 
 **/*.swp
 
@@ -27,6 +29,7 @@ tags
 # ignore jupyter checkpoints
 **/.ipynb_checkpoints/*.ipynb
 
+examples/**
 results/v2/**
 
 perf.data

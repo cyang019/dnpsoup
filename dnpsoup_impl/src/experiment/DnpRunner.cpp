@@ -180,9 +180,6 @@ namespace DnpRunner {
 
       unique_ptr<EvolutionCacheStatic> uptr_cache = nullptr;
       if (!has_mas) {
-#ifndef NDEBUG
-        cout << "EvolutionCacheStatic capacity: " << seq.uniqueEmrsCount() << endl;
-#endif
         uptr_cache = make_unique<EvolutionCacheStatic>(
             seq.uniqueEmrsCount());
       }
@@ -251,6 +248,13 @@ namespace DnpRunner {
                 spin_sys_euler, mas_angle, comp_size,
                 p.temperature, p.mas_frequency, inc, mas_inc); 
             rho0_evolve_super = evolve(rho0_evolve_super, terms);
+#ifndef NDEBUG
+            if(std::isnan(rho0_evolve_super(0,0).imag()) || std::isnan(rho0_evolve_super(0,0).real())) {
+              cout << "[WARNING] calcIntensity() rho0_evolve_super saw NAN on " << idx << " of component with size "
+                   << comp_size << endl;
+              cout << "terms.c1prime: " << terms.c1prime << endl;
+            }
+#endif
 
             //uint64_t mas_inc_cnt = static_cast<uint64_t>(round(mas_inc/inc));
             // EvolutionCache is used per comp
@@ -268,6 +272,30 @@ namespace DnpRunner {
       
       double result = ::dnpsoup::projectionNorm(
           rho0_evolve_super, acq_mat_super).real();
+      if (std::isnan(result)){
+        std::streamsize ss = std::cout.precision();
+        cout.precision(16);
+        cout << "\n======================================\n";
+        cout << "[calcIntensity()] nan encountered...\n";
+#ifndef NDEBUG
+        cout << "----------------------------------------\n"
+             << "  parameters:\n"
+             << "\tMagnet: " << m.b0 << " T\n"
+             << "\tGyrotron: " << g.em_frequency / 1.0e9 << " GHz.\n"
+             << "\tProbe: " << p << "\n"
+             //<< "\tSpinsys: " << spin_sys << "\n"
+             //<< "\tseq: " << seq << "\n"
+             << "\tacq_spin: " << toString(acq_spin) << "\n"
+             << "\teuler: " << sample_euler << "\n"
+             << "\tignore_all_power: " << ignore_all_power << "\n"
+             << "----------------------------------------\n"
+             << "Additional Info:\n"
+             << "  mas_angle: " << mas_angle << "\n"
+             << "  t: " << t << "\n";
+#endif
+        cout << "======================================" << endl;
+        cout.precision(ss);
+      }
       return result;
     }
 
@@ -661,18 +689,31 @@ namespace DnpRunner {
               ref = 
                 calcIntensity(field, g, p, spin_sys, PulseSequence(), acq_spin, euler);
             }
+#ifndef NDEBUG
+            if(std::isnan(ref)) {
+              auto ss = cout.precision();
+              cout.precision(16);
+              cout << "[WARNING] calcFieldProfile() encountered NAN when calculating ref intensity with:\n";
+              cout << "\tfield: " << field.b0 << " T.\n";
+              cout << "\tg: " << g.em_frequency / 1e9 << " GHz.\n";
+              cout << "\tp: " << p << "\n";
+              cout << "\tspin_sys:\n" << spin_sys << "\n";
+              cout << "\tseq:\n";
+              if(has_mas) {
+                cout << seq << "\n";
+              } else {
+                cout << PulseSequence() << "\n";
+              }
+              cout << "\tacq_spin: " << toString(acq_spin) << "\n";
+              cout << "\teuler: " << euler << endl;
+              cout.precision(ss);
+            }
+#endif
+
             ref += (std::abs(ref) < eps);
             auto intensity = 
               calcIntensity(field, g, p, spin_sys, seq, acq_spin, euler);
             std::cout << "." << std::flush;
-            const auto temp_val = intensity / ref;
-            if(std::isnan(temp_val)) {
-              cout << "\n[NAN] for " << field.b0 
-                   << " T with Gyrotron Frequency "
-                   << g.em_frequency / 1e9 << " GHz: "
-                   << "intensity: " << intensity << ", ref: "
-                   << ref << endl;
-            }
             return make_pair(field.b0, intensity/ref);
           };
           tpool.add_task(std::move(task));
@@ -701,7 +742,7 @@ namespace DnpRunner {
                 field, g, p, spin_sys, PulseSequence(),
                 acq_spin, eulers, ncores);
           }
-          ref += std::abs(ref) < eps;
+          ref += (std::abs(ref) < eps);
           const double res = calcPowderIntensity(
               field, g, p, spin_sys, seq, acq_spin, eulers, ncores);
           const double ratio = res/ref;
@@ -797,19 +838,33 @@ namespace DnpRunner {
         for(const auto &e : eulers){
           auto xtal_intensity = 
             calcIntensity(m, g, p, spin_sys, seq, acq_spin, e, ignore_all_power);
+#ifndef NDEBUG
+          cout << "[calcPowderIntensity()] \n\tEuler "
+               << e << " : \t\t" << xtal_intensity << endl;
+#endif
           result += xtal_intensity * std::sin(e.beta());
         }
       }
       else {
         ::lean::ThreadPool<double> tpool(ncores);
         //::lean::TaskQueue<double> tqueue;
+        size_t idx = 0;
         for(const auto &e : eulers){
           auto task = [=](){
             auto xtal_intensity = 
               calcIntensity(m, g, p, spin_sys, seq, acq_spin, e, ignore_all_power);
+#ifndef NDEBUG
+            cout << "[calcPowderIntensity()] \n\tEuler "
+                 << e << " : \t\t" << xtal_intensity << endl;
+#endif
+            if(std::isnan(xtal_intensity)) {
+              cout << "[WARNING] calcPowderIntensity() saw NAN upon calcIntensity() on ["
+                   << idx << "] Euler: " << e << endl;
+            }
             return xtal_intensity * std::sin(e.beta());
           };
           tpool.add_task(std::move(task));
+          ++idx;
           //tqueue.add_task(std::move(task));
         }
         tpool.run();
@@ -817,6 +872,10 @@ namespace DnpRunner {
         //cout << "run queue with " << ncores << "cores." << endl;
         //auto intensities = tqueue.run(ncores);
         for(auto &intensity : intensities){
+          if (std::isnan(intensity)) {
+            cout << "[WARNING] calcPowderIntensity() NAN encountered..." << endl;
+            continue;
+          }
           result += intensity;
         }
       }

@@ -62,11 +62,17 @@ void dnpsoup_exec_internal(
 			if(j["euler"].find("gamma") != j["euler"].end()){
 				euler.gamma(j["euler"]["gamma"].get<double>());
 			}
+      auto ss = cout.precision();
+      cout.precision(16);
 			cout << "Euler angle loaded..." << endl;
       constexpr double PI = 3.1415927;
-      cout << "alpha: " << euler.alpha() * 180.0 / PI << "\n";
-      cout << "beta: " << euler.beta() * 180.0 / PI << "\n";
-      cout << "gamma: " << euler.gamma() * 180.0 / PI << "\n";
+      cout << "alpha: " << euler.alpha() * 180.0 / PI 
+           << " (" << euler.alpha() << ")" << "\n";
+      cout << "beta: " << euler.beta() * 180.0 / PI
+           << " (" << euler.beta() << ")" << "\n";
+      cout << "gamma: " << euler.gamma() * 180.0 / PI
+           << " (" << euler.gamma() << ")" << "\n";
+      cout.precision(ss);
 		}
     return euler;
   };
