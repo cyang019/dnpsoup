@@ -169,8 +169,8 @@ namespace dnpsoup {
                    << "h_super:\n" << h_super
                    << "gamma_super:\n" << gamma_super
                    << "rho_ss_super:\n" << rho_ss_super << endl;
-#endif
             }
+#endif
           }
         }
         break;
