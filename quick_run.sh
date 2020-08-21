@@ -18,7 +18,7 @@ VERSION=
 
 APPENDIX=""
 
-FILENAME=eH_NOVEL_xband_loop50_8kHz_inc40ns_zcw233_intensity
+FILENAME=eH_NOVEL_xband_loop60_static_inc40ns_zcw144_fp
 ./take_one_input.sh $FILENAME $CATEGORYNAME $VERSION
 echo ""
 

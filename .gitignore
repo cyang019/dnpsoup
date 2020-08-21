@@ -30,7 +30,8 @@ tags
 **/.ipynb_checkpoints/*.ipynb
 
 examples/**
-results/v2/**
 
 perf.data
 perf.data.old
+
+deprecated/**

@@ -7,8 +7,9 @@ cd build
 #EXTRA_FLAGS="-DDNPSOUP_VERBOSE=1"
 EXPTRA_FLAGS=""
 
-#BUILD_TYPE=Release
-BUILD_TYPE=RelWithDebInfo
+#BUILD_TYPE=Debug
+BUILD_TYPE=Release
+#BUILD_TYPE=RelWithDebInfo
 CC=clang++
 C=clang
 #CC=c++
