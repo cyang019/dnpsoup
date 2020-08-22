@@ -29,8 +29,6 @@ tags
 # ignore jupyter checkpoints
 **/.ipynb_checkpoints/*.ipynb
 
-examples/**
-
 perf.data
 perf.data.old
 
