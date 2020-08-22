@@ -1,0 +1,68 @@
+{
+  "spinsys": {
+    "euler": {
+        "alpha": 0.0,
+        "beta": 0.7,
+        "gamma": 0.0
+    },
+    "spins": {
+        "1": {
+            "type": "e",
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "t1": 1.0e-3,
+            "t2": 4.0e-6
+        },
+        "2": {
+            "type": "H",
+            "x": 4.0,
+            "y": 4.0,
+            "z": 5.0,
+            "t1": 1.0,
+            "t2": 1.0e-3
+        }
+    },
+    "interactions": [
+        {
+            "entries": {
+                "id1": 1,
+                "id2": 2
+            },
+            "name": "hyperfine"
+        },
+        {
+            "entries": {
+                "euler": {
+                    "alpha": 0.0,
+                    "beta": 0.0,
+                    "gamma": 0.0
+                },
+                "id": 2,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "name": "csa"
+        },
+        {
+            "entries": {
+                "euler": {
+                    "alpha": 0.0,
+                    "beta": 0.0,
+                    "gamma": 0.0
+                },
+                "id": 1,
+                "x": 2.0092,
+                "y": 2.0056,
+                "z": 2.0022
+            },
+            "name": "shielding"
+        }
+    ],
+    "irradiation": [
+        "e"
+    ]
+  }
+}
+

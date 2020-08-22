@@ -1,0 +1,46 @@
+{
+  "euler": {
+    "alpha": 0.0,
+    "beta": 0.0,
+    "gamma": 0.0
+  },
+  "euler_scheme":{
+    "zcw": 1
+  },
+
+  "ncores": 6,
+  
+  "acq": "H",
+
+  "field range": {
+    "begin": 0.345,
+    "end": 0.350,
+    "step": 0.0001
+  },
+  "Magnet": {
+    "b0": 0.34746
+  },
+  "Gyrotron": {
+    "em_frequency": 9.745e9
+  },
+  "Probe": {
+      "mas_frequency": 0.0,
+      "temperature": 100.0,
+      "mas_increment": 2e-5
+  },
+
+  "task": "BuildUpEnhancement",
+  
+  "task details": {
+    "type": "EmrLength",
+    "spin": "e",
+    "name": "loop",
+
+    "range": {
+      "begin": 1,
+      "end": 500,
+      "step": 10
+    }
+  }
+}
+

@@ -347,7 +347,13 @@ namespace DnpRunner {
 #ifndef NDEBUG
       cout << "powder scaling factor: " << scaling_factor << endl;
 #endif
-      if(ncores == 1) {
+      if(eulers.size() == 1) {
+        auto xtal_results = calcBuildUp(m, g, p, spin_sys, seq,
+            acq_spin, eulers[0], ignore_all_power);
+        std::cout << std::endl;
+        return xtal_results;
+      }
+      else if(ncores == 1) {
         for(const auto &euler : eulers){
           auto xtal_results = calcBuildUp(m, g, p, spin_sys, seq,
               acq_spin, euler, ignore_all_power);
