@@ -87,6 +87,9 @@ namespace dnpsoup {
 
     // automatically add dipole interactions.
     if(t_auto_add){
+#ifndef NDEBUG
+      std::cout << "auto add interactions..." << std::endl;
+#endif
       for(const auto &s : m_spins){
         if(s.first != id_name){
           this->setDipole(s.first, id_name);
@@ -568,6 +571,10 @@ namespace dnpsoup {
         int id1 = interaction["id1"].get<int>();
         int id2 = interaction["id2"].get<int>();
         double val = interaction["value"].get<double>();
+#ifndef NDEBUG
+        std::cout << "[interaction] scalar " << id1 << "-" << id2 << " " << val << " Hz."
+                  << std::endl;
+#endif
         spin_sys.setScalar(id1, id2, val);
       }
       else if(interaction_name == "dipole"
@@ -576,6 +583,10 @@ namespace dnpsoup {
         auto id1 = interaction["id1"].get<int>();
         auto id2 = interaction["id2"].get<int>();
         spin_sys.setDipole(SpinId(id1), SpinId(id2));
+#ifndef NDEBUG
+        std::cout << "[interaction] dipolar " << id1 << "-" << id2 << "."
+                  << std::endl;
+#endif
       }
       else if(interaction_name == "csa"
           || interaction_name == "shielding"){
@@ -590,9 +601,17 @@ namespace dnpsoup {
         const auto angle = Euler<>(a,b,g);
         if(interaction_name == "csa"){
           spin_sys.setCsa(sid, x, y, z, angle);
+#ifndef NDEBUG
+          std::cout << "[interaction] csa " << sid << "."
+                    << std::endl;
+#endif
         }
         else{
           spin_sys.setShielding(sid, x, y, z, angle);
+#ifndef NDEBUG
+          std::cout << "[interaction] shielding " << sid << "."
+                    << std::endl;
+#endif
         }
       }
     }

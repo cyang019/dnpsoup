@@ -33,3 +33,6 @@ perf.data
 perf.data.old
 
 deprecated/**
+
+# intermediate output
+spinsys_temp.json

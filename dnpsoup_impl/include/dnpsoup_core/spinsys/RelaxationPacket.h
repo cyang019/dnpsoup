@@ -27,8 +27,10 @@ namespace dnpsoup {
     SpinId getSpinId() const { return m_id; }
 
     // rotate from eigen frame to current frame, then [A_{-q}, [A_q, . ] ]
-    MatrixCxDbl genSuperOpT1(const MatrixCxDbl &eigenvec) const;
-    MatrixCxDbl genSuperOpT2(const MatrixCxDbl &eigenvec) const;
+    //MatrixCxDbl genSuperOpT1(const MatrixCxDbl &eigenvec) const;
+    //MatrixCxDbl genSuperOpT2(const MatrixCxDbl &eigenvec) const;
+    MatrixCxDbl genSuperOpT1() const;
+    MatrixCxDbl genSuperOpT2() const;
   private:
     SpinId m_id;
     MatrixCxDbl m_x;

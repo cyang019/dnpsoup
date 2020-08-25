@@ -28,6 +28,11 @@ void dnpsoup_exec_internal(
     istringstream spinsys_iss(spinsys_js.dump());
     spinsys_iss >> spinsys;
   }
+#ifndef NDEBUG
+  std::ofstream ofs ("spinsys_temp.json", std::ofstream::out);
+  ofs << spinsys;
+  ofs.close();
+#endif
 
   std::istringstream pulseseq_iss(pulseseq_js.dump());
   PulseSequence seq;

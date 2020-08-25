@@ -316,19 +316,26 @@ namespace DnpRunner {
       if(has_mas) {
         const auto ref_intensities = calcPowderBuildUp(
             m, g, p, spin_sys, seq, acq_spin, spin_sys_eulers, ncores, true);
-      }
-      double ref_intensity = calcPowderIntensity(
-            m, g, p, spin_sys, PulseSequence(), 
-            acq_spin, spin_sys_eulers, ncores);
-      /// to avoid divide by zero error
-      ref_intensity += std::abs(ref_intensity) < eps;
+        for(size_t i = 0; i < results.size(); ++i){
+          const double temp_ref = 
+            ref_intensities[i].second + (std::abs(ref_intensities[i].second) < eps);
+          results[i].second /= temp_ref;
+        }
+        return results;
+      } else {
+        double ref_intensity = calcPowderIntensity(
+              m, g, p, spin_sys, PulseSequence(), 
+              acq_spin, spin_sys_eulers, ncores);
+        /// to avoid divide by zero error
+        ref_intensity += (std::abs(ref_intensity) < eps);
 #ifndef NDEBUG
-      cout << "ref intensity: " << ref_intensity << endl;
+        cout << "ref intensity: " << ref_intensity << endl;
 #endif
-      for(size_t i = 0; i < results.size(); ++i){
-        results[i].second /= ref_intensity;
+        for(size_t i = 0; i < results.size(); ++i){
+          results[i].second /= ref_intensity;
+        }
+        return results;
       }
-      return results;
     }
 
     std::vector<std::pair<double, double>> calcPowderBuildUp(

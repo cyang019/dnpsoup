@@ -7,7 +7,8 @@ export OMP_NUM_THREADS=1
 
 #CATEGORYNAME=Top-DNP
 #CATEGORYNAME=ISE_SSE
-CATEGORYNAME=CE/xtal_buildups
+CATEGORYNAME=CE/buildup_powder_options
+#CATEGORYNAME=CE/CE_SE_fp_comparison
 #CATEGORYNAME=NOVEL
 #CATEGORYNAME=NOVEL-MAS
 VERSION=
@@ -16,48 +17,23 @@ VERSION=
 
 APPENDIX=""
 
-FILENAME=eeH_test_coord_e2_a0b60g150_H_xn2y2z1_p1ms_a0b0g0_9p393T_inc40ns_buildup
-./take_one_input.sh $FILENAME $CATEGORYNAME $VERSION
-echo ""
-FILENAME=eeH_test_coord_e2_a0b60g150_H_xn2y2z1_p1ms_a0b15g0_9p393T_inc40ns_buildup
-./take_one_input.sh $FILENAME $CATEGORYNAME $VERSION
-echo ""
-FILENAME=eeH_test_coord_e2_a0b60g150_H_xn2y2z1_p1ms_a0b30g0_9p393T_inc40ns_buildup
-./take_one_input.sh $FILENAME $CATEGORYNAME $VERSION
-echo ""
-FILENAME=eeH_test_coord_e2_a0b60g150_H_xn2y2z1_p1ms_a0b45g0_9p393T_inc40ns_buildup
-./take_one_input.sh $FILENAME $CATEGORYNAME $VERSION
-echo ""
-FILENAME=eeH_test_coord_e2_a0b60g150_H_xn2y2z1_p1ms_a0b60g0_9p393T_inc40ns_buildup
-./take_one_input.sh $FILENAME $CATEGORYNAME $VERSION
-echo ""
-FILENAME=eeH_test_coord_e2_a0b60g150_H_xn2y2z1_p1ms_a0b75g0_9p393T_inc40ns_buildup
-./take_one_input.sh $FILENAME $CATEGORYNAME $VERSION
-echo ""
-FILENAME=eeH_test_coord_e2_a0b60g150_H_xn2y2z1_p1ms_a0b90g0_9p393T_inc40ns_buildup
-./take_one_input.sh $FILENAME $CATEGORYNAME $VERSION
-echo ""
-FILENAME=eeH_test_coord_e2_a0b60g150_H_xn2y2z1_p1ms_a0b105g0_9p393T_inc40ns_buildup
-./take_one_input.sh $FILENAME $CATEGORYNAME $VERSION
-echo ""
-FILENAME=eeH_test_coord_e2_a0b60g150_H_xn2y2z1_p1ms_a0b120g0_9p393T_inc40ns_buildup
-./take_one_input.sh $FILENAME $CATEGORYNAME $VERSION
-echo ""
-FILENAME=eeH_test_coord_e2_a0b60g150_H_xn2y2z1_p1ms_a0b135g0_9p393T_inc40ns_buildup
-./take_one_input.sh $FILENAME $CATEGORYNAME $VERSION
-echo ""
-FILENAME=eeH_test_coord_e2_a0b60g150_H_xn2y2z1_p1ms_a0b150g0_9p393T_inc40ns_buildup
-./take_one_input.sh $FILENAME $CATEGORYNAME $VERSION
-echo ""
-FILENAME=eeH_test_coord_e2_a0b60g150_H_xn2y2z1_p1ms_a0b165g0_9p393T_inc40ns_buildup
-./take_one_input.sh $FILENAME $CATEGORYNAME $VERSION
-echo ""
-FILENAME=eeH_test_coord_e2_a0b60g150_H_xn2y2z1_p1ms_a0b180g0_9p393T_inc40ns_buildup
-./take_one_input.sh $FILENAME $CATEGORYNAME $VERSION
-echo ""
+INPUTDIR=dnpsoup_analytics/inputs
+echo $CATEGORYNAME
+for filename in $INPUTDIR/$CATEGORYNAME/*.json; do
+  FULLNAME=$(basename $filename)
+  FILENAME=${FULLNAME%.json}
+  echo $FILENAME
+  ./take_one_input.sh $FILENAME $CATEGORYNAME $VERSION
+  echo ""
+done
 
-#OUTPUTDIR=dnpsoup_analytics/outputs
-#OUTPUTPATH=$OUTPUTDIR/$CATEGORYNAME/$FILENAME.result$VERSION$APPENDIX
-#echo "./plot_results.py $OUTPUTPATH"
-#./plot_results.py $OUTPUTPATH
+# FILENAME=eeH_no_e-e_dipole_p_1s_zcw610_inc40ns_static_fp
+# #FILENAME=eH_p_1s_zcw610_inc40ns_static_fp
+# ./take_one_input.sh $FILENAME $CATEGORYNAME $VERSION
+# echo ""
+
+# OUTPUTDIR=dnpsoup_analytics/outputs
+# OUTPUTPATH=$OUTPUTDIR/$CATEGORYNAME/$FILENAME.result$VERSION$APPENDIX
+# echo "./plot_results.py $OUTPUTPATH"
+# ./plot_results.py $OUTPUTPATH
 

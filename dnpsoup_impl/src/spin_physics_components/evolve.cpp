@@ -47,13 +47,13 @@ namespace dnpsoup {
       const MatrixCxDbl &rho_ss,
       const std::vector<RelaxationPacket> &rpackets)
   {
-    auto [eigenvals, eigenvec] = diagonalizeMat(rho_ss);
+    //auto [eigenvals, eigenvec] = diagonalizeMat(rho_ss);
     const size_t sz = rho_ss.nrows() * rho_ss.ncols();
     auto t1_superop = zeros<cxdbl>(sz, sz); ///< sz: 'size'
     auto t2_superop = zeros<cxdbl>(sz, sz); ///< sz: 'size'
     for(const auto &rpacket : rpackets){
-      t1_superop += rpacket.genSuperOpT1(eigenvec);
-      t2_superop += rpacket.genSuperOpT2(eigenvec);
+      t1_superop += rpacket.genSuperOpT1();
+      t2_superop += rpacket.genSuperOpT2();
     }
     auto gamma_super = t1_superop + t2_superop;
     return gamma_super;
