@@ -40,7 +40,8 @@ namespace dnpsoup {
         PulseSequence seq,
         const SpinType &acq_spin,
         const Euler<> &sample_euler,
-        bool ignore_all_power=false);
+        bool ignore_all_power=false,
+        size_t sampling_step_size=1);
 
     std::vector<std::pair<double, double>> 
       calcBuildUpEnhancement(
@@ -50,7 +51,8 @@ namespace dnpsoup {
         const SpinSys &spin_sys,
         PulseSequence seq,
         const SpinType &acq_spin,
-        const Euler<> &sample_euler);
+        const Euler<> &sample_euler,
+        size_t sampling_step_size=1);
 
     std::vector<std::pair<double, double>> calcPowderBuildUp(
         const Magnet &m, 
@@ -61,7 +63,8 @@ namespace dnpsoup {
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
         int ncores=1,
-        bool ignore_all_power=false);
+        bool ignore_all_power=false,
+        size_t sampling_step_size=1);
 
     std::vector<std::pair<double, double>> calcPowderBuildUpEnhancement(
         const Magnet &m, 
@@ -71,7 +74,8 @@ namespace dnpsoup {
         PulseSequence seq,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
-        int ncores=1);
+        int ncores=1,
+        size_t sampling_step_size=1);
 
     std::vector<std::pair<double, double>> calcFieldProfile(
         const std::vector<Magnet> &m, 

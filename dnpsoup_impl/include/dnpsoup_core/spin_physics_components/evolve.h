@@ -139,7 +139,8 @@ namespace dnpsoup {
       std::uint64_t cnt,
       std::uint64_t mas_cnt,
       std::uint64_t total_rotor_cnt,
-      double temperature);
+      double temperature,
+      size_t sampling_step_size=1);
 
 } // namespace dnpsoup
 

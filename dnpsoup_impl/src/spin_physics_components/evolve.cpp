@@ -281,7 +281,8 @@ namespace dnpsoup {
       std::uint64_t cnt,    ///< comp size
       std::uint64_t mas_inc_cnt,
       std::uint64_t total_rotor_cnt,  ///< # of steps per rotor period
-      double temperature)
+      double temperature,
+      size_t sampling_step_size)
   {
     //auto cache = EvolutionCache(total_rotor_cnt, 1);
     vector<MatrixCxDbl> cache_rho;
@@ -316,6 +317,7 @@ namespace dnpsoup {
 
     std::vector<std::pair<double, double>> results;
     const double gamma0 = mas_angle.gamma();
+    size_t counter = 0;
     while(cnt > 0){
       auto temp_euler = mas_angle * spin_sys_euler;
 #ifndef NDEBUG
@@ -350,9 +352,11 @@ namespace dnpsoup {
           //    EvolutionCacheElement(
           //      std::move(scaling_factor), std::move(rho_eq_super))); 
           //rho_evolve_super = rho_eq_super;
-          double result = ::dnpsoup::projectionNorm(
-              rho_evolve_super, acq_mat_super).real();
-          results.push_back(make_pair(t0 + t, result/result_ref));
+          if ((counter % sampling_step_size) == 0) {
+            double result = ::dnpsoup::projectionNorm(
+                rho_evolve_super, acq_mat_super).real();
+            results.push_back(make_pair(t0 + t, result/result_ref));
+          }
         }
         else{ // retrieve from cache
           // cache can be big, avoid using it
@@ -369,15 +373,18 @@ namespace dnpsoup {
           //    rotate_mat_super, rotate_mat_super_inv);
           rho_evolve_super = evolve(rho_evolve_super, 
               cache_rho[idx], cache_scaling_factor[idx]);
-          double result = ::dnpsoup::projectionNorm(
-              rho_evolve_super, acq_mat_super).real();
-          results.push_back(make_pair(t0 + t, result/result_ref));
+          if ((counter % sampling_step_size) == 0) {
+            double result = ::dnpsoup::projectionNorm(
+                rho_evolve_super, acq_mat_super).real();
+            results.push_back(make_pair(t0 + t, result/result_ref));
+          }
         }
         
         ++rotor_cnt;
         cnt -= mas_inc_cnt;
         double new_angle = gamma0 + t * mas_frequency * 2.0 * pi;
         mas_angle.gamma(new_angle);
+        ++counter;
       }
       else {    /// if pulse length is not a integer multiple of rotor period step size.
         t += static_cast<double>(cnt) * inc;
@@ -397,6 +404,7 @@ namespace dnpsoup {
         double result = ::dnpsoup::projectionNorm(
             rho_evolve_super, acq_mat_super).real();
         results.push_back(make_pair(t0 + t, result/result_ref));
+        break;
       }
     } // while
     return make_pair(results, rho_evolve_super);

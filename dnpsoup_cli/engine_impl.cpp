@@ -127,6 +127,12 @@ void dnpsoup_exec_internal(
 		  result_stream << "# Intensity:\n" << result;
 		  return;
     } else {  // "BuildUp"
+      auto j_task = j["task details"];
+      size_t sampling_step_size = 1;
+      if(j_task.find("sampling_step_size") != j_task.end()){
+        sampling_step_size = j_task["sampling_step_size"].get<uint64_t>();
+      }
+      std::cout << "sampling step size: " << sampling_step_size << std::endl;
 		  auto results = DnpRunner::calcBuildUp(magnet, gyrotron, probe,
 		  	spinsys, seq, acq_t, euler);
 
@@ -218,8 +224,14 @@ void dnpsoup_exec_internal(
   else if(task_str == "PowderBuildUp"){
 		auto magnet = Magnet(j);		
 		auto gyrotron = Gyrotron(j);
+    auto j_task = j["task details"];
+    size_t sampling_step_size = 1;
+    if(j_task.find("sampling_step_size") != j_task.end()){
+      sampling_step_size = j_task["sampling_step_size"].get<uint64_t>();
+    }
+    std::cout << "sampling step size: " << sampling_step_size << std::endl;
 		auto results = DnpRunner::calcPowderBuildUp(magnet, gyrotron, probe,
-			spinsys, seq, acq_t, eulers, ncores);
+			spinsys, seq, acq_t, eulers, ncores, false, sampling_step_size);
 
     std::ofstream result_stream;
 	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);
@@ -235,8 +247,14 @@ void dnpsoup_exec_internal(
   else if(task_str == "PowderBuildUpEnhancement"){
 		auto magnet = Magnet(j);		
 		auto gyrotron = Gyrotron(j);
+    auto j_task = j["task details"];
+    size_t sampling_step_size = 1;
+    if(j_task.find("sampling_step_size") != j_task.end()){
+      sampling_step_size = j_task["sampling_step_size"].get<uint64_t>();
+    }
+    std::cout << "sampling step size: " << sampling_step_size << std::endl;
 		auto results = DnpRunner::calcPowderBuildUpEnhancement(magnet, gyrotron, probe,
-			spinsys, seq, acq_t, eulers, ncores);
+			spinsys, seq, acq_t, eulers, ncores, sampling_step_size);
 
     std::ofstream result_stream;
 	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);

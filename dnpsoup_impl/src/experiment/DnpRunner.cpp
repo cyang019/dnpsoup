@@ -307,15 +307,16 @@ namespace DnpRunner {
         PulseSequence seq,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
-        int ncores)
+        int ncores,
+        size_t sampling_step_size)
     {
       auto results = calcPowderBuildUp(
           m, g, p, spin_sys, seq, 
-          acq_spin, spin_sys_eulers, ncores);
+          acq_spin, spin_sys_eulers, ncores, false, sampling_step_size);
       const bool has_mas = std::abs(p.mas_frequency) > eps;
       if(has_mas) {
         const auto ref_intensities = calcPowderBuildUp(
-            m, g, p, spin_sys, seq, acq_spin, spin_sys_eulers, ncores, true);
+            m, g, p, spin_sys, seq, acq_spin, spin_sys_eulers, ncores, true, sampling_step_size);
         for(size_t i = 0; i < results.size(); ++i){
           const double temp_ref = 
             ref_intensities[i].second + (std::abs(ref_intensities[i].second) < eps);
@@ -347,7 +348,8 @@ namespace DnpRunner {
         const SpinType &acq_spin,
         const std::vector<Euler<>> &eulers,
         int ncores,
-        bool ignore_all_power)
+        bool ignore_all_power,
+        size_t sampling_step_size)
     {
       std::vector<std::pair<double, double>> results;
       const double scaling_factor = 1.0 / static_cast<double>(eulers.size());
@@ -356,14 +358,14 @@ namespace DnpRunner {
 #endif
       if(eulers.size() == 1) {
         auto xtal_results = calcBuildUp(m, g, p, spin_sys, seq,
-            acq_spin, eulers[0], ignore_all_power);
+            acq_spin, eulers[0], ignore_all_power, sampling_step_size);
         std::cout << std::endl;
         return xtal_results;
       }
       else if(ncores == 1) {
         for(const auto &euler : eulers){
           auto xtal_results = calcBuildUp(m, g, p, spin_sys, seq,
-              acq_spin, euler, ignore_all_power);
+              acq_spin, euler, ignore_all_power, sampling_step_size);
           if(results.size() == 0){  // initial crystal point
             for(const auto &pt_res : xtal_results){
               const double temp = pt_res.second * std::sin(euler.beta());
@@ -389,7 +391,7 @@ namespace DnpRunner {
         for(const auto &euler : eulers){
           auto task = [=](){
             auto xtal_results = 
-              calcBuildUp(m, g, p, spin_sys, seq, acq_spin, euler, ignore_all_power);
+              calcBuildUp(m, g, p, spin_sys, seq, acq_spin, euler, ignore_all_power, sampling_step_size);
             const double factor = std::sin(euler.beta());
             for(auto &xtal_result : xtal_results){
               xtal_result.second *= factor;
@@ -437,7 +439,8 @@ namespace DnpRunner {
         PulseSequence seq,
         const SpinType &acq_spin,
         const Euler<> &sample_euler,
-        bool ignore_all_power)
+        bool ignore_all_power,
+        size_t sampling_step_size)
     {
       // Active Rotation
       const Euler<> spin_sys_euler = sample_euler * spin_sys.getEuler();
@@ -557,7 +560,7 @@ namespace DnpRunner {
                 packets, rpackets, hamiltonian_offset,
                 spin_sys_euler, mas_angle,// g, 
                 inc, comp_size, 
-                mas_inc_cnt, total_rotor_cnt, p.temperature);
+                mas_inc_cnt, total_rotor_cnt, p.temperature, sampling_step_size);
           t += static_cast<double>(comp_size) * inc;
           mas_angle.gamma(t * p.mas_frequency * 2.0 * pi);
           std::copy(temp_results.begin(), temp_results.end(), 
@@ -603,6 +606,7 @@ namespace DnpRunner {
           //     << "\nrotate_mat_super:\n" << rotate_mat_super
           //     << "\nrotate_mat_super_inv:\n" << rotate_mat_super_inv << endl;
 #endif
+          size_t counter = 0;   ///< for sampling
           while(comp_size >= mas_inc_cnt){
 #ifdef DNPSOUP_VERBOSE
             cout << "in static case, call evolve() with comp_size: " << comp_size << endl;
@@ -614,10 +618,13 @@ namespace DnpRunner {
                 scaling_factor,
                 rotate_mat_super, rotate_mat_super_inv);
             t += inc * static_cast<double>(mas_inc_cnt);
-            double val = ::dnpsoup::projectionNorm(
-                rho0_evolve_super, acq_mat_super).real();
-            results.push_back(make_pair(t, val));
+            if ((counter % sampling_step_size) == 0) {
+              double val = ::dnpsoup::projectionNorm(
+                  rho0_evolve_super, acq_mat_super).real();
+              results.push_back(make_pair(t, val));
+            }
             comp_size -= mas_inc_cnt;
+            ++counter;
           } // while
           if(comp_size > 0){
             std::tie(rotate_mat_super, rotate_mat_super_inv) = calcRotationSuperOps(
@@ -652,14 +659,15 @@ namespace DnpRunner {
         const SpinSys &spin_sys,
         PulseSequence seq,
         const SpinType &acq_spin,
-        const Euler<> &sample_euler)
+        const Euler<> &sample_euler,
+        size_t sampling_step_size)
     {
       auto intensities = calcBuildUp(
-          m, g, p, spin_sys, seq, acq_spin, sample_euler);
+          m, g, p, spin_sys, seq, acq_spin, sample_euler, sampling_step_size);
       const bool has_mas = std::abs(p.mas_frequency) > eps;
       if(has_mas) {
         const auto ref_intensities = calcBuildUp(
-          m, g, p, spin_sys, seq, acq_spin, sample_euler, true);
+          m, g, p, spin_sys, seq, acq_spin, sample_euler, true, sampling_step_size);
         for(size_t i = 0; i < intensities.size(); ++i) {
           const double val = ref_intensities[i].second + (std::abs(ref_intensities[i].second) < eps);
           intensities[i].second /= val;
