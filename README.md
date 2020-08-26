@@ -12,7 +12,7 @@ git clone --recursive git@bitbucket.org:cyang019/dnpsoup.git
 ```
 
 
-### Build
+### Install Dependencies
 
 #### Ubuntu
 
@@ -20,10 +20,22 @@ git clone --recursive git@bitbucket.org:cyang019/dnpsoup.git
 # install dependencies
 apt-get update
 apt-get install -y g++ git cmake ninja-build libopenblas-dev liblapacke-dev libpthread-stubs0-dev gfortran libatlas-base-dev
+```
 
+#### Manjaro Linux
+
+```bash
+# install dependencies
+sudo pacman -Syu clang++ cmake ninja git openblas lapacke
+```
+
+### Build
+
+```bash
 # can put this line in .bashrc
 export OMP_NUM_THREADS=1
 
+# in the root directory of dnpsoup
 mkdir build
 cd build
 cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release
@@ -38,9 +50,11 @@ ninja
 #### To execute dnpsoup
 
 ``` bash
+# in the root directory of dnpsoup
 ./build/dnpsoup_cli/dnpsoup_exec [input json file path] [output file path]
 ```
 
 #### Examples
-[Examples](./examples/inputs/)
+
+[Sample Input Scripts](./examples/inputs/)
 
