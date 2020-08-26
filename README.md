@@ -17,16 +17,21 @@ git clone --recursive git@bitbucket.org:cyang019/dnpsoup.git
 #### Ubuntu
 
 ``` bash
-# install dependencies
-apt-get update
-apt-get install -y g++ git cmake ninja-build libopenblas-dev liblapacke-dev libpthread-stubs0-dev gfortran libatlas-base-dev
+sudo apt-get update
+sudo apt-get install -y g++ git cmake ninja-build libopenblas-dev liblapacke-dev libpthread-stubs0-dev gfortran libatlas-base-dev
 ```
 
 #### Manjaro Linux
 
 ```bash
-# install dependencies
 sudo pacman -Syu clang++ cmake ninja git openblas lapacke
+```
+
+#### MacOS
+
+```bash
+# homebrew
+brew install cmake ninja git
 ```
 
 ### Build
