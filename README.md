@@ -24,7 +24,7 @@ sudo apt-get install -y g++ git cmake ninja-build libopenblas-dev liblapacke-dev
 #### Manjaro Linux
 
 ```bash
-sudo pacman -Syu clang++ cmake ninja git openblas lapacke
+sudo pacman -Syu clang cmake ninja git openblas lapacke
 ```
 
 #### MacOS
