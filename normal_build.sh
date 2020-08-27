@@ -5,7 +5,7 @@ mkdir build
 cd build
 
 #EXTRA_FLAGS="-DDNPSOUP_VERBOSE=1"
-EXPTRA_FLAGS=""
+EXTRA_FLAGS=""
 
 #BUILD_TYPE=Debug
 BUILD_TYPE=Release
