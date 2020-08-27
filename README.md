@@ -65,3 +65,7 @@ ninja
 
 One can use **[dnpsoup_gui](https://github.com/cyang019/dnpsoup_gui)** to generate simulation inputs for convenience.
 
+### License
+
+[GPL v3](./LICENSE)
+
