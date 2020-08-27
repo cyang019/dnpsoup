@@ -63,5 +63,5 @@ ninja
 
 [Sample Input Scripts](./examples/inputs/)
 
-One can use [dnpsoup_gui](https://github.com/cyang019/dnpsoup_gui) to generate simulation inputs for convenience.
+One can use **[dnpsoup_gui](https://github.com/cyang019/dnpsoup_gui)** to generate simulation inputs for convenience.
 
