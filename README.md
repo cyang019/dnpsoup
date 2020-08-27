@@ -1,8 +1,8 @@
-# DNPSoup
+# dnpsoup
 
-> A DNP Simulation Program
+> A Dynamic Nuclear Polarization Simulation Program
 
-Simulate DNP Enhancements of FieldProfiles, Buildup Curves, and Parameter Scannings.
+Simulate polarization enhancement on nuclei(s) due to the presence of electron(s) and electromagnetic radiations, with or without Magic Angle Spinning (MAS).
 
 
 ### Download
@@ -62,4 +62,6 @@ ninja
 #### Examples
 
 [Sample Input Scripts](./examples/inputs/)
+
+One can use [dnpsoup_gui](https://github.com/cyang019/dnpsoup_gui) to generate simulation inputs for convenience.
 
