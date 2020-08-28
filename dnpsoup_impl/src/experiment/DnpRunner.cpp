@@ -697,6 +697,9 @@ namespace DnpRunner {
       std::vector<std::pair<double, double>> result;
       const bool has_mas = std::abs(p.mas_frequency) > eps;
       if(eulers.size() == 1){
+#ifndef NDEBUG
+        std::cout << "[calcFieldProfile()] eulers.size() == 1" << std::endl;
+#endif
         const auto &euler = eulers[0];
         ::lean::ThreadPool<pair<double, double>> tpool(ncores);
         //::lean::TaskQueue<pair<double, double>> tqueue;
@@ -730,11 +733,25 @@ namespace DnpRunner {
               cout.precision(ss);
             }
 #endif
-
             ref += (std::abs(ref) < eps);
             auto intensity = 
               calcIntensity(field, g, p, spin_sys, seq, acq_spin, euler);
             std::cout << "." << std::flush;
+#ifndef NDEBUG
+            if(std::isnan(intensity)) {
+              auto ss = cout.precision();
+              cout.precision(16);
+              cout << "[WARNING] calcFieldProfile() encountered NAN when calculating intensity with:\n";
+              cout << "\tfield: " << field.b0 << " T.\n";
+              cout << "\tg: " << g.em_frequency / 1e9 << " GHz.\n";
+              cout << "\tp: " << p << "\n";
+              //cout << "\tspin_sys:\n" << spin_sys << "\n";
+              //cout << "\tseq:\n";
+              cout << "\tacq_spin: " << toString(acq_spin) << "\n";
+              cout << "\teuler: " << euler << endl;
+              cout.precision(ss);
+            }
+#endif
             return make_pair(field.b0, intensity/ref);
           };
           tpool.add_task(std::move(task));
@@ -751,6 +768,14 @@ namespace DnpRunner {
         });
       }
       else {
+#ifndef NDEBUG
+        std::cout << "[calcFieldProfile()] eulers.size() = " << eulers.size() << std::endl;
+        std::cout << "  eulers:\n";
+        for(const auto &euler : eulers) {
+          std::cout << "    " << euler << "\n";
+        }
+        std::cout << std::endl;
+#endif
         for(const auto &field : fields){
           //constexpr double ref = 1.0;
           double ref = 0.0;
@@ -763,9 +788,33 @@ namespace DnpRunner {
                 field, g, p, spin_sys, PulseSequence(),
                 acq_spin, eulers, ncores);
           }
+#ifndef NDEBUG
+          if(std::isnan(ref)) {
+            auto ss = cout.precision();
+            cout.precision(16);
+            cout << "[WARNING] calcFieldProfile() encountered NAN when calculating ref intensity with:\n";
+            cout << "\tfield: " << field.b0 << " T.\n";
+            cout << "\tg: " << g.em_frequency / 1e9 << " GHz.\n";
+            cout << "\tp: " << p << "\n";
+            cout << "\tacq_spin: " << toString(acq_spin) << "\n";
+            cout.precision(ss);
+          }
+#endif
           ref += (std::abs(ref) < eps);
           const double res = calcPowderIntensity(
               field, g, p, spin_sys, seq, acq_spin, eulers, ncores);
+#ifndef NDEBUG
+          if(std::isnan(res)) {
+            auto ss = cout.precision();
+            cout.precision(16);
+            cout << "[WARNING] calcFieldProfile() encountered NAN when calculating intensity with:\n";
+            cout << "\tfield: " << field.b0 << " T.\n";
+            cout << "\tg: " << g.em_frequency / 1e9 << " GHz.\n";
+            cout << "\tp: " << p << "\n";
+            cout << "\tacq_spin: " << toString(acq_spin) << "\n";
+            cout.precision(ss);
+          }
+#endif
           const double ratio = res/ref;
           result.push_back(std::make_pair(field.b0, ratio));
           std::cout << "." << std::flush;
@@ -854,7 +903,7 @@ namespace DnpRunner {
         bool ignore_all_power)
     {
       double result = 0.0;
-      const double scaling_factor = 1.0 / static_cast<double>(eulers.size());
+      const double scaling_factor = 1.0 / static_cast<double>(eulers.size() + (eulers.size() == 0));
       if(ncores == 1) {
         for(const auto &e : eulers){
           auto xtal_intensity = 
