@@ -1,10 +1,13 @@
+#include "configure_dnpsoup.h"
 #include "engine.h"
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <chrono>
 #include <iomanip>
-#include <filesystem>
+#ifndef APPLE
+  #include <filesystem>
+#endif
 
 using namespace std;
 
@@ -62,11 +65,13 @@ int main(int argc, char **argv)
         return 1;
       }
       
+#ifndef APPLE
       const auto output_dir = std::filesystem::path(argv[2]).remove_filename();
       if(!std::filesystem::exists(output_dir)) {
         std::filesystem::create_directory(output_dir);
         cout << "create directory: " << output_dir << endl;
       }
+#endif
       auto start_time = chrono::high_resolution_clock::now();
 	  	dnpsoup_exec0(argv[1], argv[2]);
       auto end_time = chrono::high_resolution_clock::now();
@@ -96,11 +101,13 @@ int main(int argc, char **argv)
         return 1;
       }
       
+#ifndef APPLE
       const auto output_dir = std::filesystem::path(argv[4]).remove_filename();
       if(!std::filesystem::exists(output_dir)) {
         std::filesystem::create_directory(output_dir);
         cout << "create directory: " << output_dir << endl;
       }
+#endif
       auto start_time = chrono::high_resolution_clock::now();
 	  	dnpsoup_exec(argv[1], argv[2], argv[3], argv[4]);
       auto end_time = chrono::high_resolution_clock::now();

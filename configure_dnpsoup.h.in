@@ -3,6 +3,7 @@
 
 #define EXAMPLE_DIR "@PROJECT_SOURCE_DIR@/examples"
 #cmakedefine DNPSOUP_VERBOSE
+#cmakedefine APPLE
 
 #endif
 

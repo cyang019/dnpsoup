@@ -2,24 +2,24 @@ FROM ubuntu:latest
 
 WORKDIR /usr/src/dnpsoup
 
-COPY CMakeLists.txt .
-COPY cmake .
-COPY matrix .
-COPY configure_dnpsoup.h.in .
-COPY tests .
-COPY dnpsoup_cli .
-COPY dnpsoup_impl .
+RUN apt-get update \
+    && ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime \
+    && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get install -y tzdata \
+    && dpkg-reconfigure --frontend noninteractive tzdata \
+    && apt-get install -y g++ git cmake ninja-build libopenblas-dev liblapacke-dev libpthread-stubs0-dev gfortran
 
-RUN apt-get update
-RUN ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
-RUN export DEBIAN_FRONTEND=noninteractive
-RUN apt-get install -y tzdata
-RUN dpkg-reconfigure --frontend noninteractive tzdata
-RUN apt-get install -y g++ git cmake ninja-build libopenblas-dev liblapacke-dev libpthread-stubs0-dev gfortran
-RUN mkdir build
-RUN cd build
-RUN cmake .. -GNinja
-RUN ninja
-RUN cd ..
+COPY ./cmake ./cmake
+COPY ./configure_dnpsoup.h.in ./
+COPY ./CMakeLists.txt ./
+COPY ./matrix/matrix_impl ./matrix/matrix_impl
+COPY ./tests ./tests
+COPY ./dnpsoup_cli ./dnpsoup_cli
+COPY ./dnpsoup_impl ./dnpsoup_impl
 
-CMD ["./build/dnpsoup_cli/dnpsoup_exec", "input.json", "output.result"]
+RUN mkdir build \
+    && cd build \
+    && cmake .. -GNinja \
+    && ninja
+
+CMD ["./build/dnpsoup_cli/dnpsoup_exec", "mounted/input.json", "mounted/output.result"]
