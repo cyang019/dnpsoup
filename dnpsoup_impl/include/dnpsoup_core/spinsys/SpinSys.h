@@ -95,6 +95,8 @@ namespace dnpsoup {
     SpinSys& clearObservables();
     SpinSys& clear();
 
+    SpinSys& addSpinGroup(const std::vector<SpinId> &);
+
     std::size_t calcTotalDimension() const;
     std::vector<std::size_t> calcDimensions() const;
 
@@ -103,6 +105,8 @@ namespace dnpsoup {
     std::size_t spinCount() const;
     std::size_t typeCount() const;
     std::size_t observableCount() const;
+    std::size_t groupCount() const { return m_groups.size(); }
+    std::vector<SpinSys> genSubSpinSys() const;
   private:
     std::map<SpinId, SpinEntity> m_spins;
     std::unordered_map<SpinType, std::vector<SpinId>> m_spin_types;
@@ -110,6 +114,7 @@ namespace dnpsoup {
     Euler<> m_e;
     std::size_t m_ntotal;
     std::vector<SpinType> m_irradiated_types;
+    std::vector<std::vector<SpinId>> m_groups;  ///< groups of spins
 
     /// need to use position info from SpinSys
     template<typename T>

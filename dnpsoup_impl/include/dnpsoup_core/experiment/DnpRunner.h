@@ -31,6 +31,16 @@ namespace dnpsoup {
         const SpinType &acq_spin,
         const Euler<> &sample_euler,
         bool ignore_all_power=false);
+ 
+    double calcIntensityAveraged(
+        const Magnet &m, 
+        const Gyrotron &g,
+        const Probe &p,
+        const SpinSys &spin_sys,
+        PulseSequence seq,
+        const SpinType &acq_spin,
+        const Euler<> &sample_euler,
+        bool ignore_all_power=false);
 
     std::vector<std::pair<double, double>> calcBuildUp(
         const Magnet &m, 

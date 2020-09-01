@@ -353,6 +353,12 @@ namespace dnpsoup {
     return *this;
   }
 
+  SpinSys& SpinSys::addSpinGroup(const std::vector<SpinId> &spin_ids)
+  {
+    m_groups.push_back(spin_ids);
+    return *this;
+  }
+
   std::size_t SpinSys::calcTotalDimension() const 
   {
     std::size_t total_dim = 0;
@@ -404,6 +410,21 @@ namespace dnpsoup {
   std::size_t SpinSys::observableCount() const
   {
     return m_observables.size();
+  }
+
+  std::vector<SpinSys> SpinSys::genSubSpinSys() const
+  {
+    std::vector<SpinSys> result;
+    for(const std::vector<SpinId> &group : m_groups) {
+      SpinSys tmp = *this;
+      for(const auto &spin_info_pair : m_spins) {
+        if(std::find(group.begin(), group.end(), spin_info_pair.first) == group.end()) {
+          tmp.removeSpin(spin_info_pair.first);
+        }
+      }
+    }
+
+    return result;
   }
 
   std::ostream& operator<<(std::ostream &os, const SpinSys &spin_sys)
@@ -612,6 +633,16 @@ namespace dnpsoup {
           std::cout << "[interaction] shielding " << sid << "."
                     << std::endl;
 #endif
+        }
+      }
+      // spin groups
+      if(j.find("spin-groups") != j.end()) {
+        for(const auto &spin_group : j["spin-groups"]) {
+          vector<SpinId> tmp;
+          for(const auto &spin_id_js : spin_group) {
+            tmp.push_back(SpinId(spin_id_js.get<int>()));
+          }
+          spin_sys.addSpinGroup(tmp);
         }
       }
     }

@@ -299,6 +299,31 @@ namespace DnpRunner {
       return result;
     }
 
+    double calcIntensityAveraged(
+        const Magnet &m, 
+        const Gyrotron &g,
+        const Probe &p,
+        const SpinSys &spin_sys,
+        PulseSequence seq,
+        const SpinType &acq_spin,
+        const Euler<> &sample_euler,
+        bool ignore_all_power=false)
+    {
+      if (spin_sys.groupCount() == 0) {
+        return calcIntensity(m, g, p, spin_sys, seq, acq_spin, sample_euler, ignore_all_power);
+      } else {
+        double result = 0.0;
+        auto sub_spinsystems = spin_sys.genSubSpinSys();
+        for(const auto &sub_sys : sub_spinsystems) {
+          const double temp = calcIntensity(m, g, p, sub_sys,
+              seq, acq_spin, sample_euler, ignore_all_power);
+          result += temp;
+        }
+        result /= static_cast<double>(spin_sys.groupCount());
+        return result;
+      }
+    }
+
     std::vector<std::pair<double, double>> calcPowderBuildUpEnhancement(
         const Magnet &m, 
         const Gyrotron &g,
@@ -708,10 +733,10 @@ namespace DnpRunner {
             double ref = 0.0;
             if(has_mas) {
               ref = 
-                calcIntensity(field, g, p, spin_sys, seq, acq_spin, euler, true);
+                calcIntensityAveraged(field, g, p, spin_sys, seq, acq_spin, euler, true);
             } else {
               ref = 
-                calcIntensity(field, g, p, spin_sys, PulseSequence(), acq_spin, euler);
+                calcIntensityAveraged(field, g, p, spin_sys, PulseSequence(), acq_spin, euler);
             }
 #ifndef NDEBUG
             if(std::isnan(ref)) {
@@ -735,7 +760,7 @@ namespace DnpRunner {
 #endif
             ref += (std::abs(ref) < eps);
             auto intensity = 
-              calcIntensity(field, g, p, spin_sys, seq, acq_spin, euler);
+              calcIntensityAveraged(field, g, p, spin_sys, seq, acq_spin, euler);
             std::cout << "." << std::flush;
 #ifndef NDEBUG
             if(std::isnan(intensity)) {
@@ -907,7 +932,7 @@ namespace DnpRunner {
       if(ncores == 1) {
         for(const auto &e : eulers){
           auto xtal_intensity = 
-            calcIntensity(m, g, p, spin_sys, seq, acq_spin, e, ignore_all_power);
+            calcIntensityAveraged(m, g, p, spin_sys, seq, acq_spin, e, ignore_all_power);
 #ifndef NDEBUG
           cout << "[calcPowderIntensity()] \n\tEuler "
                << e << " : \t\t" << xtal_intensity << endl;
@@ -922,7 +947,7 @@ namespace DnpRunner {
         for(const auto &e : eulers){
           auto task = [=](){
             auto xtal_intensity = 
-              calcIntensity(m, g, p, spin_sys, seq, acq_spin, e, ignore_all_power);
+              calcIntensityAveraged(m, g, p, spin_sys, seq, acq_spin, e, ignore_all_power);
 #ifndef NDEBUG
             cout << "[calcPowderIntensity()] \n\tEuler "
                  << e << " : \t\t" << xtal_intensity << endl;
