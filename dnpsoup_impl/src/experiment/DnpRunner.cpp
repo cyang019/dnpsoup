@@ -307,7 +307,7 @@ namespace DnpRunner {
         PulseSequence seq,
         const SpinType &acq_spin,
         const Euler<> &sample_euler,
-        bool ignore_all_power=false)
+        bool ignore_all_power)
     {
       if (spin_sys.groupCount() == 0) {
         return calcIntensity(m, g, p, spin_sys, seq, acq_spin, sample_euler, ignore_all_power);
