@@ -14,7 +14,7 @@ OUTPUTPATH=$OUTPUTDIR/$CATEGORYNAME/$FILENAME.result$VERSION$APPENDIX
 
 date
 echo input: $INPUTPATH
-./fast_exec_dnpsoup $INPUTPATH $OUTPUTPATH
+./build/dnpsoup_cli/dnpsoup_exec $INPUTPATH $OUTPUTPATH
 echo input: $INPUTPATH
 echo output: $OUTPUTPATH
 echo "finished."

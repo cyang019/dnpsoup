@@ -151,8 +151,8 @@ namespace dnpsoup {
   {
     const auto t = m_spins.at(sid).getSpinType();
     m_spins.erase(sid);
-    auto vec = m_spin_types.at(t);
-    m_spin_types.at(t).erase(std::remove(vec.begin(), vec.end(), sid), vec.end());
+    std::vector<SpinId> &vec = m_spin_types.at(t);
+    vec.erase(std::remove(vec.begin(), vec.end(), sid), vec.end());
 
     std::vector<ObservableId> obs_to_remove;
     for(const auto &ob_pair : m_observables){
@@ -421,9 +421,11 @@ namespace dnpsoup {
   {
     std::vector<SpinSys> result;
     for(const std::vector<SpinId> &group : m_groups) {
-      SpinSys tmp;
-      for(const SpinId &sid : group) {
-        tmp.addSpin(sid, m_spins[sid]);
+      SpinSys tmp = *this;
+      for(const auto &[sid, spin_entity] : m_spins) {
+        if(std::find(group.begin(), group.end(), sid) == group.end()) {
+          tmp.removeSpin(sid);
+        }
       }
       result.push_back(tmp);
     }
