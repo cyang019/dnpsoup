@@ -25,10 +25,10 @@ endif()
 #  target_compile_options(dnpsoup_core PUBLIC -Wall -Wextra -Wpedantic -Werror)  
 #endif()
 
+target_compile_options(dnpsoup_core PUBLIC -Wall -Wextra -Wpedantic)
+
 find_package(BLAS REQUIRED)
 find_package(LAPACK REQUIRED)
-
-target_compile_options(dnpsoup_core PUBLIC -Wall -Wextra -Wpedantic)
 
 target_link_libraries(dnpsoup_core PUBLIC matrix ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
 message(STATUS "dnpsoup_core linked to matrix...")

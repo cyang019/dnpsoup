@@ -27,12 +27,14 @@ else()
 endif()
 #target_compile_options(dnpsoup_core INTERFACE -Wall -Wextra -Wpedantic -Werror)  
 
+find_package(BLAS REQUIRED)
+find_package(LAPACK REQUIRED)
+
 if(USE_EMCC)
   target_link_libraries(dnpsoup_exec PRIVATE "${CMAKE_CURRENT_LIST_DIR}/dnpsoup_core")
 else()
-  target_link_libraries(dnpsoup_exec PRIVATE dnpsoup_core)
+  target_link_libraries(dnpsoup_exec PRIVATE dnpsoup_core matrix ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
 endif()
-#target_link_libraries(dnpsoup_core INTERFACE matrix)
 message(STATUS "ex_dnpsoup linked to dnpsoup_core...")
 
 target_include_directories(dnpsoup_exec
