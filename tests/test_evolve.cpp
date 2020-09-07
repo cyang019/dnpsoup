@@ -21,7 +21,7 @@ namespace {
     using namespace std;
     using namespace dnpsoup;
 
-    TEST(TestDnproup, EvolutionSSI){
+    TEST(TestDnpsoup, EvolutionSSI){
       std::string totapol_js_file = 
         std::string(EXAMPLE_DIR) + "/spinsys/TOTAPOL.json";
       std::ifstream spinsys_stream;
