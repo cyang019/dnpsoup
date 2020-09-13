@@ -1,0 +1,22 @@
+# ignore local build
+build/*
+deprecated/*
+dist/*
+
+# ignore data analytics
+dnpsoup_analytics/*
+results/*
+resources/*
+prototype/*
+
+matrix/build/*
+matrix/tests/*
+
+emcc_scripts/*
+
+# ignore profiling files
+perf.data
+perf.data.old
+
+*log
+

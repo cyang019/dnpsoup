@@ -307,16 +307,25 @@ namespace DnpRunner {
         PulseSequence seq,
         const SpinType &acq_spin,
         const Euler<> &sample_euler,
-        bool ignore_all_power=false)
+        bool ignore_all_power)
     {
       if (spin_sys.groupCount() == 0) {
+#ifndef NDEBUG
+        cout << "[calcIntensityAveraged()] fall back to calcIntensity()." << endl;
+#endif
         return calcIntensity(m, g, p, spin_sys, seq, acq_spin, sample_euler, ignore_all_power);
       } else {
         double result = 0.0;
         auto sub_spinsystems = spin_sys.genSubSpinSys();
+#ifndef NDEBUG
+        cout << "[calcIntensityAveraged()] number of groups: " << sub_spinsystems.size() << endl;
+#endif
         for(const auto &sub_sys : sub_spinsystems) {
           const double temp = calcIntensity(m, g, p, sub_sys,
               seq, acq_spin, sample_euler, ignore_all_power);
+#ifndef NDEBUG
+          cout << "[calcIntesityAveraged()] sub system intensity: " << temp << endl;
+#endif
           result += temp;
         }
         result /= static_cast<double>(spin_sys.groupCount());

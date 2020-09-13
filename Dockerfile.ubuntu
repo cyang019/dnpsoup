@@ -7,7 +7,9 @@ RUN apt-get update \
     && export DEBIAN_FRONTEND=noninteractive \
     && apt-get install -y tzdata \
     && dpkg-reconfigure --frontend noninteractive tzdata \
-    && apt-get install -y g++ git cmake ninja-build libopenblas-dev liblapacke-dev libpthread-stubs0-dev gfortran
+    && apt-get install -y g++ git cmake ninja-build libopenblas-dev liblapack-dev liblapacke-dev libpthread-stubs0-dev gfortran
+
+WORKDIR /usr/src/dnpsoup
 
 COPY ./cmake ./cmake
 COPY ./configure_dnpsoup.h.in ./
@@ -16,10 +18,12 @@ COPY ./matrix/matrix_impl ./matrix/matrix_impl
 COPY ./tests ./tests
 COPY ./dnpsoup_cli ./dnpsoup_cli
 COPY ./dnpsoup_impl ./dnpsoup_impl
-
+COPY ./examples ./examples
 RUN mkdir build \
     && cd build \
-    && cmake .. -GNinja \
+    && cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release \
     && ninja
 
-CMD ["./build/dnpsoup_cli/dnpsoup_exec", "mounted/input.json", "mounted/output.result"]
+RUN ./build/tests/test_dnpsoup_core
+
+CMD ["/bin/bash"]

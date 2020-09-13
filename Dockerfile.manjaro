@@ -1,0 +1,21 @@
+FROM manjarolinux/base:latest
+
+RUN pacman -Sy --noconfirm clang cmake ninja git cblas openblas lapacke lapack
+
+WORKDIR /usr/src/dnpsoup
+
+COPY ./cmake ./cmake
+COPY ./configure_dnpsoup.h.in ./
+COPY ./CMakeLists.txt ./
+COPY ./matrix/matrix_impl ./matrix/matrix_impl
+COPY ./tests ./tests
+COPY ./dnpsoup_cli ./dnpsoup_cli
+COPY ./dnpsoup_impl ./dnpsoup_impl
+RUN mkdir build \
+    && cd build \
+    && cmake .. -GNinja \
+    && ninja
+
+RUN ./build/tests/test_dnpsoup_core
+
+CMD ["/bin/bash"]

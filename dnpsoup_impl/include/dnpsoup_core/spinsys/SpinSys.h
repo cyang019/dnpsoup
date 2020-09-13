@@ -40,6 +40,10 @@ namespace dnpsoup {
     friend std::istream& operator>>(std::istream &is, SpinSys &spin_sys);
   public:
     SpinSys();
+    SpinSys(const SpinSys &) = default;
+    SpinSys& operator=(const SpinSys &) = default;
+    SpinSys(SpinSys &&) noexcept = default;
+    SpinSys& operator=(SpinSys &&) noexcept = default;
 
     SpinSys& addSpin(const SpinId &, const SpinEntity &, bool t_auto_add=true); 
     SpinSys& addSpin(int, const SpinEntity &, bool t_auto_add=true); 
@@ -93,6 +97,7 @@ namespace dnpsoup {
     SpinSys& rotate(const Euler<> &e);
 
     SpinSys& clearObservables();
+    SpinSys& clearGroups();
     SpinSys& clear();
 
     SpinSys& addSpinGroup(const std::vector<SpinId> &);

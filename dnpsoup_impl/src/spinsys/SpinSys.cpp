@@ -151,8 +151,8 @@ namespace dnpsoup {
   {
     const auto t = m_spins.at(sid).getSpinType();
     m_spins.erase(sid);
-    auto vec = m_spin_types.at(t);
-    m_spin_types.at(t).erase(std::remove(vec.begin(), vec.end(), sid), vec.end());
+    std::vector<SpinId> &vec = m_spin_types.at(t);
+    vec.erase(std::remove(vec.begin(), vec.end(), sid), vec.end());
 
     std::vector<ObservableId> obs_to_remove;
     for(const auto &ob_pair : m_observables){
@@ -166,6 +166,7 @@ namespace dnpsoup {
     }
 
     m_ntotal = this->calcTotalDimension();
+    m_groups.clear();
     return *this;
   }
 
@@ -345,11 +346,15 @@ namespace dnpsoup {
   SpinSys& SpinSys::clearObservables()
   { m_observables.clear(); return *this; }
 
+  SpinSys& SpinSys::clearGroups()
+  { m_groups.clear(); return *this; }
+
   SpinSys& SpinSys::clear()
   {
     m_observables.clear();
     m_spins.clear();
     m_ntotal = 0;
+    m_groups.clear();
     return *this;
   }
 
@@ -417,11 +422,12 @@ namespace dnpsoup {
     std::vector<SpinSys> result;
     for(const std::vector<SpinId> &group : m_groups) {
       SpinSys tmp = *this;
-      for(const auto &spin_info_pair : m_spins) {
-        if(std::find(group.begin(), group.end(), spin_info_pair.first) == group.end()) {
-          tmp.removeSpin(spin_info_pair.first);
+      for(const auto &[sid, spin_entity] : m_spins) {
+        if(std::find(group.begin(), group.end(), sid) == group.end()) {
+          tmp.removeSpin(sid);
         }
       }
+      result.push_back(tmp);
     }
 
     return result;
@@ -635,15 +641,21 @@ namespace dnpsoup {
 #endif
         }
       }
-      // spin groups
-      if(j.find("spin-groups") != j.end()) {
-        for(const auto &spin_group : j["spin-groups"]) {
-          vector<SpinId> tmp;
-          for(const auto &spin_id_js : spin_group) {
-            tmp.push_back(SpinId(spin_id_js.get<int>()));
-          }
-          spin_sys.addSpinGroup(tmp);
+    }
+    // spin groups
+    if(j.find("spin-groups") != j.end()) {
+      std::cout << "Found spin groups..." << std::endl;
+      for(const auto &spin_group : j["spin-groups"]) {
+        vector<SpinId> tmp;
+        for(const auto &spin_id_js : spin_group) {
+          tmp.push_back(SpinId(spin_id_js.get<int>()));
         }
+        std::cout << "  Group Members: ";
+        for(const auto &val : tmp) {
+          std::cout << toString(val) << " ";
+        }
+        std::cout << std::endl;
+        spin_sys.addSpinGroup(tmp);
       }
     }
 
