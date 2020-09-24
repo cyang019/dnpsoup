@@ -164,9 +164,14 @@ namespace dnpsoup {
     for(const auto &oid : obs_to_remove){
       m_observables.erase(oid);
     }
-
     m_ntotal = this->calcTotalDimension();
     m_groups.clear();
+
+    // refresh observables for emr
+    auto found = find(m_irradiated_types.begin(), m_irradiated_types.end(), t);
+    if(found != m_irradiated_types.end()) {
+      this->irradiateOn(t);
+    }
     return *this;
   }
 
@@ -302,7 +307,10 @@ namespace dnpsoup {
     irradiation.setProperty(p);
     auto oid_name = ObservableId(InteractionType::EMR, t);
     m_observables[oid_name] = irradiation;
-    m_irradiated_types.push_back(t);
+    auto found = find(m_irradiated_types.begin(), m_irradiated_types.end(), t);
+    if (found == m_irradiated_types.end()) {
+      m_irradiated_types.push_back(t);
+    }
     return *this;
   }
 

@@ -99,9 +99,20 @@ namespace dnpsoup {
         {
 #ifndef NDEBUG
           cout << "\tpulse" << "\n";
+          cout << "update with default component..." << endl;
 #endif
           packets->updatePulseSeqComponent(default_comp);
+#ifndef NDEBUG
+          cout << "update finished..." << endl;
+          const auto comp_names = ptr_section->getNames();
+          for(const auto &comp_name_ref : comp_names) {
+            std::cout << "[comp name]: " << comp_name_ref << std::endl;
+          }
+#endif
           const string comp_name = ptr_section->getNames()[0];
+#ifndef NDEBUG
+          cout << "\t[Pulse Type Component Name] " << comp_name << endl;
+#endif
           const auto comp = ptr_components->at(comp_name);
           packets->updatePulseSeqComponent(comp);
 
@@ -196,6 +207,9 @@ namespace dnpsoup {
     else if(terms.size() == 1 && n == 1) return terms[0];
 
     const size_t cnt = terms.size();
+#ifndef NDEBUG
+    cout << "terms.size() = " << cnt << endl;
+#endif
     // in total terms.size() multiples + 0th term
     // matrices
     vector<MatrixCxDbl> term_residuals;
@@ -316,11 +330,20 @@ namespace dnpsoup {
     vector<string> sections_in_calc_order = findSectionOrder(ptr_sections);
     vector<MasterEqTerms> term_per_section;
     for(const string &name : sections_in_calc_order) {
+#ifndef NDEBUG
+      std::cout << "[genMasterEqTerms()] name of sections_in_calc_order: " << name << std::endl;
+#endif
       const SubSeqInterface *ptr_sec = ptr_sections->at(name).get();
       if(ptr_sec->isPure()){
+#ifndef NDEBUG
+      std::cout << "[genMasterEqTerms()] entering genMasterEqTermsFromSingletonSeq()..." << std::endl;
+#endif
         auto [term, packets_temp] = genMasterEqTermsFromSingletonSeq(
               packets, rpackets, ham_offset, ptr_sec, ptr_components,
               irradiated, g, euler, temperature, inc);
+#ifndef NDEBUG
+      std::cout << "[genMasterEqTerms()] genMasterEqTermsFromSingletonSeq() finished..." << std::endl;
+#endif
         packets = packets_temp;
         term_per_section.push_back(std::move(term));
       } else {
@@ -352,7 +375,7 @@ namespace dnpsoup {
           }
         }
 #ifndef NDEBUG
-        cout << "terms to combine: ";
+        cout << "child terms to combine: ";
         for(const string &child : children) {
           cout << child << " ";
         }
@@ -369,31 +392,32 @@ namespace dnpsoup {
       finalTerms.push_back(term_per_section[idx]);
     }
 #ifndef NDEBUG
-        cout << "terms to combine: ";
-        for(const string &child : sections) {
-          cout << child << " ";
-        }
-        cout << "\n";
+    cout << "final terms to combine: ";
+    for(const string &child : sections) {
+      cout << child << " ";
+    }
+    cout << "\n";
 #endif
     MasterEqTerms result = combineMasterEqTerms(finalTerms, 1);
 
 #ifndef NDEBUG
-    if(std::isnan(result.c1(0,0).real())) {
+    std::cout << "Finished combineMasterEqTerms..." << std::endl;
+    if(result.c1.nelements() > 0 && std::isnan(result.c1(0,0).real())) {
       cout << "[WARNING] genMasterEqTerms result.c1 realpart has nan..." << endl;
     }
-    if(std::isnan(result.c1(0,0).imag())) {
+    if(result.c1.nelements() > 0 && std::isnan(result.c1(0,0).imag())) {
       cout << "[WARNING] genMasterEqTerms result.c1 imagpart has nan..." << endl;
     }
-    if(std::isnan(result.c1prime(0,0).real())) {
+    if(result.c1prime.nelements() > 0 && std::isnan(result.c1prime(0,0).real())) {
       cout << "[WARNING] genMasterEqTerms result.c1prime realpart has nan..." << endl;
     }
-    if(std::isnan(result.c1prime(0,0).imag())) {
+    if(result.c1prime.nelements() > 0 && std::isnan(result.c1prime(0,0).imag())) {
       cout << "[WARNING] genMasterEqTerms result.c1prime imagpart has nan..." << endl;
     }
-    if(std::isnan(result.E(0,0).real())) {
+    if(result.E.nelements() > 0 && std::isnan(result.E(0,0).real())) {
       cout << "[WARNING] genMasterEqTerms result.E realpart has nan..." << endl;
     }
-    if(std::isnan(result.E(0,0).imag())) {
+    if(result.E.nelements() > 0 && std::isnan(result.E(0,0).imag())) {
       cout << "[WARNING] genMasterEqTerms result.E imagpart has nan..." << endl;
     }
 #endif

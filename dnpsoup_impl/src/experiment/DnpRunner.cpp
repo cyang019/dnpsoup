@@ -210,9 +210,19 @@ namespace DnpRunner {
       /// via MasterEqTerms static case (MAS=0)
       // --------------------------------------------------------
       if(!has_mas) {
+#ifndef NDEBUG
+        cout << "entering genMasterEqTerms()..." << endl;
+#endif
         auto [terms, ptr_packets] = genMasterEqTerms(&packets, rpackets, 
             hamiltonian_offset, seq, irradiated_types, g, angle, p.temperature, inc);
+#ifndef NDEBUG
+        cout << "genMasterEqTerms() finished..." << endl;
+        cout << "entering evolve()..." << endl;
+#endif
         rho0_evolve_super = evolve(rho0_evolve_super, terms);
+#ifndef NDEBUG
+        cout << "evolve() finished..." << endl;
+#endif
       } else {  // MAS
         std::uint64_t comp_size = 0u;
         uint64_t idx = 0;
@@ -730,6 +740,13 @@ namespace DnpRunner {
     {
       std::vector<std::pair<double, double>> result;
       const bool has_mas = std::abs(p.mas_frequency) > eps;
+#ifndef NDEBUG
+      std::cout << "Fields:\n";
+      for(const auto &f : fields) {
+        std::cout << f.b0 << " ";
+      }
+      std::cout << endl;
+#endif
       if(eulers.size() == 1){
 #ifndef NDEBUG
         std::cout << "[calcFieldProfile()] eulers.size() == 1" << std::endl;
@@ -800,7 +817,7 @@ namespace DnpRunner {
               const pair<double, double> &val2){
               return val1.first < val2.first;
         });
-      }
+      } ///< eulers.size == 1
       else {
 #ifndef NDEBUG
         std::cout << "[calcFieldProfile()] eulers.size() = " << eulers.size() << std::endl;
@@ -812,6 +829,9 @@ namespace DnpRunner {
 #endif
         for(const auto &field : fields){
           //constexpr double ref = 1.0;
+#ifndef NDEBUG
+          std::cout << "[calcFieldProfile()] field: " << field.b0 << " T.\n";
+#endif 
           double ref = 0.0;
           if(has_mas) {
             ref = calcPowderIntensity(
@@ -835,6 +855,9 @@ namespace DnpRunner {
           }
 #endif
           ref += (std::abs(ref) < eps);
+#ifndef NDEBUG
+          std::cout << "reference intensity: " << ref << std::endl;
+#endif
           const double res = calcPowderIntensity(
               field, g, p, spin_sys, seq, acq_spin, eulers, ncores);
 #ifndef NDEBUG
@@ -848,6 +871,7 @@ namespace DnpRunner {
             cout << "\tacq_spin: " << toString(acq_spin) << "\n";
             cout.precision(ss);
           }
+          std::cout << "intensity: " << res << std::endl;
 #endif
           const double ratio = res/ref;
           result.push_back(std::make_pair(field.b0, ratio));

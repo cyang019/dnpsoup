@@ -1,6 +1,6 @@
 FROM manjarolinux/base:latest
 
-RUN pacman -Sy --noconfirm clang cmake ninja git cblas openblas lapacke lapack
+RUN pacman -Sy --noconfirm clang cmake ninja git openblas lapacke lapack
 
 WORKDIR /usr/src/dnpsoup
 
@@ -11,6 +11,7 @@ COPY ./matrix/matrix_impl ./matrix/matrix_impl
 COPY ./tests ./tests
 COPY ./dnpsoup_cli ./dnpsoup_cli
 COPY ./dnpsoup_impl ./dnpsoup_impl
+COPY ./examples ./examples
 RUN mkdir build \
     && cd build \
     && cmake .. -GNinja \
