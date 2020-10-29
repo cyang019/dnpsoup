@@ -6,6 +6,7 @@
 #include <iterator>
 #include <algorithm>
 #include <limits>
+#include <tuple>
 
 using namespace std;
 
@@ -65,6 +66,32 @@ namespace dnpsoup {
     return res;
   }
 
+  OperatorType extractFromSortedVecRelaxInfo(
+      const VecRelaxInfo &vec, const SpinId &sid)
+  {
+    if(vec.size() == 0) return OperatorType::Identity;
+
+    /// binary search, assuming vec already sorted by SpinId
+    size_t beg = 0;
+    size_t end = vec.size();
+    while(beg < end) {
+      size_t mid = (beg + end) / 2;
+      if(std::get<0>(vec[mid]) == sid) {
+        return vec[mid].second;
+      } else if(std::get<0>(vec[mid]) < sid) {
+        beg = mid + 1;
+      } else {
+        end = mid;
+      }
+    }
+    if(std::get<0>(vec[beg]) == sid) {
+      return vec[beg].second;
+    }
+    return OperatorType::Identity;
+  }
+
+  // ====================================================================
+
   SpinSys::SpinSys()
     : m_e(Euler<>(0.0,0.0,0.0)), m_ntotal(0)
   {}
@@ -123,6 +150,17 @@ namespace dnpsoup {
     SpinId id_name(id_val);
     auto s = SpinEntity(t, x, y, z);
     return addSpin(id_name, s, t_auto_add);
+  }
+
+  SpinSys& SpinSys::addCustomRelaxation(const VecRelaxInfo &vec, double t, double scale)
+  {
+    auto sorted_vec = vec;
+    sort(sorted_vec.begin(), sorted_vec.end(), 
+        [](const std::pair<SpinId, OperatorType> &lhs, const std::pair<SpinId, OperatorType> &rhs) {
+          return lhs.first < rhs.first;
+        });
+    m_custom_relaxation_info_list.push_back(make_tuple(sorted_vec, t, scale));
+    return *this;
   }
 
   SpinSys& SpinSys::setT1(const SpinId &sid, double t)
@@ -341,6 +379,34 @@ namespace dnpsoup {
       auto nbefore = calcDimBeforeId(m_spins, s.first);
       auto nafter = calcDimAfterId(m_spins, s.first);
       result.emplace_back(s.first, s.second, nbefore, nafter);
+    }
+    return result;
+  }
+
+  RelaxationPacketCollection SpinSys::summarizeRelaxationExtended() const
+  {
+    RelaxationPacketCollection result;
+    constexpr double dmax = std::numeric_limits<double>::max();
+    // t1 and t2
+    for(const auto &s : m_spins){
+      auto t1 = s.second.getT1();
+      auto t2 = s.second.getT2();
+      if(t1 > dmax && t2 > dmax) continue;  // if inf, skip
+      auto nbefore = calcDimBeforeId(m_spins, s.first);
+      auto nafter = calcDimAfterId(m_spins, s.first);
+      result.addRelaxationPacket(s.first, s.second, nbefore, nafter);
+    }
+    if(m_custom_relaxation_info_list.size() == 0) return result;
+
+    // customized relaxation operator
+    for(const auto &[relax_info, t, scale] : m_custom_relaxation_info_list) {
+      vector<pair<SpinType, OperatorType>> ops;
+      for(const auto &[sid, entity] : m_spins) {
+        auto s_t = entity.getSpinType();
+        auto otype = extractFromSortedVecRelaxInfo(relax_info, sid);
+        ops.push_back(make_pair(s_t, otype));
+      }
+      result.addCustomRelaxationPacket(ops, t, scale);
     }
     return result;
   }

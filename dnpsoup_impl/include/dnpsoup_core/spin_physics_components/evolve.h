@@ -57,6 +57,9 @@ namespace dnpsoup {
       const MatrixCxDbl &rho_ss,
       const std::vector<RelaxationPacket> &rpackets);
 
+  MatrixCxDbl calcGammaSuper(
+      const RelaxationPacketCollection &rpackets);
+
   /// @returns h_super, gamma_super_internal, rho_eq_super
   std::tuple<MatrixCxDbl, MatrixCxDbl, MatrixCxDbl> calcSuperOpsForMasterEq(
       const MatrixCxDbl &ham,
@@ -66,11 +69,25 @@ namespace dnpsoup {
       const std::vector<RelaxationPacket> &rpackets,
       double temperature);
 
+  std::tuple<MatrixCxDbl, MatrixCxDbl, MatrixCxDbl> calcSuperOpsForMasterEq(
+      const MatrixCxDbl &ham,
+      const MatrixCxDbl &ham_lab,
+      const MatrixCxDbl &rotate_mat_super,
+      const MatrixCxDbl &rotate_mat_super_inv,
+      const RelaxationPacketCollection &rpackets,
+      double temperature);
+
   /// @returns h_super, gamma_super_internal, rho_eq_super
   std::tuple<MatrixCxDbl, MatrixCxDbl, MatrixCxDbl> calcSuperOpsForMasterEq(
       const MatrixCxDbl &ham,
       const MatrixCxDbl &ham_lab,
       const std::vector<RelaxationPacket> &rpackets,
+      double temperature);
+
+  std::tuple<MatrixCxDbl, MatrixCxDbl, MatrixCxDbl> calcSuperOpsForMasterEq(
+      const MatrixCxDbl &ham,
+      const MatrixCxDbl &ham_lab,
+      const RelaxationPacketCollection &rpackets,
       double temperature);
 
   /// @returns rotate_mat_super, rotate_mat_super_inv
@@ -85,6 +102,9 @@ namespace dnpsoup {
   inline MatrixCxDbl calcLambdaSuper(
       const MatrixCxDbl &h_super, const MatrixCxDbl &gamma_super)
   {
+    if(gamma_super.nelements() == 0) {
+      return std::complex<double>(0, 1.0) * h_super;
+    }
     return std::complex<double>(0, 1.0) * h_super + gamma_super;
   }
 
@@ -121,6 +141,22 @@ namespace dnpsoup {
       std::uint64_t total_rotor_cnt,
       double temperature);
 
+  MatrixCxDbl evolveMASCnstEmr(
+      const MatrixCxDbl &rho_prev_super,
+      double mas_frequency,
+      //const pulseseq::Component &comp,
+      const PacketCollection &packets,
+      const RelaxationPacketCollection &rpackets,
+      const MatrixCxDbl &ham_offset,
+      const Euler<> &spin_sys_euler,
+      Euler<> magic_angle,
+      //const Gyrotron &g,
+      double inc, 
+      std::uint64_t cnt,
+      std::uint64_t mas_cnt,
+      std::uint64_t total_rotor_cnt,
+      double temperature);
+
   std::pair<std::vector<std::pair<double, double>>, MatrixCxDbl>
     evolveMASCnstEmr(
       const MatrixCxDbl &rho_prev_super,
@@ -131,6 +167,27 @@ namespace dnpsoup {
       //const pulseseq::Component &comp,
       const PacketCollection &packets,
       const std::vector<RelaxationPacket> &rpackets,
+      const MatrixCxDbl &ham_offset,
+      const Euler<> &spin_sys_euler,
+      Euler<> magic_angle,
+      //const Gyrotron &g,
+      double inc, 
+      std::uint64_t cnt,
+      std::uint64_t mas_cnt,
+      std::uint64_t total_rotor_cnt,
+      double temperature,
+      size_t sampling_step_size=1);
+
+  std::pair<std::vector<std::pair<double, double>>, MatrixCxDbl>
+    evolveMASCnstEmr(
+      const MatrixCxDbl &rho_prev_super,
+      const MatrixCxDbl &detect_op_super,
+      double t0,
+      double result_ref,
+      double mas_frequency,
+      //const pulseseq::Component &comp,
+      const PacketCollection &packets,
+      const RelaxationPacketCollection &rpackets,
       const MatrixCxDbl &ham_offset,
       const Euler<> &spin_sys_euler,
       Euler<> magic_angle,

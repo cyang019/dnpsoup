@@ -6,6 +6,8 @@
 #include "dnpsoup_core/spinsys/SpinEntity.h"
 #include "dnpsoup_core/spin_physics_components/spin.h"
 #include "dnpsoup_core/spin_physics_components/relaxation.h"
+#include <vector>
+#include <utility>
 
 
 namespace dnpsoup {
@@ -40,6 +42,39 @@ namespace dnpsoup {
     double m_t2;
   };
 
+  class CustomRelaxationPacket {
+  public:
+    CustomRelaxationPacket(
+        const std::vector<std::pair<SpinType, OperatorType>> &ops, double t, 
+        double scale=1.0);
+    CustomRelaxationPacket(const CustomRelaxationPacket &) = default;
+    CustomRelaxationPacket(CustomRelaxationPacket &&) noexcept = default;
+    CustomRelaxationPacket& operator=(const CustomRelaxationPacket &) = default;
+    CustomRelaxationPacket& operator=(CustomRelaxationPacket &&) noexcept = default;
+    ~CustomRelaxationPacket() {}
+
+    void setT(double t) { m_t = t; }
+    double getT() const { return m_t; }
+
+    MatrixCxDbl genSuperOp() const;
+  private:
+    std::vector<std::pair<SpinType, OperatorType>> m_ops;
+    MatrixCxDbl m_mat;
+    double m_t;
+  };
+
+  class RelaxationPacketCollection {
+  public:
+    MatrixCxDbl genMatrix() const;
+    void addRelaxationPacket(const SpinId &sid, const SpinEntity &sinfo,
+        std::size_t nbefore, std::size_t nafter);
+    void addCustomRelaxationPacket(
+        const std::vector<std::pair<SpinType, OperatorType>> &ops,
+        double t, double scale=1.0);
+  private:
+    std::vector<RelaxationPacket> m_rpackets;
+    std::vector<CustomRelaxationPacket> m_crpackets;
+  };
 } // namespace dnpsoup
 
 #endif

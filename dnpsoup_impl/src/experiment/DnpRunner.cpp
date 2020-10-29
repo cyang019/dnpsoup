@@ -134,7 +134,7 @@ namespace DnpRunner {
       const Euler<> spin_sys_euler = sample_euler * spin_sys.getEuler();
       auto packets = spin_sys.summarize<DnpExperiment>();
       auto offset_packets = spin_sys.summarizeOffset<DnpExperiment>();
-      auto rpackets = spin_sys.summarizeRelaxation();
+      auto rpackets = spin_sys.summarizeRelaxationExtended();
       auto acq_mat = spin_sys.acquireOn(acq_spin);
       auto acq_mat_super = ::dnpsoup::flatten(acq_mat, 'c');
       double mas_inc = p.mas_increment;
@@ -195,7 +195,8 @@ namespace DnpRunner {
 			const auto rho_ss_super = ::dnpsoup::flatten(rho0_lab, 'c');
       //auto rho0_evolve = rho0_lab;
       //auto rho0_evolve_super = ::dnpsoup::flatten(rho0_evolve, 'c');
-      const auto gamma_super = calcGammaSuper(rho0_lab, rpackets);
+      //const auto gamma_super = calcGammaSuper(rho0_lab, rpackets);
+      const auto gamma_super = calcGammaSuper(rpackets);
       const auto h_super = commutationSuperOp(hamiltonian);
       const auto super_op = calcLambdaSuper(h_super, gamma_super);
       const auto rho_eq_super = calcRhoDynamicEq(h_super, gamma_super, rho_ss_super);
@@ -492,7 +493,7 @@ namespace DnpRunner {
       constexpr double eps = std::numeric_limits<double>::epsilon();
       auto packets = spin_sys.summarize<DnpExperiment>();
       auto offset_packets = spin_sys.summarizeOffset<DnpExperiment>();
-      auto rpackets = spin_sys.summarizeRelaxation();
+      auto rpackets = spin_sys.summarizeRelaxationExtended();
       auto acq_mat = spin_sys.acquireOn(acq_spin);
       auto acq_mat_super = ::dnpsoup::flatten(acq_mat, 'c');
       double mas_inc = p.mas_increment;
@@ -562,7 +563,7 @@ namespace DnpRunner {
       const auto rho_ss_super = ::dnpsoup::flatten(rho0_lab, 'c');
       //auto rho0_evolve = rho0_lab;
       //auto rho0_evolve_super = ::dnpsoup::flatten(rho0_evolve, 'c');
-      MatrixCxDbl gamma_super = calcGammaSuper(rho0_lab, rpackets);
+      MatrixCxDbl gamma_super = calcGammaSuper(rpackets);
       const auto h_super = commutationSuperOp(hamiltonian);
       const auto super_op = calcLambdaSuper(h_super, gamma_super);
       const auto rho_eq_super = calcRhoDynamicEq(h_super, gamma_super, rho_ss_super);

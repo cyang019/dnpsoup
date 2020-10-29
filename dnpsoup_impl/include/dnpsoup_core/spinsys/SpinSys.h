@@ -35,6 +35,11 @@ namespace dnpsoup {
       const std::map<SpinId, SpinEntity> &spins, 
       const SpinId &sid1, const SpinId &sid2);
 
+  using VecRelaxInfo = std::vector<std::pair<SpinId, OperatorType>>;
+
+  OperatorType extractFromSortedVecRelaxInfo(
+      const VecRelaxInfo &vec, const SpinId &sid);
+
   class SpinSys {
     friend std::ostream& operator<<(std::ostream &os, const SpinSys &spin_sys);
     friend std::istream& operator>>(std::istream &is, SpinSys &spin_sys);
@@ -48,6 +53,8 @@ namespace dnpsoup {
     SpinSys& addSpin(const SpinId &, const SpinEntity &, bool t_auto_add=true); 
     SpinSys& addSpin(int, const SpinEntity &, bool t_auto_add=true); 
     SpinSys& addSpin(int, SpinType, double x, double y, double z, bool t_auto_add=true);
+    /// vec will be sorted before addition
+    SpinSys& addCustomRelaxation(const VecRelaxInfo &vec, double t, double scale);
     SpinSys& setT1(const SpinId &, double);
     double getT1(const SpinId &) const;
     SpinSys& setT2(const SpinId &, double);
@@ -91,6 +98,7 @@ namespace dnpsoup {
     PacketCollection summarizeOffset() const;
 
     std::vector<RelaxationPacket> summarizeRelaxation() const;
+    RelaxationPacketCollection summarizeRelaxationExtended() const;
 
     SpinSys& setEuler(const Euler<> &e) { m_e = e; return *this; }
     const Euler<>& getEuler() const { return m_e; }
@@ -120,6 +128,7 @@ namespace dnpsoup {
     std::size_t m_ntotal;
     std::vector<SpinType> m_irradiated_types;
     std::vector<std::vector<SpinId>> m_groups;  ///< groups of spins
+    std::vector<std::tuple<VecRelaxInfo, double, double>> m_custom_relaxation_info_list;
 
     /// need to use position info from SpinSys
     template<typename T>

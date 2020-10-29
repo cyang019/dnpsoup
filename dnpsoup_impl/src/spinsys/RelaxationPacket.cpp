@@ -38,4 +38,77 @@ namespace dnpsoup {
       }
       return t2SuperOp(t2_prime_inv, m_z);
     }
+
+    CustomRelaxationPacket::CustomRelaxationPacket(
+        const vector<pair<SpinType, OperatorType>> &ops, double t, double scale)
+      : m_t(t)
+    {
+      vector<MatrixCxDbl> mats;
+      for(const auto &[s_type, op_type] : ops) {
+        const auto sz = getMatrixDimension(s_type);
+        switch(op_type) {
+          case OperatorType::Identity:
+            mats.emplace_back(spin<OperatorType::Identity>(sz));
+            break;
+          case OperatorType::Minus:
+            mats.emplace_back(spin<OperatorType::Minus>(sz));
+            break;
+          case OperatorType::Plus:
+            mats.emplace_back(spin<OperatorType::Plus>(sz));
+            break;
+          case OperatorType::X:
+            mats.emplace_back(spin<OperatorType::X>(sz));
+            break;
+          case OperatorType::Y:
+            mats.emplace_back(spin<OperatorType::Y>(sz));
+            break;
+          case OperatorType::Z:
+            mats.emplace_back(spin<OperatorType::Z>(sz));
+            break;
+        }
+      }
+      m_mat = scale * kron(mats);
+    }
+
+    MatrixCxDbl CustomRelaxationPacket::genSuperOp() const
+    {
+      double t_inv = 0.0;
+      if(m_t < numeric_limits<double>::max()){
+        t_inv = 1.0/m_t;
+      }
+      return t_inv * secularRelaxationSuperOp(m_mat);
+    }
+
+    MatrixCxDbl RelaxationPacketCollection::genMatrix() const
+    {
+      if(m_rpackets.size() == 0) return MatrixCxDbl(0);
+      auto t1_superop = m_rpackets[0].genSuperOpT1();
+      auto t2_superop = m_rpackets[0].genSuperOpT2();
+      for(size_t i = 1; i < m_rpackets.size(); ++i) {
+        t1_superop += m_rpackets[i].genSuperOpT1();
+        t2_superop += m_rpackets[i].genSuperOpT2();
+      }
+      if(m_crpackets.size() == 0) {
+        return t1_superop + t2_superop;
+      }
+      auto t_custom_superop = m_crpackets[0].genSuperOp();
+      for(size_t i = 1; i < m_crpackets.size(); ++i) {
+        t_custom_superop += m_crpackets[i].genSuperOp();
+      }
+      return t1_superop + t2_superop + t_custom_superop;
+    }
+
+    void RelaxationPacketCollection::addRelaxationPacket(
+        const SpinId &sid, const SpinEntity &sinfo,
+        std::size_t nbefore, std::size_t nafter)
+    {
+      m_rpackets.emplace_back(sid, sinfo, nbefore, nafter);
+    }
+
+    void RelaxationPacketCollection::addCustomRelaxationPacket(
+        const std::vector<std::pair<SpinType, OperatorType>> &ops,
+        double t, double scale)
+    {
+      m_crpackets.emplace_back(ops, t, scale);
+    }
 } // namespace dnpsoup

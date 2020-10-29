@@ -120,6 +120,49 @@ namespace dnpsoup {
     double mas_inc,
     size_t cache_size = 128
   );
+  
+  // including customized relaxation
+  std::tuple<MasterEqTerms, PacketCollection*>
+  genMasterEqTermsFromSingletonSeq(
+    PacketCollection *packets,
+    const RelaxationPacketCollection &rpackets,
+    const MatrixCxDbl &ham_offset,
+    const pulseseq::SubSequenceInterface* ptr_section,
+    const std::map<std::string, pulseseq::Component>* ptr_components,
+    const std::vector<SpinType> &irradiated,
+    const Gyrotron &g,
+    const Euler<> &euler,
+    double temperature,
+    double inc
+  );
+
+  std::tuple<MasterEqTerms, PacketCollection*>
+  genMasterEqTerms(
+    PacketCollection *packets,
+    const RelaxationPacketCollection &rpackets,
+    const MatrixCxDbl &ham_offset,
+    const PulseSequence &pseq,
+    const std::vector<SpinType> &irradiated,
+    const Gyrotron &g,
+    const Euler<> &euler,
+    double temperature,
+    double inc
+  );
+
+  MasterEqTerms genMasterEqTermsMAS(
+    PacketCollection *packets,
+    const RelaxationPacketCollection &rpackets,
+    const MatrixCxDbl &ham_offset,
+    //const Gyrotron &g,  // em freq
+    const Euler<> &sample_euler,
+    const Euler<> &magic_angle,
+    size_t comp_size,
+    double temperature,
+    double mas_freq,
+    double inc,
+    double mas_inc,
+    size_t cache_size = 128
+  );
 
   // if the entire mat is nan, just need to check the first element
   inline bool hasNan(const MatrixCxDbl &mat)
