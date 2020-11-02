@@ -45,8 +45,10 @@ namespace dnpsoup {
   class CustomRelaxationPacket {
   public:
     CustomRelaxationPacket(
-        const std::vector<std::pair<SpinType, OperatorType>> &ops, double t, 
-        double scale=1.0);
+        const std::vector<
+                          std::pair<
+                                    std::vector<std::pair<SpinType, OperatorType>>, double
+                                    >>  &ops, double t); 
     CustomRelaxationPacket(const CustomRelaxationPacket &) = default;
     CustomRelaxationPacket(CustomRelaxationPacket &&) noexcept = default;
     CustomRelaxationPacket& operator=(const CustomRelaxationPacket &) = default;
@@ -69,8 +71,8 @@ namespace dnpsoup {
     void addRelaxationPacket(const SpinId &sid, const SpinEntity &sinfo,
         std::size_t nbefore, std::size_t nafter);
     void addCustomRelaxationPacket(
-        const std::vector<std::pair<SpinType, OperatorType>> &ops,
-        double t, double scale=1.0);
+        const std::vector<std::pair<std::vector<std::pair<SpinType, OperatorType>>, double>> &ops,
+        double t);
   private:
     std::vector<RelaxationPacket> m_rpackets;
     std::vector<CustomRelaxationPacket> m_crpackets;

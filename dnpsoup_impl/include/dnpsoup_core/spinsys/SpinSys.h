@@ -35,10 +35,10 @@ namespace dnpsoup {
       const std::map<SpinId, SpinEntity> &spins, 
       const SpinId &sid1, const SpinId &sid2);
 
-  using VecRelaxInfo = std::vector<std::pair<SpinId, OperatorType>>;
+  using VecRelaxInfo = std::vector<std::pair<std::vector<std::pair<SpinId, OperatorType>>, double>>;
 
   OperatorType extractFromSortedVecRelaxInfo(
-      const VecRelaxInfo &vec, const SpinId &sid);
+      const std::vector<std::pair<SpinId, OperatorType>> &vec, const SpinId &sid);
 
   class SpinSys {
     friend std::ostream& operator<<(std::ostream &os, const SpinSys &spin_sys);
@@ -54,7 +54,7 @@ namespace dnpsoup {
     SpinSys& addSpin(int, const SpinEntity &, bool t_auto_add=true); 
     SpinSys& addSpin(int, SpinType, double x, double y, double z, bool t_auto_add=true);
     /// vec will be sorted before addition
-    SpinSys& addCustomRelaxation(const VecRelaxInfo &vec, double t, double scale);
+    SpinSys& addCustomRelaxation(const VecRelaxInfo &vec, double t);
     SpinSys& setT1(const SpinId &, double);
     double getT1(const SpinId &) const;
     SpinSys& setT2(const SpinId &, double);
@@ -128,7 +128,7 @@ namespace dnpsoup {
     std::size_t m_ntotal;
     std::vector<SpinType> m_irradiated_types;
     std::vector<std::vector<SpinId>> m_groups;  ///< groups of spins
-    std::vector<std::tuple<VecRelaxInfo, double, double>> m_custom_relaxation_info_list;
+    std::vector<std::pair<VecRelaxInfo, double>> m_custom_relaxation_info_list;
 
     /// need to use position info from SpinSys
     template<typename T>

@@ -40,34 +40,45 @@ namespace dnpsoup {
     }
 
     CustomRelaxationPacket::CustomRelaxationPacket(
-        const vector<pair<SpinType, OperatorType>> &ops, double t, double scale)
+        const vector<pair<vector<pair<SpinType, OperatorType>>, double>> &ops,
+        double t)
       : m_t(t)
     {
       vector<MatrixCxDbl> mats;
-      for(const auto &[s_type, op_type] : ops) {
-        const auto sz = getMatrixDimension(s_type);
-        switch(op_type) {
-          case OperatorType::Identity:
-            mats.emplace_back(spin<OperatorType::Identity>(sz));
-            break;
-          case OperatorType::Minus:
-            mats.emplace_back(spin<OperatorType::Minus>(sz));
-            break;
-          case OperatorType::Plus:
-            mats.emplace_back(spin<OperatorType::Plus>(sz));
-            break;
-          case OperatorType::X:
-            mats.emplace_back(spin<OperatorType::X>(sz));
-            break;
-          case OperatorType::Y:
-            mats.emplace_back(spin<OperatorType::Y>(sz));
-            break;
-          case OperatorType::Z:
-            mats.emplace_back(spin<OperatorType::Z>(sz));
-            break;
+      for(const auto &[vec, scale] : ops) {
+        vector<MatrixCxDbl> sub_mats;
+        for(const auto &[s_type, op_type] : vec) {
+          const auto sz = getMatrixDimension(s_type);
+          switch(op_type) {
+            case OperatorType::Identity:
+              sub_mats.emplace_back(spin<OperatorType::Identity>(sz));
+              break;
+            case OperatorType::Minus:
+              sub_mats.emplace_back(spin<OperatorType::Minus>(sz));
+              break;
+            case OperatorType::Plus:
+              sub_mats.emplace_back(spin<OperatorType::Plus>(sz));
+              break;
+            case OperatorType::X:
+              sub_mats.emplace_back(spin<OperatorType::X>(sz));
+              break;
+            case OperatorType::Y:
+              sub_mats.emplace_back(spin<OperatorType::Y>(sz));
+              break;
+            case OperatorType::Z:
+              sub_mats.emplace_back(spin<OperatorType::Z>(sz));
+              break;
+          }
+        }
+        MatrixCxDbl sub_mat = scale * kron(sub_mats);
+        mats.push_back(sub_mat);
+      }
+      if(mats.size() > 0) {
+        m_mat = mats[0];
+        for(size_t i = 1; i < mats.size(); ++i) {
+          m_mat += mats[i];
         }
       }
-      m_mat = scale * kron(mats);
     }
 
     MatrixCxDbl CustomRelaxationPacket::genSuperOp() const
@@ -106,9 +117,9 @@ namespace dnpsoup {
     }
 
     void RelaxationPacketCollection::addCustomRelaxationPacket(
-        const std::vector<std::pair<SpinType, OperatorType>> &ops,
-        double t, double scale)
+        const vector<pair<vector<pair<SpinType, OperatorType>>, double>> &ops,
+        double t)
     {
-      m_crpackets.emplace_back(ops, t, scale);
+      m_crpackets.emplace_back(ops, t);
     }
 } // namespace dnpsoup

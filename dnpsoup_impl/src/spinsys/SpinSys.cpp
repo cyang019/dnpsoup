@@ -67,7 +67,7 @@ namespace dnpsoup {
   }
 
   OperatorType extractFromSortedVecRelaxInfo(
-      const VecRelaxInfo &vec, const SpinId &sid)
+      const vector<pair<SpinId, OperatorType>> &vec, const SpinId &sid)
   {
     if(vec.size() == 0) return OperatorType::Identity;
 
@@ -152,14 +152,15 @@ namespace dnpsoup {
     return addSpin(id_name, s, t_auto_add);
   }
 
-  SpinSys& SpinSys::addCustomRelaxation(const VecRelaxInfo &vec, double t, double scale)
+  SpinSys& SpinSys::addCustomRelaxation(const VecRelaxInfo &vec, double t)
   {
-    auto sorted_vec = vec;
-    sort(sorted_vec.begin(), sorted_vec.end(), 
-        [](const std::pair<SpinId, OperatorType> &lhs, const std::pair<SpinId, OperatorType> &rhs) {
-          return lhs.first < rhs.first;
-        });
-    m_custom_relaxation_info_list.push_back(make_tuple(sorted_vec, t, scale));
+    //auto sorted_vec = vec;
+    //sort(sorted_vec.begin(), sorted_vec.end(), 
+    //    [](const std::pair<SpinId, OperatorType> &lhs, const std::pair<SpinId, OperatorType> &rhs) {
+    //      return lhs.first < rhs.first;
+    //    });
+    //m_custom_relaxation_info_list.push_back(make_tuple(sorted_vec, t, scale));
+    m_custom_relaxation_info_list.push_back(make_pair(vec, t));
     return *this;
   }
 
@@ -399,14 +400,18 @@ namespace dnpsoup {
     if(m_custom_relaxation_info_list.size() == 0) return result;
 
     // customized relaxation operator
-    for(const auto &[relax_info, t, scale] : m_custom_relaxation_info_list) {
-      vector<pair<SpinType, OperatorType>> ops;
-      for(const auto &[sid, entity] : m_spins) {
-        auto s_t = entity.getSpinType();
-        auto otype = extractFromSortedVecRelaxInfo(relax_info, sid);
-        ops.push_back(make_pair(s_t, otype));
+    for(const auto &[relax_info, t] : m_custom_relaxation_info_list) {
+      vector<pair<vector<pair<SpinType, OperatorType>>, double>> ops_info;
+      for(const auto &[terms, scale] : relax_info) {
+        vector<pair<SpinType, OperatorType>> ops;
+        for(const auto &[sid, entity] : m_spins) {
+          auto s_t = entity.getSpinType();
+          auto otype = extractFromSortedVecRelaxInfo(terms, sid);
+          ops.push_back(make_pair(s_t, otype));
+        }
+        ops_info.push_back(make_pair(ops, scale));
       }
-      result.addCustomRelaxationPacket(ops, t, scale);
+      result.addCustomRelaxationPacket(ops_info, t);
     }
     return result;
   }
@@ -747,23 +752,34 @@ namespace dnpsoup {
         if(relax_info.find("operator") == relax_info.end()) {
           throw NameNotFoundInInput("cannot find 'operator' in input stream for custom relaxation.");
         }
-        std::vector<std::pair<SpinId, OperatorType>> vec_sid_otype;
+        std::vector<std::pair<std::vector<std::pair<SpinId, OperatorType>>, double>> vec_sid_otype;
         for(const auto &op_dict : relax_info["operator"]) {
-          SpinId sid(op_dict["id"].get<int>());
-          char otype_char = op_dict["type"].get<char>();
-          OperatorType otype;
-          switch(otype_char) {
-            case '+': otype = OperatorType::Plus; break;
-            case '-': otype = OperatorType::Minus; break;
-            case 'z': case 'Z': otype = OperatorType::Z; break;
-            case 'x': case 'X': otype = OperatorType::X; break;
-            case 'y': case 'Y': otype = OperatorType::Y; break;
-            case 'i': case 'I': otype = OperatorType::Identity; break;
-            default:
-              throw NameNotFoundInInput("operator can only be one of +, -, z, x, y, i.");
-              break;
+          double scale = op_dict["scale"].get<double>();
+          const auto &terms = op_dict["terms"];
+          vector<pair<SpinId, OperatorType>> vec_term;
+          for(const auto &term_dict: terms) {
+            SpinId sid(term_dict["id"].get<int>());
+            string otype_str = term_dict["type"].get<string>();
+            char otype_char = otype_str[0];
+            OperatorType otype;
+            switch(otype_char) {
+              case '+': otype = OperatorType::Plus; break;
+              case '-': otype = OperatorType::Minus; break;
+              case 'z': case 'Z': otype = OperatorType::Z; break;
+              case 'x': case 'X': otype = OperatorType::X; break;
+              case 'y': case 'Y': otype = OperatorType::Y; break;
+              case 'i': case 'I': otype = OperatorType::Identity; break;
+              default:
+                throw NameNotFoundInInput("operator can only be one of +, -, z, x, y, i.");
+                break;
+            }
+            vec_term.push_back(make_pair(sid, otype));
           }
-          vec_sid_otype.push_back(make_pair(sid, otype));
+          sort(vec_term.begin(), vec_term.end(), 
+              [](const std::pair<SpinId, OperatorType> &lhs, const std::pair<SpinId, OperatorType> &rhs) {
+                return lhs.first < rhs.first;
+              });
+          vec_sid_otype.push_back(make_pair(vec_term, scale));
         }
         if(relax_info.find("t") == relax_info.end()) {
           throw NameNotFoundInInput("cannot find 't' for custom relaxation.");
@@ -773,7 +789,7 @@ namespace dnpsoup {
         if(relax_info.find("scale") != relax_info.end()){
           scale = relax_info["scale"].get<double>();
         }
-        spin_sys.addCustomRelaxation(vec_sid_otype, t, scale);
+        spin_sys.addCustomRelaxation(vec_sid_otype, t);
       }
     }
 
