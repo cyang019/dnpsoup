@@ -197,7 +197,16 @@ void dnpsoup_exec_internal(
         }
         eulers.push_back(euler);
 		}
+    cout << "found " << eulers.size() << " euler angles..." << endl;
 	}
+  bool simple_averaging = false;
+  if(j.find("averaging_scheme") != j.end()) {
+    std::string option_str = j["averaging_scheme"].get<string>();
+    if(option_str == "simple" || option_str == "Simple" || option_str == "SIMPLE") {
+      simple_averaging = true;
+      std::cout << "using simple averaging..." << std::endl;
+    }
+  }
 	int ncores = 1;
 	if(j.find("ncores") != j.end()){
     cout << std::thread::hardware_concurrency() << " cores detected on the current machine." << "\n";
@@ -212,7 +221,7 @@ void dnpsoup_exec_internal(
 		auto magnet = Magnet(j);		
 		auto gyrotron = Gyrotron(j);
 		auto result = DnpRunner::calcPowderIntensity(magnet, gyrotron, probe,
-			spinsys, seq, acq_t, eulers, ncores);
+			spinsys, seq, acq_t, eulers, ncores, false, simple_averaging);
 
     std::ofstream result_stream;
 	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);
@@ -231,7 +240,7 @@ void dnpsoup_exec_internal(
     }
     std::cout << "sampling step size: " << sampling_step_size << std::endl;
 		auto results = DnpRunner::calcPowderBuildUp(magnet, gyrotron, probe,
-			spinsys, seq, acq_t, eulers, ncores, false, sampling_step_size);
+			spinsys, seq, acq_t, eulers, ncores, false, simple_averaging, sampling_step_size);
 
     std::ofstream result_stream;
 	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);
@@ -254,7 +263,7 @@ void dnpsoup_exec_internal(
     }
     std::cout << "sampling step size: " << sampling_step_size << std::endl;
 		auto results = DnpRunner::calcPowderBuildUpEnhancement(magnet, gyrotron, probe,
-			spinsys, seq, acq_t, eulers, ncores, sampling_step_size);
+			spinsys, seq, acq_t, eulers, ncores, simple_averaging, sampling_step_size);
 
     std::ofstream result_stream;
 	  result_stream.exceptions(std::ios::failbit | std::ios::badbit);
@@ -277,7 +286,7 @@ void dnpsoup_exec_internal(
 			}
 			auto gyrotron = Gyrotron(j);
 		  result = DnpRunner::calcFieldProfile(magnets, gyrotron, probe,
-		  	spinsys, seq, acq_t, eulers, ncores);
+		  	spinsys, seq, acq_t, eulers, ncores, simple_averaging);
 		}
     else if(j.find("field range") != j.end()){
       vector<Magnet> magnets;
@@ -294,7 +303,7 @@ void dnpsoup_exec_internal(
       }
 			auto gyrotron = Gyrotron(j);
 		  result = DnpRunner::calcFieldProfile(magnets, gyrotron, probe,
-		  	spinsys, seq, acq_t, eulers, ncores);
+		  	spinsys, seq, acq_t, eulers, ncores, simple_averaging);
     }
 		else if(j.find("emrs") != j.end()){
 			vector<Gyrotron> emrs;
@@ -304,7 +313,7 @@ void dnpsoup_exec_internal(
 			}
 			auto magnet = Magnet(j);
 		  result = DnpRunner::calcFieldProfile(magnet, emrs, probe,
-		  	spinsys, seq, acq_t, eulers, ncores);
+		  	spinsys, seq, acq_t, eulers, ncores, simple_averaging);
 		}
     else if(j.find("emr range") != j.end()){
       vector<Gyrotron> emrs;
@@ -321,7 +330,7 @@ void dnpsoup_exec_internal(
       }
 			auto magnet = Magnet(j);
 		  result = DnpRunner::calcFieldProfile(magnet, emrs, probe,
-		  	spinsys, seq, acq_t, eulers, ncores);
+		  	spinsys, seq, acq_t, eulers, ncores, simple_averaging);
     }
 		else {
 			throw runtime_error("Missing 'fields', 'emrs' or 'field range', 'emr range' in the input json.");

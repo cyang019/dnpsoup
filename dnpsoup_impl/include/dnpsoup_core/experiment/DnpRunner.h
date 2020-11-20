@@ -74,6 +74,7 @@ namespace dnpsoup {
         const std::vector<Euler<>> &spin_sys_eulers,
         int ncores=1,
         bool ignore_all_power=false,
+        bool simple_averaging=false,
         size_t sampling_step_size=1);
 
     std::vector<std::pair<double, double>> calcPowderBuildUpEnhancement(
@@ -85,6 +86,7 @@ namespace dnpsoup {
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
         int ncores=1,
+        bool simple_averaging=false,
         size_t sampling_step_size=1);
 
     std::vector<std::pair<double, double>> calcFieldProfile(
@@ -95,7 +97,8 @@ namespace dnpsoup {
         PulseSequence seq,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
-        int ncores=1);
+        int ncores=1,
+        bool simple_averaging=false);
 
     std::vector<std::pair<double, double>> calcFieldProfile(
         const Magnet &fields, 
@@ -105,7 +108,8 @@ namespace dnpsoup {
         PulseSequence seq,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
-        int ncores=1);
+        int ncores=1,
+        bool simple_averaging=false);
 
     double calcPowderIntensity(
         const Magnet &m, 
@@ -116,7 +120,8 @@ namespace dnpsoup {
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
         int ncores=1,
-        bool ignore_all_power=false);
+        bool ignore_all_power=false,
+        bool simple_averaging=false);
 
     MatrixCxDbl propagate(
         const MatrixCxDbl &rho_prev_super, 

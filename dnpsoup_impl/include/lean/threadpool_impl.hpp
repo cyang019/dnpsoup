@@ -123,10 +123,24 @@ namespace lean {
       m_cv.notify_one();
     }
 
+    //constexpr bool log_temp_results = std::is_same<T, std::pair<double, double>>::value;
+    //const std::string filename = "temp_outputs.log";
+    //std::ofstream ofs;
+    //if constexpr(log_temp_results) {
+    //  ofs.open(filename, std::ofstream::out);
+    //}
+
     for (auto& result_getter : m_result_getters) {
       auto res = result_getter.get();
+      //if constexpr(log_temp_results) {
+      //  for(const auto &item : res) {
+      //    ofs << item.first << ", " << item.second << std::endl;
+      //  }
+      //}
+
       results.insert(results.end(), res.begin(), res.end());
     }
+    //ofs.close();
     return results;
   }
 } // inline namespace v1

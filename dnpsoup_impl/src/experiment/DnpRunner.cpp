@@ -353,15 +353,19 @@ namespace DnpRunner {
         const SpinType &acq_spin,
         const std::vector<Euler<>> &spin_sys_eulers,
         int ncores,
+        bool simple_averaging,
         size_t sampling_step_size)
     {
       auto results = calcPowderBuildUp(
           m, g, p, spin_sys, seq, 
-          acq_spin, spin_sys_eulers, ncores, false, sampling_step_size);
+          acq_spin, spin_sys_eulers, ncores, false, 
+          simple_averaging, sampling_step_size);
       const bool has_mas = std::abs(p.mas_frequency) > eps;
       if(has_mas) {
         const auto ref_intensities = calcPowderBuildUp(
-            m, g, p, spin_sys, seq, acq_spin, spin_sys_eulers, ncores, true, sampling_step_size);
+            m, g, p, spin_sys, seq, 
+            acq_spin, spin_sys_eulers, ncores, true,
+            simple_averaging, sampling_step_size);
         for(size_t i = 0; i < results.size(); ++i){
           const double temp_ref = 
             ref_intensities[i].second + (std::abs(ref_intensities[i].second) < eps);
@@ -371,7 +375,8 @@ namespace DnpRunner {
       } else {
         double ref_intensity = calcPowderIntensity(
               m, g, p, spin_sys, PulseSequence(), 
-              acq_spin, spin_sys_eulers, ncores);
+              acq_spin, spin_sys_eulers, ncores, 
+              true, simple_averaging);
         /// to avoid divide by zero error
         ref_intensity += (std::abs(ref_intensity) < eps);
 #ifndef NDEBUG
@@ -394,6 +399,7 @@ namespace DnpRunner {
         const std::vector<Euler<>> &eulers,
         int ncores,
         bool ignore_all_power,
+        bool simple_averaging,
         size_t sampling_step_size)
     {
       std::vector<std::pair<double, double>> results;
@@ -413,7 +419,9 @@ namespace DnpRunner {
               acq_spin, euler, ignore_all_power, sampling_step_size);
           if(results.size() == 0){  // initial crystal point
             for(const auto &pt_res : xtal_results){
-              const double temp = pt_res.second * std::sin(euler.beta());
+              const double factor = 1.0 * simple_averaging +
+                (!simple_averaging) * std::sin(euler.beta());
+              const double temp = pt_res.second * factor;
               results.push_back(make_pair(pt_res.first, temp));
             }
           }
@@ -424,7 +432,9 @@ namespace DnpRunner {
             }
 #endif
             for(size_t i = 0; i < results.size(); ++i){
-              const double temp = xtal_results[i].second * std::sin(euler.beta());
+              const double factor = 1.0 * simple_averaging +
+                (!simple_averaging) * std::sin(euler.beta());
+              const double temp = xtal_results[i].second * factor;
               results[i].second += temp;
             }
           }
@@ -437,7 +447,8 @@ namespace DnpRunner {
           auto task = [=](){
             auto xtal_results = 
               calcBuildUp(m, g, p, spin_sys, seq, acq_spin, euler, ignore_all_power, sampling_step_size);
-            const double factor = std::sin(euler.beta());
+            const double factor = 1.0 * simple_averaging +
+              (!simple_averaging) * std::sin(euler.beta());
             for(auto &xtal_result : xtal_results){
               xtal_result.second *= factor;
             }
@@ -470,7 +481,11 @@ namespace DnpRunner {
         }
       }
       for(auto &pt : results){
-        pt.second *= (scaling_factor/pi * 4.0);
+        if (simple_averaging) {
+          pt.second *= scaling_factor;
+        } else {
+          pt.second *= (scaling_factor/pi * 4.0);
+        }
       }
       std::cout << std::endl;
       return results;
@@ -737,7 +752,8 @@ namespace DnpRunner {
         PulseSequence seq,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &eulers,
-        [[maybe_unused]] int ncores)
+        [[maybe_unused]] int ncores,
+        bool simple_averaging)
     {
       std::vector<std::pair<double, double>> result;
       const bool has_mas = std::abs(p.mas_frequency) > eps;
@@ -837,11 +853,11 @@ namespace DnpRunner {
           if(has_mas) {
             ref = calcPowderIntensity(
                 field, g, p, spin_sys, seq,
-                acq_spin, eulers, ncores, true);
+                acq_spin, eulers, ncores, true, simple_averaging);
           } else {
             ref = calcPowderIntensity(
                 field, g, p, spin_sys, PulseSequence(),
-                acq_spin, eulers, ncores);
+                acq_spin, eulers, ncores, true, simple_averaging);
           }
 #ifndef NDEBUG
           if(std::isnan(ref)) {
@@ -860,7 +876,8 @@ namespace DnpRunner {
           std::cout << "reference intensity: " << ref << std::endl;
 #endif
           const double res = calcPowderIntensity(
-              field, g, p, spin_sys, seq, acq_spin, eulers, ncores);
+              field, g, p, spin_sys, seq, acq_spin, eulers, ncores, 
+              false, simple_averaging);
 #ifndef NDEBUG
           if(std::isnan(res)) {
             auto ss = cout.precision();
@@ -891,7 +908,8 @@ namespace DnpRunner {
         PulseSequence seq,
         const SpinType &acq_spin,
         const std::vector<Euler<>> &eulers,
-        [[maybe_unused]] int ncores)
+        [[maybe_unused]] int ncores,
+        bool simple_averaging)
     {
       std::vector<std::pair<double, double>> result;
       const bool has_mas = std::abs(p.mas_frequency) > eps;
@@ -932,15 +950,16 @@ namespace DnpRunner {
           if (has_mas) {
             ref = calcPowderIntensity(
                 m, g, p, spin_sys, seq,
-                acq_spin, eulers, ncores, true);
+                acq_spin, eulers, ncores, true, simple_averaging);
           } else {
             ref = calcPowderIntensity(
                 m, g, p, spin_sys, PulseSequence(),
-                acq_spin, eulers, ncores);
+                acq_spin, eulers, ncores, true, simple_averaging);
           }
           ref += (std::abs(ref) < eps);
           const double res = calcPowderIntensity(
-              m, g, p, spin_sys, seq, acq_spin, eulers, ncores);
+              m, g, p, spin_sys, seq, acq_spin, eulers, ncores,
+              false, simple_averaging);
           const double ratio = res/ref;
           result.emplace_back(make_pair(g.em_frequency, ratio));
           std::cout << "." << std::flush;
@@ -959,7 +978,8 @@ namespace DnpRunner {
         const SpinType &acq_spin,
         const std::vector<Euler<>> &eulers,
         [[maybe_unused]] int ncores,
-        bool ignore_all_power)
+        bool ignore_all_power,
+        bool simple_averaging)
     {
       double result = 0.0;
       const double scaling_factor = 1.0 / static_cast<double>(eulers.size() + (eulers.size() == 0));
@@ -971,7 +991,9 @@ namespace DnpRunner {
           cout << "[calcPowderIntensity()] \n\tEuler "
                << e << " : \t\t" << xtal_intensity << endl;
 #endif
-          result += xtal_intensity * std::sin(e.beta());
+          const double factor = 1.0 * simple_averaging + 
+            (!simple_averaging) * std::sin(e.beta());
+          result += xtal_intensity * factor;
         }
       }
       else {
@@ -1008,7 +1030,11 @@ namespace DnpRunner {
           result += intensity;
         }
       }
-      result = result * scaling_factor / pi * 4.0;
+      if (simple_averaging) {
+        result = result * scaling_factor;
+      } else {
+        result = result * scaling_factor / pi * 4.0;
+      }
       //std::cout << "." << std::flush;
 
       return result;
