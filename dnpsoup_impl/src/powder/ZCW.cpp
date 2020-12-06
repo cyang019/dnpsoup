@@ -63,4 +63,21 @@ namespace dnpsoup {
     std::vector<Euler<>> result;
     return result;
   }
+
+  vector<Euler<>> getZCWAnglesSTEP(std::uint64_t m, std::uint64_t cnt_gamma, PowderSphere choice)
+  {
+    vector<Euler<>> result_no_gamma = getZCWAnglesSTEP(m, choice);
+    if (cnt_gamma < 2) return result_no_gamma;
+    vector<Euler<>> result;
+    for(const auto &angle : result_no_gamma) {
+      Euler<> e = angle;
+      double step_size = pi * 2.0 / static_cast<double>(cnt_gamma);
+      for(std::uint64_t i = 0; i < cnt_gamma; ++i) {
+        double new_gamma = step_size * static_cast<double>(i);
+        e.gamma(new_gamma);
+        result.push_back(e);
+      }
+    }
+    return result;
+  }
 } // namespace dnpsoup

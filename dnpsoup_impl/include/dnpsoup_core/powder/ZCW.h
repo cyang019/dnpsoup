@@ -22,6 +22,7 @@ namespace dnpsoup {
   std::vector<Euler<>> getZCWAnglesFromConstants(std::uint64_t m, double c1, double c2, double c3);
 
   std::vector<Euler<>> getZCWAnglesSTEP(std::uint64_t m, PowderSphere choice);
+  std::vector<Euler<>> getZCWAnglesSTEP(std::uint64_t m, std::uint64_t cnt_gamma, PowderSphere choice);
 } // namespace dnpsoup
 
 #endif

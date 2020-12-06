@@ -27,10 +27,11 @@ endif()
 
 target_compile_options(dnpsoup_core PUBLIC -Wall -Wextra -Wpedantic)
 
-find_package(BLAS REQUIRED)
-find_package(LAPACK REQUIRED)
+#find_package(BLAS REQUIRED)
+#find_package(LAPACK REQUIRED)
 
-target_link_libraries(dnpsoup_core PUBLIC matrix ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+#target_link_libraries(dnpsoup_core PUBLIC matrix ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+target_link_libraries(dnpsoup_core PUBLIC matrix)
 message(STATUS "dnpsoup_core linked to matrix...")
 
 if (UNIX AND NOT APPLE)

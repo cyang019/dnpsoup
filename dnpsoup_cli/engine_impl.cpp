@@ -157,18 +157,23 @@ void dnpsoup_exec_internal(
 	auto eulers = vector<Euler<>>();
   if(j.find("euler_scheme") != j.end()){
     if(j["euler_scheme"].find("zcw") != j["euler_scheme"].end()){
+      std::uint64_t cnt_gamma = 1;
+      if(j["euler_scheme"].find("gamma_cnt") != j["euler_scheme"].end()) {
+        cnt_gamma = j["euler_scheme"]["gamma_cnt"].get<uint64_t>();
+        cout << "ZCW 3 angles...\n";
+      }
       auto zcw_input = j["euler_scheme"]["zcw"].get<uint64_t>();
       if(j["euler_scheme"].find("sphere") != j["euler_scheme"].end()) {
         auto sphere = j["euler_scheme"]["sphere"].get<uint64_t>();
         switch(sphere){
           case 0:
-            eulers = getZCWAnglesSTEP(zcw_input, PowderSphere::full);
+            eulers = getZCWAnglesSTEP(zcw_input, cnt_gamma, PowderSphere::full);
             break;
           case 1:
-            eulers = getZCWAnglesSTEP(zcw_input, PowderSphere::hemi);
+            eulers = getZCWAnglesSTEP(zcw_input, cnt_gamma, PowderSphere::hemi);
             break;
           case 2:
-            eulers = getZCWAnglesSTEP(zcw_input, PowderSphere::octant);
+            eulers = getZCWAnglesSTEP(zcw_input, cnt_gamma, PowderSphere::octant);
             break;
           default:
             eulers = getZCWAngles(zcw_input);
