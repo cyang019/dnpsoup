@@ -231,6 +231,9 @@ namespace DnpRunner {
 //#ifndef NDEBUG
 //        cout << "seq.size() = " << seq.size() << endl;
 //#endif
+        // cache size based on matrix size
+        const size_t dim1 = hamiltonian_offset.nrows();
+        size_t cache_size = 128 * (dim1 <= 12) + 32 * (dim1 > 12);
         if(ignore_all_power) {
           std::uint64_t total_seq_size = 0u;
           while(idx < seq.size() || comp_size > 0) {
@@ -242,7 +245,7 @@ namespace DnpRunner {
           MasterEqTerms terms = genMasterEqTermsMAS(
               &packets, rpackets, hamiltonian_offset,// g,
               spin_sys_euler, mas_angle, total_seq_size,
-              p.temperature, p.mas_frequency, inc, mas_inc); 
+              p.temperature, p.mas_frequency, inc, mas_inc, cache_size); 
           rho0_evolve_super = evolve(rho0_evolve_super, terms);
         } else {
           while(idx < seq.size() || comp_size > 0) {
@@ -257,7 +260,7 @@ namespace DnpRunner {
             MasterEqTerms terms = genMasterEqTermsMAS(
                 &packets, rpackets, hamiltonian_offset,// g,
                 spin_sys_euler, mas_angle, comp_size,
-                p.temperature, p.mas_frequency, inc, mas_inc); 
+                p.temperature, p.mas_frequency, inc, mas_inc, cache_size); 
             rho0_evolve_super = evolve(rho0_evolve_super, terms);
 #ifndef NDEBUG
             if(std::isnan(rho0_evolve_super(0,0).imag()) || std::isnan(rho0_evolve_super(0,0).real())) {
