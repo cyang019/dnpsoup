@@ -226,7 +226,14 @@ namespace {
       spins.addSpin(1, SpinType::e, 0.0, 0.0, 0.0);
       spins.addSpin(2, SpinType::e, 6.0, 0.0, 0.0);
       spins.addSpin(3, SpinType::H, 0.0, -2.0, 1.0);
-      spins.setShielding(dnpsoup::SpinId(1), 2.02, 2.06, 2.09, dnpsoup::Euler<>(0.0,0.0,0.0));
+      spins.setShielding(dnpsoup::SpinId(1), 2.09, 2.06, 2.02, dnpsoup::Euler<>(0.0,0.0,0.0));
+      spins.setShielding(dnpsoup::SpinId(2), 2.09, 2.06, 2.02, dnpsoup::Euler<>(20.0,100.0,0.0));
+      spins.setT1(dnpsoup::SpinId(1), 0.001);
+      spins.setT1(dnpsoup::SpinId(2), 0.001);
+      spins.setT1(dnpsoup::SpinId(3), 1.0);
+      spins.setT2(dnpsoup::SpinId(1), 1.0e-6);
+      spins.setT2(dnpsoup::SpinId(2), 1.0e-6);
+      spins.setT2(dnpsoup::SpinId(3), 1.0e-3);
       spins.irradiateOn(SpinType::e);
       std::vector<dnpsoup::SpinId> acq_spins;
       acq_spins.push_back(dnpsoup::SpinId(3));
