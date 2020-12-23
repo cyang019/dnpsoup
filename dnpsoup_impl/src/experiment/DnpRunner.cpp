@@ -986,6 +986,7 @@ namespace DnpRunner {
     {
       double result = 0.0;
       const double scaling_factor = 1.0 / static_cast<double>(eulers.size() + (eulers.size() == 0));
+      const bool single_euler = (eulers.size() == 1);
       if(ncores == 1) {
         for(const auto &e : eulers){
           auto xtal_intensity = 
@@ -994,8 +995,8 @@ namespace DnpRunner {
           cout << "[calcPowderIntensity()] \n\tEuler "
                << e << " : \t\t" << xtal_intensity << endl;
 #endif
-          const double factor = 1.0 * simple_averaging + 
-            (!simple_averaging) * std::sin(e.beta());
+          double factor = 1.0 * (simple_averaging || single_euler) + 
+            (!simple_averaging && (!single_euler)) * std::sin(e.beta());
           result += xtal_intensity * factor;
         }
       }
@@ -1014,6 +1015,9 @@ namespace DnpRunner {
             if(std::isnan(xtal_intensity)) {
               cout << "[WARNING] calcPowderIntensity() saw NAN upon calcIntensity() on ["
                    << idx << "] Euler: " << e << endl;
+            }
+            if (single_euler) {
+              return xtal_intensity;
             }
             return xtal_intensity * std::sin(e.beta());
           };
