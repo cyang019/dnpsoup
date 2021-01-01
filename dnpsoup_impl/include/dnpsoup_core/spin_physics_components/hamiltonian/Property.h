@@ -21,7 +21,8 @@ namespace dnpsoup {
 
     freq = 200,
     phase = 201,
-    phase0 = 202,   /// lab frame rotatin: cos(w t + phi(t)): phase0 = w * t, phase = phi(t)
+    phase0 = 202,   /// lab frame rotation: cos(w t + phi(t)): phase0 = w * t, phase = phi(t)
+    bulk = 501      /// the count of spins represented by this interaction
   };
 
   std::ostream& operator<<(std::ostream &, const ValueName &);
@@ -39,6 +40,8 @@ namespace dnpsoup {
 
     const double& get(const ValueName &name) const;
     Property& set(const ValueName &name, double value);
+    bool contains(const ValueName &name) const
+    { return m_values.find(name) == m_values.end(); }
   private:
     std::unordered_map<ValueName, double, HashType<ValueName>> m_values;
   }; // class PropertyValue

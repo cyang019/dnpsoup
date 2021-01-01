@@ -88,6 +88,11 @@ namespace dnpsoup {
       double coeff1 = (sxx - syy) * 0.5 * sa * sb * s2g + ca * s2b * (szz - sxx * (cg * cg) -syy * sg * sg);
       double coeff2 = (syy - sxx) * 0.5 * ca * sb * s2g + sa * s2b * (szz - sxx * (cg * cg) -syy * sg * sg);
       MatrixCxDbl res = - m_gamma * b0 * m_z + coeff1 * m_x + coeff2 * m_y + coeff3 * m_z;
+      if(csa.contains(ValueName::bulk)) {
+        // it's a bulk nuclei
+        const double multiplier = csa.get(ValueName::bulk);
+        res *= multiplier;
+      }
       return res;
     } else {  // Rotating Frame
       MatrixCxDbl res = coeff3 * m_z;

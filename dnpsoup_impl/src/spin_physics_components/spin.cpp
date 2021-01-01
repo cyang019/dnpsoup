@@ -13,7 +13,8 @@ namespace dnpsoup {
       "C13", "c13",
       "N14", "n14",
       "N15", "n15",
-      "O17", "o17"
+      "O17", "o17",
+      "BulkH", "HBulk"
     };
     for(const auto &name : candidates){
       if(s == name) return true;
@@ -44,6 +45,9 @@ namespace dnpsoup {
     else if(s == "O17" || s == "o17"){
       return SpinType::O17;
     }
+    else if(s == "BulkH" || s == "HBulk"){
+      return SpinType::BulkH;
+    }
     return SpinType::Null;
   }
 
@@ -73,6 +77,9 @@ namespace dnpsoup {
       case SpinType::O17:
         return "O17";
         break;
+      case SpinType::BulkH:
+        return "BulkH";
+        break;
       default:
         return "Unknown";
         break;
@@ -97,6 +104,8 @@ namespace dnpsoup {
         return gamma_N15;
       case SpinType::O17:
         return gamma_O17;
+      case SpinType::BulkH:
+        return gamma_H1;
       default: return 0.0;
     }
   }
@@ -107,6 +116,8 @@ namespace dnpsoup {
       case SpinType::e:
         return 2;
       case SpinType::H:
+        return 2;
+      case SpinType::BulkH:
         return 2;
       case SpinType::D:
         return 3;

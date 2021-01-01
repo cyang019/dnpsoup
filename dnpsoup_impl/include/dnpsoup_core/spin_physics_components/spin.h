@@ -17,7 +17,8 @@ namespace dnpsoup {
     C13 =   13,
     N14 =   14,
     N15 =   15,
-    O17 =   17
+    O17 =   17,
+    BulkH = 501,
   };
 
   bool isSpinTypeStr(const std::string &s);
