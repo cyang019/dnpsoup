@@ -57,7 +57,11 @@ namespace dnpsoup {
           std::size_t n = getMatrixDimension(t);
           std::size_t nbefore = calcDimBeforeId(m_spins, sid);
           std::size_t nafter = calcDimAfterId(m_spins, sid);
-          const double gyro = getGyromagneticRatio(t);
+          double gyro = getGyromagneticRatio(t);
+          if(t == SpinType::BulkH) {
+            gyro *= BULK_H_MULTIPLIER;
+          }
+          
           if constexpr (std::is_same<T, DnpExperiment>::value){
             res = std::make_unique<ChemicalShiftInteraction<LabFrame>>(
                 gyro, n, nbefore, nafter);

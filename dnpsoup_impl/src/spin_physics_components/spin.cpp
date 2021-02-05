@@ -92,7 +92,7 @@ namespace dnpsoup {
     switch(t){
       case SpinType::e:
         return beta_e;
-      case SpinType::H:
+      case SpinType::H: case SpinType::BulkH:
         return gamma_H1;
       case SpinType::D:
         return gamma_D2;
@@ -104,8 +104,6 @@ namespace dnpsoup {
         return gamma_N15;
       case SpinType::O17:
         return gamma_O17;
-      case SpinType::BulkH:
-        return gamma_H1;
       default: return 0.0;
     }
   }

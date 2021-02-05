@@ -46,6 +46,9 @@ namespace dnpsoup {
   constexpr double MAS_L_RATIO = 0.01;
   constexpr size_t MAS_CACHE_SIZE = 64;
   constexpr double GAMMA_STEP_MIN = 1e-7;   ///< 0.1 us
+  
+  // bulk proton multiplier
+  constexpr double BULK_H_MULTIPLIER = 100;
 } // namespace dnpsoup
 
 #endif
