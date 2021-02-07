@@ -45,6 +45,7 @@ namespace dnpsoup {
     Observable(const InteractionType &, const SpinId &);
     Observable(const InteractionType &, const SpinId &, const SpinId &);
     Observable(const InteractionType&, const std::vector<SpinId> &sids); 
+    Observable(const InteractionType &, const SpinId &, bool);
     Observable(const Observable &) = default;
     Observable(Observable &&) noexcept;
     Observable& operator=(const Observable&) = default;
@@ -55,6 +56,7 @@ namespace dnpsoup {
     const InteractionType& getType() const { return m_type; }
 
     bool hasSpinId(const SpinId &) const;
+    bool isBulk() const { return m_bulk; }
 
     const Euler<>& getEuler() const { return m_e; }
     Observable& setEuler(const Euler<> &e) 
@@ -69,6 +71,7 @@ namespace dnpsoup {
   private:
     InteractionType m_type;
     std::vector<SpinId> m_spin_ids;
+    bool m_bulk;
 
     Euler<> m_e;
     Property m_p;

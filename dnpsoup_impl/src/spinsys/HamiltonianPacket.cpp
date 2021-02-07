@@ -67,9 +67,18 @@ namespace dnpsoup {
     return *this;
   }
 
+  PacketCollection& PacketCollection::addBulk(const ObservableId &oid, HamiltonianPacket &&sp)
+  {
+    m_bulk_packets.insert({oid, std::move(sp)});
+    return *this;
+  }
+
   PacketCollection& PacketCollection::rotate(const Euler<> &e)
   {
     for(auto &sp_pair : m_packets){
+      sp_pair.second.rotate(e);
+    }
+    for(auto &sp_pair : m_bulk_packets){
       sp_pair.second.rotate(e);
     }
     return *this;
@@ -80,6 +89,9 @@ namespace dnpsoup {
     for(auto &sp_pair : m_packets){
       sp_pair.second.setPropertyValue(vname, val);
     }
+    for(auto &sp_pair : m_bulk_packets){
+      sp_pair.second.setPropertyValue(vname, val);
+    }
     return *this;
   }
 
@@ -87,6 +99,9 @@ namespace dnpsoup {
         const ObservableId &oid, const ValueName &vname, double val)
   {
     m_packets.at(oid).setPropertyValue(vname, val);
+    if(m_bulk_packets.find(oid) != m_bulk_packets.end()){
+      m_bulk_packets.at(oid).setPropertyValue(vname, val);
+    }
     return *this;
   }
 
@@ -96,6 +111,9 @@ namespace dnpsoup {
   {
     auto oid = ObservableId(t, sid);
     m_packets.at(oid).setPropertyValue(vname, val);
+    if(m_bulk_packets.find(oid) != m_bulk_packets.end()){
+      m_bulk_packets.at(oid).setPropertyValue(vname, val);
+    }
     return *this;
   }
 
@@ -105,6 +123,9 @@ namespace dnpsoup {
   {
     auto oid = ObservableId(t, id1, id2);
     m_packets.at(oid).setPropertyValue(vname, val);
+    if(m_bulk_packets.find(oid) != m_bulk_packets.end()){
+      m_bulk_packets.at(oid).setPropertyValue(vname, val);
+    }
     return *this;
   }
 
@@ -157,6 +178,40 @@ namespace dnpsoup {
     }
     return res;
   }
+
+  bool PacketCollection::hasBulk() const
+  {
+    return m_bulk_packets.size() > 0;
+  }
+
+  MatrixCxDbl PacketCollection::genMatrixBulkRemainder() const
+  {
+    if(m_bulk_packets.size() == 0) return MatrixCxDbl();
+    auto res = MatrixCxDbl();
+    for(const auto &obs : m_bulk_packets){
+      if(res.nrows() == 0){
+        res = obs.second.genMatrix();
+      } else{
+        res += obs.second.genMatrix();
+      }
+    }
+    return res;
+  }
+
+  MatrixCxDbl PacketCollection::genMatrixBulkRemainder(const Euler<> &e) const
+  {
+    if(m_bulk_packets.size() == 0) return MatrixCxDbl();
+    auto res = MatrixCxDbl();
+    for(const auto &obs : m_bulk_packets){
+      if(res.nrows() == 0){
+        res = obs.second.genMatrix(e);
+      } else{
+        res += obs.second.genMatrix(e);
+      }
+    }
+    return res;
+  }
+
 
   bool PacketCollection::hasPulseSeqComponent(const pulseseq::Component &comp) const
   {

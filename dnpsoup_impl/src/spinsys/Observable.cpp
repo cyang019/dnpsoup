@@ -31,24 +31,29 @@ namespace dnpsoup {
 
   // class Observable
   Observable::Observable()
-    : m_type(InteractionType::Null)
+    : m_type(InteractionType::Null), m_bulk(false)
   {}
 
   Observable::Observable(const InteractionType &t, const SpinId &id)
-    : m_type(t), m_spin_ids({id})
+    : m_type(t), m_spin_ids({id}), m_bulk(false)
   {}
 
   Observable::Observable(const InteractionType &t, const SpinId &id1, const SpinId &id2)
-    : m_type(t), m_spin_ids({id1, id2})
+    : m_type(t), m_spin_ids({id1, id2}), m_bulk(false)
   {}
 
   Observable::Observable(
       const InteractionType &t, const std::vector<SpinId> &spin_ids)
-    : m_type(t), m_spin_ids(spin_ids)
+    : m_type(t), m_spin_ids(spin_ids), m_bulk(false)
+  {}
+
+  Observable::Observable(const InteractionType &t, const SpinId &spin_id, bool bulk)
+    : m_type(t), m_spin_ids({spin_id}), m_bulk(bulk)
   {}
 
   Observable::Observable(Observable &&rhs) noexcept
     : m_type(std::move(rhs.m_type)), m_spin_ids(std::move(rhs.m_spin_ids)),
+    m_bulk(rhs.m_bulk),
     m_e(std::move(rhs.m_e)), m_p(std::move(rhs.m_p))
   {}
 
@@ -56,6 +61,7 @@ namespace dnpsoup {
   {
     m_type = std::move(rhs.m_type);
     m_spin_ids = std::move(rhs.m_spin_ids);
+    m_bulk = rhs.m_bulk;
     m_e = std::move(rhs.m_e);
     m_p = std::move(rhs.m_p);
     return *this;

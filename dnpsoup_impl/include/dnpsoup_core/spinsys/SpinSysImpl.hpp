@@ -8,6 +8,26 @@ namespace dnpsoup {
       auto packet = HamiltonianPacket(
           std::move(ptr_interaction), obs.second.getProperty(), obs.second.getEuler());
       result.add(obs.first, std::move(packet));
+      const auto ob_type = obs.second.getType();
+      if(ob_type == InteractionType::Csa) {
+        SpinId sid = obs.second.getSpinIds()[0];
+        SpinType t = m_spins.at(sid).getSpinType();
+        // ==============================================
+        /// This part should only affect rho0 calculation: genRhoEq()
+        if(t == SpinType::BulkH) {
+          const double gyro = (BULK_H_MULTIPLIER - 1) * getGyromagneticRatio(t);
+          std::size_t n = getMatrixDimension(t);
+          std::size_t nbefore = calcDimBeforeId(m_spins, sid);
+          std::size_t nafter = calcDimAfterId(m_spins, sid);
+          auto ptr_interaction = std::make_unique<ChemicalShiftInteraction<LabFrame>>(
+              gyro, n, nbefore, nafter);
+          auto packet = HamiltonianPacket(
+              std::move(ptr_interaction),
+              obs.second.getProperty(), obs.second.getEuler());
+          result.addBulk(obs.first, std::move(packet));
+        }
+        // ==============================================
+      }
     }
     return result;
   }
@@ -58,9 +78,6 @@ namespace dnpsoup {
           std::size_t nbefore = calcDimBeforeId(m_spins, sid);
           std::size_t nafter = calcDimAfterId(m_spins, sid);
           double gyro = getGyromagneticRatio(t);
-          if(t == SpinType::BulkH) {
-            gyro *= BULK_H_MULTIPLIER;
-          }
           
           if constexpr (std::is_same<T, DnpExperiment>::value){
             res = std::make_unique<ChemicalShiftInteraction<LabFrame>>(
@@ -90,7 +107,7 @@ namespace dnpsoup {
           std::size_t n = getMatrixDimension(t);
           std::size_t nbefore = calcDimBeforeId(m_spins, sid);
           std::size_t nafter = calcDimAfterId(m_spins, sid);
-          const double gyro = getGyromagneticRatio(t);
+          double gyro = getGyromagneticRatio(t);
           res = std::make_unique<OffsetInteraction>(
               gyro, n, nbefore, nafter);
         }

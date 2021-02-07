@@ -52,6 +52,7 @@ namespace dnpsoup {
     ~PacketCollection() {}
 
     PacketCollection& add(const ObservableId &, HamiltonianPacket &&);
+    PacketCollection& addBulk(const ObservableId &, HamiltonianPacket &&);
     PacketCollection& rotate(const Euler<> &e);
 
     // set all values
@@ -74,6 +75,9 @@ namespace dnpsoup {
 
     MatrixCxDbl genMatrix() const;
     MatrixCxDbl genMatrix(const Euler<> &e) const;
+    bool hasBulk() const;
+    MatrixCxDbl genMatrixBulkRemainder() const;
+    MatrixCxDbl genMatrixBulkRemainder(const Euler<> &e) const;
 
     bool hasPulseSeqComponent(const pulseseq::Component &comp) const;
 
@@ -84,6 +88,7 @@ namespace dnpsoup {
     const HamiltonianPacket& getPacket(const ObservableId &oid) const { return m_packets.at(oid); }
   private:
     std::map<ObservableId, HamiltonianPacket> m_packets;
+    std::map<ObservableId, HamiltonianPacket> m_bulk_packets;
   };
 } // namespace dnpsoup
 

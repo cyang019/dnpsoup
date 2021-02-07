@@ -190,7 +190,10 @@ namespace DnpRunner {
       const auto angle = mas_angle * spin_sys_euler;
       MatrixCxDbl hamiltonian = packets.genMatrix(angle);
       MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(angle);
-      const auto hamiltonian_lab = hamiltonian + hamiltonian_offset;
+      auto hamiltonian_lab = hamiltonian + hamiltonian_offset;
+      if(packets.hasBulk()){
+        hamiltonian_lab += packets.genMatrixBulkRemainder();
+      }
       MatrixCxDbl rho0_lab = genRhoEq(hamiltonian_lab, p.temperature);
 			const auto rho_ss_super = ::dnpsoup::flatten(rho0_lab, 'c');
       //auto rho0_evolve = rho0_lab;
@@ -577,6 +580,9 @@ namespace DnpRunner {
       MatrixCxDbl hamiltonian = packets.genMatrix(temp_angle);
       MatrixCxDbl hamiltonian_offset = offset_packets.genMatrix(temp_angle);
       auto hamiltonian_lab = hamiltonian + hamiltonian_offset;
+      if(packets.hasBulk()){
+        hamiltonian_lab += packets.genMatrixBulkRemainder();
+      }
       MatrixCxDbl rho0_lab = genRhoEq(hamiltonian_lab, p.temperature);
       const auto rho_ss_super = ::dnpsoup::flatten(rho0_lab, 'c');
       //auto rho0_evolve = rho0_lab;
