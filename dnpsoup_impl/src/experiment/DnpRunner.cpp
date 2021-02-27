@@ -48,7 +48,7 @@ namespace DnpRunner {
       }
 
       double inc = seq.getIncrement();
-      inc = roundToCycle(inc, g.em_frequency);
+      //inc = roundToCycle(inc, g.em_frequency);
       vector<vector<double>> results;
       auto packets = spin_sys.summarize<DnpExperiment>();
       auto offset_packets = spin_sys.summarizeOffset<DnpExperiment>();
