@@ -48,7 +48,7 @@ namespace dnpsoup {
   constexpr double GAMMA_STEP_MIN = 1e-7;   ///< 0.1 us
   
   // bulk proton multiplier
-  constexpr double BULK_H_MULTIPLIER = 100.0;
+  constexpr double BULK_H_MULTIPLIER = 1.0;
 } // namespace dnpsoup
 
 #endif
