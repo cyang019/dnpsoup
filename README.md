@@ -1,8 +1,8 @@
 # dnpsoup
 
-> A Dynamic Nuclear Polarization Simulation Program
+> Dynamic Nuclear Polarization Simulation Optimized with Unified Propagation
 
-Simulate polarization enhancement on nuclei(s) due to the presence of electron(s) and electromagnetic radiations, with or without Magic Angle Spinning (MAS).
+Simulates polarization enhancement on nuclei(s) due to the presence of electron(s) and EM radiations, with or without Magic Angle Spinning (MAS).
 
 
 ### Download
