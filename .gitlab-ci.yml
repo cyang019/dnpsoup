@@ -6,7 +6,7 @@
 image: ubuntu:latest
 
 prepare:
-  stage: install dependencies
+  stage: .pre
   script:
     - apt-get update
     - ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
