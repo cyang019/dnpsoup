@@ -5,7 +5,11 @@
 # You can specify a custom docker image from Docker Hub as your build environment.
 image: ubuntu:latest
 
-build:
+stages:
+  - build
+  - test
+
+build_job:
   stage: build
   script:
     - apt-get update
@@ -23,7 +27,8 @@ build:
 test:
   stage: test
   needs:
-    - job: build
+    - job: build_job
+      artifacts: true
   script:
     - cd /builds/chen.yang/dnpsoup
     - ./build/tests/test_dnpsoup_core
