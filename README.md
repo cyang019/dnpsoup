@@ -66,7 +66,7 @@ ninja
 
 [Sample Input Scripts](./examples/inputs/)
 
-**[dnpsoup_analytics](https://bitbucket.org/cyang019/dnpsoup_analytics)** contains details of simulation results for some of the above simulation examples.
+**[dnpsoup_analytics](https://gitlab.com/chen.yang/dnpsoup_analytics)** contains details of simulation results for some of the above simulation examples.
 
 One can use **[dnpsoup_gui](https://github.com/cyang019/dnpsoup_gui)** to generate simulation inputs for convenience.
 
