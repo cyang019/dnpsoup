@@ -25,5 +25,5 @@ test:
   needs:
     - job: build
   script:
-    - ./tests/test_dnpsoup_core
+    - ./build/tests/test_dnpsoup_core
 
