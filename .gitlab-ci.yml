@@ -25,5 +25,6 @@ test:
   needs:
     - job: build
   script:
+    - cd /builds/chen.yang/dnpsoup
     - ./build/tests/test_dnpsoup_core
 
