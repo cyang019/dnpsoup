@@ -8,7 +8,7 @@ Simulate polarization enhancement on nuclei(s) due to the presence of electron(s
 ### Download
 
 ``` bash
-git clone --recursive git@bitbucket.org:cyang019/dnpsoup.git
+git clone --recursive git@gitlab.com:chen.yang/dnpsoup.git
 ```
 
 
@@ -73,5 +73,5 @@ One can use **[dnpsoup_gui](https://github.com/cyang019/dnpsoup_gui)** to genera
 
 ### License
 
-[GPL v3](./LICENSE)
+[BSD-3](./LICENSE)
 
