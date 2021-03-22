@@ -1,6 +1,6 @@
 [submodule "matrix"]
 	path = matrix
-	url = git@gitlab.com:chen.yang/matrix.git
+	url = ../matrix.git
 [submodule "dnpsoup_analytics"]
 	path = dnpsoup_analytics
-	url = git@gitlab.com:chen.yang/dnpsoup_analytics.git
+	url = ../dnpsoup_analytics.git
