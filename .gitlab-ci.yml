@@ -17,7 +17,7 @@ build_job:
     - export DEBIAN_FRONTEND=noninteractive
     - apt-get install -y tzdata
     - dpkg-reconfigure --frontend noninteractive tzdata
-    - apt-get install -y g++ git cmake ninja-build libopenblas-dev liblapack-dev liblapacke-dev libpthread-stubs0-dev gfortran
+    - apt-get install -y g++ git locate cmake ninja-build libopenblas-dev liblapack-dev liblapacke-dev libpthread-stubs0-dev gfortran
     - locate .bash_logout > bash_logout_path
     - cat bash_logout_path
     - cat bash_logout_path | rm
