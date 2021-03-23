@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.6.0)
 project (dnpsoup 
   LANGUAGES CXX
-  VERSION 0.1)
+  VERSION 0.1.0)
 enable_language(CXX)
 
 message(STATUS "Project dnpsoup...")

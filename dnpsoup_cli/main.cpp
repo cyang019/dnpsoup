@@ -1,5 +1,4 @@
 // dnpsoup, a dynamic nuclear polarization simulation program.
-// Copyright (C) 2016-2021 Chen Yang
 #include "configure_dnpsoup.h"
 #include "engine.h"
 #include <iostream>
@@ -21,8 +20,9 @@ bool fileExists(const string &filename)
 
 int main(int argc, char **argv)
 {
-  const string license_short_line = "dnpsoup  Copyright (C) 2016-2021 Chen Yang";
-  std::cout << license_short_line << std::endl;
+  const string license_short_line = " Copyright (C) " + 
+    to_string(LICENSE_START) + "-" + to_string(LICENSE_END) + " Chen Yang";
+  std::cout << PROJECT_NAME << " v" << PROJECT_VER << license_short_line << std::endl;
   int ret_code = 0;
 	if(argc != 5 && argc != 3 && argc != 2){
 		std::cout << "Saw " << argc - 1 << " arguments." << std::endl;
