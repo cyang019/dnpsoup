@@ -3,13 +3,13 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
-image: ubuntu:latest
+image: manjarolinux/base:latest
 
 stages:
   - build
   - test
 
-build_job:
+build_test_job:
   stage: build
   script:
     - apt-get update
