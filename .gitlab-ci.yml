@@ -9,7 +9,7 @@ stages:
   - build
   - test
 
-build_job:
+build_test_job:
   stage: build
   script:
     - apt-get update
@@ -23,13 +23,5 @@ build_job:
     - cd build
     - cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release
     - ninja
-
-test:
-  stage: test
-  needs:
-    - job: build_job
-      artifacts: true
-  script:
-    - cd /builds/chen.yang/dnpsoup
-    - ./build/tests/test_dnpsoup_core
+    - ./tests/test_dnpsoup_core
 

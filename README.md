@@ -1,5 +1,7 @@
 # dnpsoup
 
+[![pipeline status](https://gitlab.com/chen.yang/dnpsoup/badges/master/pipeline.svg)](https://gitlab.com/chen.yang/dnpsoup/-/commits/master)
+
 > Dynamic Nuclear Polarization Simulation Optimized with Unified Propagation
 
 Simulates polarization enhancement on nuclei(s) due to the presence of electron(s) and EM radiations, with or without Magic Angle Spinning (MAS).
