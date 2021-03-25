@@ -3,13 +3,13 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
-image: ubuntu:latest
+image: gcc:latest
 
 stages:
   - build
   - test
 
-build_test_job:
+build_job:
   stage: build
   script:
     - apt-get update
@@ -23,5 +23,9 @@ build_test_job:
     - cd build
     - cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release
     - ninja
-    - ./tests/test_dnpsoup_core
 
+test_job:
+  stage: test
+  script:
+    - cd /builds/chen.yang/dnpsoup/build
+    - ./tests/test_dnpsoup_core
