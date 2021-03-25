@@ -25,6 +25,7 @@ build_job:
 
 test_job:
   stage: test
+  needs: [build_job]
   script:
     - cd /builds/chen.yang/dnpsoup/build
     - ./tests/test_dnpsoup_core
