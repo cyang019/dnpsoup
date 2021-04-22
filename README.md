@@ -2,10 +2,11 @@
 
 [![pipeline status](https://gitlab.com/chen.yang/dnpsoup/badges/master/pipeline.svg)](https://gitlab.com/chen.yang/dnpsoup/-/commits/master)
 
-> Dynamic Nuclear Polarization Simulation Optimized with Unified Propagation
+> **D**ynamic **N**uclear **P**olarization **S**imulation **O**ptimized with **U**nified **P**ropagation
 
 Simulates polarization enhancement on nuclei(s) due to the presence of electron(s) and EM radiations, with or without Magic Angle Spinning (MAS).
 
+## Getting Started
 
 ### Download
 
@@ -73,7 +74,18 @@ ninja
 One can use **[dnpsoup_gui](https://github.com/cyang019/dnpsoup_gui)** to generate simulation inputs for convenience.
 
 
-### License
+## Authors
+Chen Yang, Kong Ooi Tan, Robert G. Griffin
+
+
+## Acknowledgements
+- The authors would like to thank Dr. Sheetal Kumar Jain for initial discussions and encouragement on creating a separate simulation package.
+- The authors would also like to thank Dr. Kan-Nian Hu for discussions on cross effect, and Dr. John Wright for computational resources of PSFC at MIT. 
+- Chen Yang thanks Professor Leonard Mueller for introducing him to solid-state NMR and product operators. 
+- Chen Yang also thanks his family for support, and Mr. Xiang Gao for his suggestions on debugging frontend javascript code.
+
+
+## License
 
 [BSD-3](./LICENSE)
 
