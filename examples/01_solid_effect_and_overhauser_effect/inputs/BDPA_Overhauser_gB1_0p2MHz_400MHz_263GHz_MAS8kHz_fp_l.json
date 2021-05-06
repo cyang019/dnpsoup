@@ -1,0 +1,199 @@
+{
+  "spinsys": {
+    "euler": {
+      "alpha": 0,
+      "beta": 0,
+      "gamma": 0
+    },
+    "interactions": [
+      {
+        "name": "shielding",
+        "id": 0,
+        "entries": {
+          "x": 2.00263,
+          "y": 2.00259,
+          "z": 2.00234,
+          "id": 0,
+          "euler": {
+            "alpha": 0,
+            "beta": 0,
+            "gamma": 0
+          }
+        }
+      },
+      {
+        "name": "csa",
+        "id": 1,
+        "entries": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "id": 1,
+          "euler": {
+            "alpha": 0,
+            "beta": 0,
+            "gamma": 0
+          }
+        }
+      },
+      {
+        "name": "hyperfine",
+        "id": 2,
+        "entries": {
+          "id1": 0,
+          "id2": 1
+        }
+      },
+      {
+        "name": "Scalar",
+        "id": 3,
+        "entries": {
+          "value": 2000000,
+          "id1": 0,
+          "id2": 1
+        }
+      }
+    ],
+    "spins": {
+      "0": {
+        "type": "e",
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "t1": 0.005,
+        "t2": 0.000001
+      },
+      "1": {
+        "type": "H1",
+        "x": 0,
+        "y": 0,
+        "z": 5,
+        "t1": 10,
+        "t2": 0.005
+      }
+    },
+    "custom-relaxation": [
+      {
+        "operator": [
+          {
+            "terms": [
+              {
+                "id": 0,
+                "type": "+"
+              },
+              {
+                "id": 1,
+                "type": "-"
+              }
+            ],
+            "scale": 1.0
+          },
+          {
+            "terms": [
+              {
+                "id": 0,
+                "type": "-"
+              },
+              {
+                "id": 1,
+                "type": "+"
+              }
+            ],
+            "scale": 1.0
+          }
+        ],
+        "t": 10.0
+      },
+      {
+        "operator": [
+          {
+            "terms": [
+              {
+                "id": 0,
+                "type": "+"
+              },
+              {
+                "id": 1,
+                "type": "+"
+              }
+            ],
+            "scale": 1.0
+          },
+          {
+            "terms": [
+              {
+                "id": 0,
+                "type": "-"
+              },
+              {
+                "id": 1,
+                "type": "-"
+              }
+            ],
+            "scale": 1.0
+          }
+        ],
+        "t": 10.6
+      }
+    ],
+    "irradiation": [
+      "e"
+    ]
+  },
+  "pulseseq": {
+    "name": "CW",
+    "increment": 1e-9,
+    "components": {
+      "emr1": {
+        "e": {
+          "frequency": 200000,
+          "phase": 0,
+          "offset": 0
+        }
+      }
+    },
+    "sections": {
+      "cw": {
+        "type": "Pulse",
+        "size": 5000000000,
+        "names": [
+          "emr1"
+        ],
+        "params": {}
+      }
+    },
+    "sequence": [
+      "cw"
+    ]
+  },
+  "settings": {
+    "euler": {
+      "alpha": 0,
+      "beta": 0,
+      "gamma": 0
+    },
+    "ncores": 5,
+    "acq": "H1",
+    "Magnet": {
+      "b0": 9.41
+    },
+    "Gyrotron": {
+      "em_frequency": 263700000000
+    },
+    "Probe": {
+      "mas_frequency": 8000,
+      "temperature": 80,
+      "mas_increment": 1e-8
+    },
+    "task": "FieldProfile",
+    "euler_scheme": {
+      "zcw": 4,
+      "sphere": 1
+    },
+    "field range": {
+      "begin": 9.392,
+      "end": 9.397,
+      "step": 0.0001
+    }
+  }
+}
