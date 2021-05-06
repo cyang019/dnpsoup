@@ -2,7 +2,7 @@
 
 [![pipeline status](https://gitlab.com/chen.yang/dnpsoup/badges/master/pipeline.svg)](https://gitlab.com/chen.yang/dnpsoup/-/commits/master)
 
-> **D**ynamic **N**uclear **P**olarization **S**imulation **O**ptimized with **U**nified **P**ropagation
+> **D**ynamic **N**uclear **P**olarization **S**imulation **O**ptimized with a **U**nified **P**ropagator
 
 Simulates polarization enhancement on nuclei(s) due to the presence of electron(s) and EM radiations, with or without Magic Angle Spinning (MAS).
 
@@ -67,7 +67,9 @@ ninja
 
 #### Examples
 
-[Sample Input Scripts](./examples/inputs/)
+[Solid Effect and Overhauser Effect](./examples/01_solid_effect_and_overhauser_effect/se_oe_visualization.ipynb)
+
+[Cross Effect](./examples/02_cross_effect/ce_visualization.ipynb)
 
 **[dnpsoup_analytics](https://gitlab.com/chen.yang/dnpsoup_analytics)** contains details of simulation results for some of the above simulation examples.
 
