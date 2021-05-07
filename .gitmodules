@@ -1,6 +1,3 @@
 [submodule "matrix"]
 	path = matrix
 	url = ../../chen.yang/matrix.git
-[submodule "dnpsoup_analytics"]
-	path = dnpsoup_analytics
-	url = ../../chen.yang/dnpsoup_analytics.git

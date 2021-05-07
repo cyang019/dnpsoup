@@ -1,4 +1,4 @@
-# dnpsoup
+# DNPSOUP
 
 [![pipeline status](https://gitlab.com/chen.yang/dnpsoup/badges/master/pipeline.svg)](https://gitlab.com/chen.yang/dnpsoup/-/commits/master)
 
@@ -71,9 +71,37 @@ ninja
 
 [Cross Effect](./examples/02_cross_effect/ce_visualization.ipynb)
 
-**[dnpsoup_analytics](https://gitlab.com/chen.yang/dnpsoup_analytics)** contains details of simulation results for some of the above simulation examples.
+[TOP-DNP] (./examples/06_top_dnp/top_dnp_visualization.ipynb)
 
-One can use **[dnpsoup_gui](https://github.com/cyang019/dnpsoup_gui)** to generate simulation inputs for convenience.
+
+**[dnpsoup_gui](https://github.com/cyang019/dnpsoup_gui)** can help to generate simulation inputs.
+
+#### Input File Format
+
+```JSON
+{
+  'spinsys': {
+    'euler': {
+      'alpha': [float],
+      'beta': [float],
+      'gamma': [float]
+    },
+    'interactions': [
+      ...
+    ],
+    'spins': {
+      ...
+    }
+  },
+  'pulseseq': {
+    ...
+  },
+  'settings': {
+    ...
+  }
+}
+```
+
 
 
 ## Authors
