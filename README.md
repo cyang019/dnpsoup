@@ -71,7 +71,7 @@ ninja
 
 [Cross Effect](./examples/02_cross_effect/ce_visualization.ipynb)
 
-[TOP-DNP] (./examples/06_top_dnp/top_dnp_visualization.ipynb)
+[TOP-DNP](./examples/06_top_dnp/top_dnp_visualization.ipynb)
 
 
 **[dnpsoup_gui](https://github.com/cyang019/dnpsoup_gui)** can help to generate simulation inputs.
