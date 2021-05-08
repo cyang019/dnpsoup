@@ -67,36 +67,71 @@ ninja
 
 #### Examples
 
-[Solid Effect and Overhauser Effect](./examples/01_solid_effect_and_overhauser_effect/se_oe_visualization.ipynb)
++ [Solid Effect and Overhauser Effect](./examples/01_solid_effect_and_overhauser_effect/se_oe_visualization.ipynb)
 
-[Cross Effect](./examples/02_cross_effect/ce_visualization.ipynb)
++ [Cross Effect](./examples/02_cross_effect/ce_visualization.ipynb)
 
-[TOP-DNP](./examples/06_top_dnp/top_dnp_visualization.ipynb)
++ [NOVEL]()
+
++ [Offres-NOVEL]()
+
++ [ISE SSE]()
+
++ [TOP-DNP](./examples/06_top_dnp/top_dnp_visualization.ipynb)
 
 
 **[dnpsoup_gui](https://github.com/cyang019/dnpsoup_gui)** can help to generate simulation inputs.
 
-#### Input File Format
 
-```JSON
+#### Expected Input JSON File Format
+
+```json
 {
-  'spinsys': {
-    'euler': {
-      'alpha': [float],
-      'beta': [float],
-      'gamma': [float]
+  "spinsys": {
+    "euler": {
+      "alpha": <float>,
+      "beta": <float>,
+      "gamma": <float>
     },
-    'interactions': [
+    "interactions": [
       ...
     ],
-    'spins': {
+    "spins": {
       ...
     }
   },
-  'pulseseq': {
-    ...
+  "pulseseq": {
+    "name": "name of the pulse sequence",
+    "components": {
+      ...
+    },
+    "sections": {
+      ...
+    },
+    "sequence": [
+      ...
+    ]
   },
-  'settings': {
+  "settings": {
+    "euler": {
+      "alpha": <float>,
+      "beta": <float>,
+      "gamma": <float>
+    },
+    "ncores": <int>,
+    "acq": "H1",
+    "Magnet": {
+      "b0": <float>
+    },
+    "Gyroton": {
+      "em_frequency": <float>
+    },
+    "Probe": {
+      "mas_frequency": <float>,
+      "temperature": <float>,
+      "mas_increment": <float>
+    },
+    "task": <task name>,
     ...
   }
 }
