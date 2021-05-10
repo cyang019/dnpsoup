@@ -10,9 +10,11 @@ Simulates polarization enhancement on nuclei(s) due to the presence of electron(
 ## Sponsors
 
 + High Field DNP and EPR in Biological Systems:
+
   [https://grantome.com/grant/NIH/R01-GM132997-32](https://grantome.com/grant/NIH/R01-GM132997-32)
 
-+ MIT/Harvard Center for Magnetic Resonance
++ MIT/Harvard Center for Magnetic Resonance:
+
   [https://grantome.com/grant/NIH/P41-GM132079-01](https://grantome.com/grant/NIH/P41-GM132079-01)
 
 
