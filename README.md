@@ -13,6 +13,7 @@ Simulates polarization enhancement on nuclei(s) due to the presence of electron(
 
   [https://grantome.com/grant/NIH/R01-GM132997-32](https://grantome.com/grant/NIH/R01-GM132997-32)
 
+
 + MIT/Harvard Center for Magnetic Resonance:
 
   [https://grantome.com/grant/NIH/P41-GM132079-01](https://grantome.com/grant/NIH/P41-GM132079-01)
@@ -20,15 +21,17 @@ Simulates polarization enhancement on nuclei(s) due to the presence of electron(
 
 ## Background Knowledge
 
-+ Nuclear Magnetic Resonance (NMR)
+#### Nuclear Magnetic Resonance (NMR)
 
-  NMR is an analytical chemistry technique that utilizes a strong high field magnet to measure molecular or atomic structures within chemicals and proteins.
-    - [What is NMR](http://chem.ch.huji.ac.il/nmr/whatisnmr/whatisnmr.htmlhttp://chem.ch.huji.ac.il/nmr/whatisnmr/whatisnmr.html)
-    - [Solid-state NMR spectroscopy](https://www.nature.com/articles/s43586-020-00002-1)
+NMR is an analytical chemistry technique that utilizes a high field magnet to measure molecular or atomic structures.
+  - [What is NMR](http://chem.ch.huji.ac.il/nmr/whatisnmr/whatisnmr.htmlhttp://chem.ch.huji.ac.il/nmr/whatisnmr/whatisnmr.html)
+  - [Solid-state NMR spectroscopy](https://www.nature.com/articles/s43586-020-00002-1)
 
-+ Dynamic Nuclear Polarization (DNP)
 
-  A technique that boost the sensitivity of NMR by polarizing electrons first, and then transfer the polarizations to nucleis (often H1's).
+#### Dynamic Nuclear Polarization (DNP)
+
+DNP relies on the transfer of electron polarization (typically from an organic based exogenous radical) to neighboring nuclei offering significant gains in sensitivity.
+
   - [High-field DNP](https://griffingroup.mit.edu/high-field-dnp#overlay-context=research/nmr-methodology)
   - [DNP for organic compounds](https://www.nature.com/articles/s41598-017-03659-z)
   - [DNP Review](https://www.nature.com/articles/s41598-017-03659-z)
