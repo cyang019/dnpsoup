@@ -7,18 +7,6 @@
 Simulates polarization enhancement on nuclei(s) due to the presence of electron(s) and EM radiations, with or without Magic Angle Spinning (MAS).
 
 
-## Sponsors
-
-+ High Field DNP and EPR in Biological Systems:
-
-  [https://grantome.com/grant/NIH/R01-GM132997-32](https://grantome.com/grant/NIH/R01-GM132997-32)
-
-
-+ MIT/Harvard Center for Magnetic Resonance:
-
-  [https://grantome.com/grant/NIH/P41-GM132079-01](https://grantome.com/grant/NIH/P41-GM132079-01)
-
-
 ## Background Knowledge
 
 #### Nuclear Magnetic Resonance (NMR)
@@ -169,9 +157,17 @@ ninja
 ```
 
 
-
 ## Authors
 Chen Yang, Kong Ooi Tan, Robert G. Griffin
+
+## Sponsors
+
++ High Field DNP and EPR in Biological Systems:
+  [https://grantome.com/grant/NIH/R01-GM132997-32](https://grantome.com/grant/NIH/R01-GM132997-32)
+
+
++ MIT/Harvard Center for Magnetic Resonance:
+  [https://grantome.com/grant/NIH/P41-GM132079-01](https://grantome.com/grant/NIH/P41-GM132079-01)
 
 
 ## Acknowledgements
@@ -183,5 +179,5 @@ Chen Yang, Kong Ooi Tan, Robert G. Griffin
 
 ## License
 
-[BSD-3](./LICENSE)
+[BSD-3 License](./LICENSE)
 
