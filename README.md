@@ -6,6 +6,32 @@
 
 Simulates polarization enhancement on nuclei(s) due to the presence of electron(s) and EM radiations, with or without Magic Angle Spinning (MAS).
 
+
+## Sponsors
+
++ High Field DNP and EPR in Biological Systems:
+  [https://grantome.com/grant/NIH/R01-GM132997-32](https://grantome.com/grant/NIH/R01-GM132997-32)
+
++ MIT/Harvard Center for Magnetic Resonance
+  [https://grantome.com/grant/NIH/P41-GM132079-01](https://grantome.com/grant/NIH/P41-GM132079-01)
+
+
+## Background Knowledge
+
++ Nuclear Magnetic Resonance (NMR)
+
+  NMR is an analytical chemistry technique that utilizes a strong high field magnet to measure molecular or atomic structures within chemicals and proteins.
+    - [What is NMR](http://chem.ch.huji.ac.il/nmr/whatisnmr/whatisnmr.htmlhttp://chem.ch.huji.ac.il/nmr/whatisnmr/whatisnmr.html)
+    - [Solid-state NMR spectroscopy](https://www.nature.com/articles/s43586-020-00002-1)
+
++ Dynamic Nuclear Polarization (DNP)
+
+  A technique that boost the sensitivity of NMR by polarizing electrons first, and then transfer the polarizations to nucleis (often H1's).
+  - [High-field DNP](https://griffingroup.mit.edu/high-field-dnp#overlay-context=research/nmr-methodology)
+  - [DNP for organic compounds](https://www.nature.com/articles/s41598-017-03659-z)
+  - [DNP Review](https://www.nature.com/articles/s41598-017-03659-z)
+  - [DNP for materials](https://pubs.acs.org/doi/10.1021/acs.chemmater.0c01801)
+
 ## Getting Started
 
 ### Download
