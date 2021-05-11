@@ -12,16 +12,16 @@ Simulates polarization enhancement on nuclei(s) due to the presence of electron(
 #### Nuclear Magnetic Resonance (NMR)
 
 NMR is an analytical chemistry technique that utilizes a high field magnet to measure molecular or atomic structures.
-  - [What is NMR](http://chem.ch.huji.ac.il/nmr/whatisnmr/whatisnmr.htmlhttp://chem.ch.huji.ac.il/nmr/whatisnmr/whatisnmr.html)
-  - [Solid-state NMR spectroscopy](https://www.nature.com/articles/s43586-020-00002-1)
-  - [Keeler notes](http://www-keeler.ch.cam.ac.uk/lectures/)
+  - [What is NMR (http://chem.ch.huji.ac.il/nmr/whatisnmr/whatisnmr.html)](http://chem.ch.huji.ac.il/nmr/whatisnmr/whatisnmr.html)
+  - [Solid-state NMR spectroscopy (https://www.nature.com/articles/s43586-020-00002-1)](https://www.nature.com/articles/s43586-020-00002-1)
+  - [Keeler notes (http://www-keeler.ch.cam.ac.uk/lectures/)](http://www-keeler.ch.cam.ac.uk/lectures/)
 
 
 #### Dynamic Nuclear Polarization (DNP)
 
 DNP relies on the transfer of electron polarization (typically from an organic based exogenous radical) to neighboring nuclei offering significant gains in sensitivity.
 
-  - [High-field DNP](https://griffingroup.mit.edu/high-field-dnp#overlay-context=research/nmr-methodology)
+  - [High-field DNP (https://griffingroup.mit.edu/high-field-dnp#overlay-context=research/nmr-methodology)](https://griffingroup.mit.edu/high-field-dnp#overlay-context=research/nmr-methodology)
 
 ## Getting Started
 
