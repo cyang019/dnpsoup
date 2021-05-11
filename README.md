@@ -14,6 +14,7 @@ Simulates polarization enhancement on nuclei(s) due to the presence of electron(
 NMR is an analytical chemistry technique that utilizes a high field magnet to measure molecular or atomic structures.
   - [What is NMR](http://chem.ch.huji.ac.il/nmr/whatisnmr/whatisnmr.htmlhttp://chem.ch.huji.ac.il/nmr/whatisnmr/whatisnmr.html)
   - [Solid-state NMR spectroscopy](https://www.nature.com/articles/s43586-020-00002-1)
+  - [Keeler notes](http://www-keeler.ch.cam.ac.uk/lectures/)
 
 
 #### Dynamic Nuclear Polarization (DNP)
@@ -21,9 +22,6 @@ NMR is an analytical chemistry technique that utilizes a high field magnet to me
 DNP relies on the transfer of electron polarization (typically from an organic based exogenous radical) to neighboring nuclei offering significant gains in sensitivity.
 
   - [High-field DNP](https://griffingroup.mit.edu/high-field-dnp#overlay-context=research/nmr-methodology)
-  - [DNP for organic compounds](https://www.nature.com/articles/s41598-017-03659-z)
-  - [DNP Review](https://www.nature.com/articles/s41598-017-03659-z)
-  - [DNP for materials](https://pubs.acs.org/doi/10.1021/acs.chemmater.0c01801)
 
 ## Getting Started
 
@@ -158,13 +156,12 @@ ninja
 
 
 ## Authors
-Chen Yang, Kong Ooi Tan, Robert G. Griffin
+Chen Yang, Kong Ooi Tan, and Robert G. Griffin
 
-## Sponsors
+## Fundings
 
 + High Field DNP and EPR in Biological Systems:
   [https://grantome.com/grant/NIH/R01-GM132997-32](https://grantome.com/grant/NIH/R01-GM132997-32)
-
 
 + MIT/Harvard Center for Magnetic Resonance:
   [https://grantome.com/grant/NIH/P41-GM132079-01](https://grantome.com/grant/NIH/P41-GM132079-01)
