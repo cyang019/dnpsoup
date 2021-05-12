@@ -1,0 +1,156 @@
+{
+  "spinsys": {
+    "euler": {
+      "alpha": 0,
+      "beta": 0,
+      "gamma": 0
+    },
+    "interactions": [
+      {
+        "name": "shielding",
+        "id": 0,
+        "entries": {
+          "x": 2.00263,
+          "y": 2.00259,
+          "z": 2.00234,
+          "id": 0,
+          "euler": {
+            "alpha": 0,
+            "beta": 1.5707963267948966,
+            "gamma": 0
+          }
+        }
+      },
+      {
+        "name": "csa",
+        "id": 1,
+        "entries": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "id": 1,
+          "euler": {
+            "alpha": 0,
+            "beta": 0,
+            "gamma": 0
+          }
+        }
+      },
+      {
+        "name": "hyperfine",
+        "id": 2,
+        "entries": {
+          "id1": 0,
+          "id2": 1
+        }
+      }
+    ],
+    "spins": {
+      "0": {
+        "type": "e",
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "t1": 0.0003,
+        "t2": 1e-06
+      },
+      "1": {
+        "type": "H1",
+        "x": 0,
+        "y": 0,
+        "z": 4.5,
+        "t1": 1,
+        "t2": 0.001
+      }
+    },
+    "irradiation": [
+      "e"
+    ]
+  },
+  "pulseseq": {
+    "name": "NOVEL",
+    "increment": 1.0000000000000002e-10,
+    "components": {
+      "emr1": {
+        "e": {
+          "frequency": 0,
+          "phase": 0,
+          "offset": 0
+        }
+      },
+      "emr2": {
+        "e": {
+          "frequency": 0,
+          "phase": -90,
+          "offset": 0
+        }
+      }
+    },
+    "sections": {
+      "p90": {
+        "type": "Pulse",
+        "size": 167,
+        "names": [
+          "emr1"
+        ],
+        "params": {}
+      },
+      "pmix": {
+        "type": "Pulse",
+        "size": 5000,
+        "names": [
+          "emr2"
+        ],
+        "params": {}
+      },
+      "d": {
+        "type": "Delay",
+        "size": 10000000,
+        "names": [],
+        "params": {}
+      },
+      "loop": {
+        "type": "Section",
+        "size": 1000,
+        "names": [
+          "p90",
+          "pmix",
+          "d"
+        ],
+        "params": {},
+        "phase0": {
+          "reset": false,
+          "seed": 0
+        }
+      }
+    },
+    "sequence": [
+      "loop"
+    ]
+  },
+  "settings": {
+    "euler": {
+      "alpha": 0,
+      "beta": 0,
+      "gamma": 0
+    },
+    "ncores": 5,
+    "acq": "H1",
+    "Magnet": {
+      "b0": 0.34965
+    },
+    "Gyrotron": {
+      "em_frequency": 9795000000.0
+    },
+    "Probe": {
+      "mas_frequency": 0,
+      "temperature": 80,
+      "mas_increment": 1e-06
+    },
+    "task": "PowderIntensity",
+    "euler_scheme": {
+      "zcw": 4,
+      "sphere": 0
+    }
+  }
+}

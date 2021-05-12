@@ -20,8 +20,10 @@ bool fileExists(const string &filename)
 
 int main(int argc, char **argv)
 {
+  const string authors = "Chen Yang, Kong Ooi Tan, and Robert G. Griffin";
   const string license_short_line = " Copyright (C) " + 
-    to_string(LICENSE_START) + "-" + to_string(LICENSE_END) + " Chen Yang";
+    to_string(LICENSE_START) + "-" + to_string(LICENSE_END) + " " +
+    authors;
   std::cout << PROJECT_NAME << " v" << PROJECT_VER << license_short_line << std::endl;
   int ret_code = 0;
 	if(argc != 5 && argc != 3 && argc != 2){

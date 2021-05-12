@@ -4,7 +4,7 @@
 
 > **D**ynamic **N**uclear **P**olarization **S**imulation **O**ptimized with a **U**nified **P**ropagator
 
-Simulates polarization enhancement on nuclei(s) due to the presence of electron(s) and EM radiations, with or without Magic Angle Spinning (MAS).
+DNPSOUP simulates polarization enhancement on nuclei(s) due to the presence of electron(s) and EM radiations, with or without Magic Angle Spinning (MAS).
 
 
 ## Background Knowledge
@@ -21,7 +21,7 @@ NMR is an analytical chemistry technique that utilizes a high field magnet to me
 
 DNP relies on the transfer of electron polarization (typically from an organic based exogenous radical) to neighboring nuclei offering significant gains in sensitivity.
 
-  - [High-field DNP (https://griffingroup.mit.edu/high-field-dnp#overlay-context=research/nmr-methodology)](https://griffingroup.mit.edu/high-field-dnp#overlay-context=research/nmr-methodology)
+  - [High-field DNP (https://griffingroup.mit.edu/high-field-dnp)](https://griffingroup.mit.edu/high-field-dnp#overlay-context=research/nmr-methodology)
 
 ## Getting Started
 
@@ -31,23 +31,29 @@ DNP relies on the transfer of electron polarization (typically from an organic b
 git clone --recursive git@gitlab.com:chen.yang/dnpsoup.git
 ```
 
+### Dependencies
 
-### Install Dependencies
+- git
+- cmake
+- ninja
+- openblas & lapack / accelerate
 
-#### Ubuntu
+#### Install Dependencies
+
+##### Ubuntu
 
 ``` bash
 sudo apt-get update
 sudo apt-get install -y g++ git cmake ninja-build libopenblas-dev liblapacke-dev libpthread-stubs0-dev gfortran libatlas-base-dev
 ```
 
-#### Manjaro Linux
+##### Manjaro Linux
 
 ```bash
 sudo pacman -Syu clang cmake ninja git openblas lapacke
 ```
 
-#### MacOS
+##### MacOS
 
 Install xcode
 Install homebrew
@@ -88,11 +94,11 @@ ninja
 
 + [Cross Effect](./examples/02_cross_effect/ce_visualization.ipynb)
 
-+ [NOVEL]()
++ [NOVEL](./examples/03_novel/NOVEL_visualization.ipynb)
 
-+ [Offres-NOVEL]()
++ [Offres-NOVEL](./examples/04_off_resonance_novel/OffresNOVEL_visualization.ipynb)
 
-+ [ISE SSE]()
++ [ISE SSE](./examples/05_ise_sse/ISE_SSE_visualization.ipynb)
 
 + [TOP-DNP](./examples/06_top_dnp/top_dnp_visualization.ipynb)
 
@@ -157,6 +163,9 @@ ninja
 
 ## Authors
 Chen Yang, Kong Ooi Tan, and Robert G. Griffin
+
+## Citing DNPSOUP
+*DNPSOUP: A numerical simulation software for dynamic nuclear polarization*, in preparation
 
 ## Fundings
 
