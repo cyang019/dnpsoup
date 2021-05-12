@@ -36,3 +36,7 @@ deprecated/**
 
 # intermediate output
 spinsys_temp.json
+
+# symbolic link
+plot_results.py
+
