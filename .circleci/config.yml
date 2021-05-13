@@ -9,8 +9,7 @@ jobs:
       - checkout
       - run: git submodule sync
       - run: git submodule update --init
-      - run: cmake -GNinja -DCMAKE_BUILD_TYPE=Release -B build
-      - run: cmake --build build
+      - run: cmake -GNinja -DCMAKE_BUILD_TYPE=Release -B build && cmake --build build
   test:
     docker:
       - image: cyang019/cpphpc:latest
