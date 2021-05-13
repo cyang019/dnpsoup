@@ -16,7 +16,7 @@ jobs:
       - image: cyang019/cpphpc:latest
     steps:
       - checkout
-      - run: ./build/tests/test_dnpsoup_core 
+      - run: ./tests/test_dnpsoup_core 
 
 # Orchestrate our job run sequence
 workflows:
