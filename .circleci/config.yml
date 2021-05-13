@@ -7,6 +7,8 @@ jobs:
       - image: cyang019/cpphpc:latest
     steps:
       - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
       - run: cmake -GNinja -DCMAKE_BUILD_TYPE=Release -B build
       - run: cmake --build build
   test:
