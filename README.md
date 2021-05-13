@@ -113,50 +113,76 @@ ninja
 {
   "spinsys": {
     "euler": {
-      "alpha": <float>,
-      "beta": <float>,
-      "gamma": <float>
+      "alpha": 0.0,
+      "beta": 0.0,
+      "gamma": 0.0
     },
     "interactions": [
-      ...
+      {
+        "entries": {
+        },
+        "name": "csa/shielding/hyperfine/dipole/scalar"
+      }
     ],
     "spins": {
-      ...
+      "spin-id": {
+        "type": "e/H1/C13 etc",
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "t1": 1.0e-3,
+        "t2": 1.0e-6
+      }
     }
   },
   "pulseseq": {
     "name": "name of the pulse sequence",
     "components": {
-      ...
+      "emr-name": {
+        "channel-name": {
+          "frequency": 1.0e6,
+          "offset": 0.0,
+          "phase": 0.0
+        }
+      }
     },
+    "increment": 1.0e-9,
     "sections": {
-      ...
+      "section-name": {
+        "names-within-section": [
+          "name1"          
+        ],
+        "params": {},
+        "size": 100,
+        "type": "section-type"
+      }
     },
     "sequence": [
-      ...
+      "section1", "section2", "section3"
     ]
   },
   "settings": {
     "euler": {
-      "alpha": <float>,
-      "beta": <float>,
-      "gamma": <float>
+      "alpha": 0.0,
+      "beta": 0.0,
+      "gamma": 0.0
     },
-    "ncores": <int>,
+    "ncores": 1,
     "acq": "H1",
     "Magnet": {
-      "b0": <float>
+      "b0": 9.4
     },
     "Gyroton": {
-      "em_frequency": <float>
+      "em_frequency": 263.0e9
     },
     "Probe": {
-      "mas_frequency": <float>,
-      "temperature": <float>,
-      "mas_increment": <float>
+      "mas_frequency": 0.0,
+      "temperature": 77.0,
+      "mas_increment": 1e-5
     },
-    "task": <task name>,
-    ...
+    "task": "FieldProfile",
+
+    "other-task-related-entries"
   }
 }
 ```
