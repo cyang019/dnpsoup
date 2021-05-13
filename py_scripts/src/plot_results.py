@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('TKagg')
 import numpy as np
 import pandas as pd
 import argparse

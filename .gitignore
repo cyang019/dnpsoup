@@ -39,4 +39,11 @@ spinsys_temp.json
 
 # symbolic link
 plot_results.py
+# intermediate results
+py_scripts/*.ps
+eofe7/**
+
+resources/**
+
+Dockerfile.ubuntu.env
 
