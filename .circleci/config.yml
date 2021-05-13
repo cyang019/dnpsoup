@@ -11,11 +11,15 @@ jobs:
       - run: git submodule update --init
       - run: cmake -DCMAKE_BUILD_TYPE=Release -B build
       - run: cmake --build build
+      - run: pwd
+      - run: ls
   test:
     docker:
       - image: cyang019/cpphpc:latest
     steps:
       - checkout
+      - run: pwd
+      - run: ls
       - run: ./tests/test_dnpsoup_core 
 
 # Orchestrate our job run sequence
