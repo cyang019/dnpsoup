@@ -104,7 +104,10 @@ ninja
 + [TOP-DNP](./examples/06_top_dnp/top_dnp_visualization.ipynb)
 
 
-**[dnpsoup_gui](https://github.com/cyang019/dnpsoup_gui)** can help to generate simulation inputs.
+### Graphical Interface for Input Preparation
+
+**dnpsoup_gui** is a graphical user interface that helps generating simulation inputs:
+[https://github.com/cyang019/dnpsoup_gui](https://github.com/cyang019/dnpsoup_gui)
 
 
 #### Expected Input JSON File Format
