@@ -7,7 +7,6 @@
 
 DNPSOUP simulates polarization enhancement on nuclei(s) due to the presence of electron(s) and EM radiations, with or without Magic Angle Spinning (MAS).
 
-
 ## Background Knowledge
 
 #### Nuclear Magnetic Resonance (NMR)
@@ -213,7 +212,13 @@ Chen Yang, Kong Ooi Tan, and Robert G. Griffin
 - Chen Yang also thanks his family for support, and Mr. Xiang Gao for his suggestions on debugging frontend javascript code.
 
 
+## Links
+
++ Griffin Group website: [https://griffingroup.mit.edu](https://griffingroup.mit.edu)
++ Kong Ooi Tan's Webpage: [https://www.chimie.ens.fr/tan/](https://www.chimie.ens.fr/tan)
+
+
 ## License
 
-[BSD-3 License](./LICENSE)
+[BSD-3-Clause License](./LICENSE)
 
