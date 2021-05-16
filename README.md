@@ -215,7 +215,7 @@ Chen Yang, Kong Ooi Tan, and Robert G. Griffin
 ## Links
 
 + Griffin Group website: [https://griffingroup.mit.edu](https://griffingroup.mit.edu)
-+ Kong Ooi Tan's Webpage: [https://www.chimie.ens.fr/tan/](https://www.chimie.ens.fr/tan)
++ Kong Ooi Tan's Webpage: [https://www.chimie.ens.fr/tan](https://www.chimie.ens.fr/tan)
 
 
 ## License
