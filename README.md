@@ -33,9 +33,7 @@ git clone --recursive https://github.com/cyang019/dnpsoup.git
 
 ### Dependencies
 
-- git
-- cmake
-- ninja
+- nlohmann/json ([https://github.com/nlohmann/json](https://github.com/nlohmann/json))
 - openblas & lapack / accelerate
 
 #### Install Dependencies
