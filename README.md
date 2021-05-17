@@ -55,8 +55,7 @@ sudo pacman -Syu clang cmake ninja git openblas lapacke
 
 ##### MacOS
 
-Install xcode
-Install homebrew
+Install xcode and homebrew
 
 ```bash
 # homebrew
