@@ -1,3 +1,3 @@
 [submodule "matrix"]
 	path = matrix
-	url = git@gitlab.com:chen.yang/matrix.git
+	url = ../../chen.yang/matrix.git
