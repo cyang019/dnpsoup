@@ -109,7 +109,8 @@ ninja
 ### Graphical Interface for Input Preparation
 
 **dnpsoup_gui** is a graphical user interface that helps generating simulation inputs:
-[https://github.com/cyang019/dnpsoup_gui](https://github.com/cyang019/dnpsoup_gui)
+
+[https://gitlab.com/chen.yang/dnpsoup_gui](https://gitlab.com/chen.yang/dnpsoup_gui)
 
 
 #### Expected Input JSON File Format
