@@ -1,6 +1,6 @@
 # DNPSOUP
 
-[![CircleCI](https://circleci.com/gh/cyang019/dnpsoup.svg?style=svg&circle-token=329696edcd1550614500348cdd674eb9900ee51b)](https://circleci.com/gh/cyang019/dnpsoup)
+[![pipeline status](https://gitlab.com/chen.yang/dnpsoup/badges/main/pipeline.svg)](https://gitlab.com/chen.yang/dnpsoup/-/commits/main)
 
 
 > **D**ynamic **N**uclear **P**olarization **S**imulation **O**ptimized with a **U**nified **P**ropagator
