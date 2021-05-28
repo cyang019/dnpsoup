@@ -208,6 +208,7 @@ Chen Yang, Kong Ooi Tan, and Robert G. Griffin
 + MIT/Harvard Center for Magnetic Resonance:
   [https://grantome.com/grant/NIH/P41-GM132079-01](https://grantome.com/grant/NIH/P41-GM132079-01)
 
++ Advancing NMR Sensitivity Beyond Continuous-Wave DNP - PulsedDNP: [https://anr.fr/Project-ANR-20-ERC9-0008](https://anr.fr/Project-ANR-20-ERC9-0008)
 
 ## Acknowledgements
 - The authors would like to thank Dr. Sheetal Kumar Jain for initial discussions and encouragement on creating a separate simulation package.
