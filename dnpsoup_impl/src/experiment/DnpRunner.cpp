@@ -379,10 +379,17 @@ namespace DnpRunner {
         }
         return results;
       } else {
-        double ref_intensity = calcPowderIntensity(
-              m, g, p, spin_sys, PulseSequence(), 
-              acq_spin, spin_sys_eulers, ncores, 
-              true, simple_averaging);
+        double ref_intensity = 0.0;
+        if(spin_sys_eulers.size() == 1) {
+          ref_intensity = calcIntensityAveraged(
+              m, g, p, spin_sys, PulseSequence(),
+              acq_spin, spin_sys_eulers[0]);
+        } else {
+          ref_intensity = calcPowderIntensity(
+                m, g, p, spin_sys, PulseSequence(), 
+                acq_spin, spin_sys_eulers, ncores, 
+                true, simple_averaging);
+        }
         /// to avoid divide by zero error
         ref_intensity += (std::abs(ref_intensity) < eps);
 #ifndef NDEBUG
