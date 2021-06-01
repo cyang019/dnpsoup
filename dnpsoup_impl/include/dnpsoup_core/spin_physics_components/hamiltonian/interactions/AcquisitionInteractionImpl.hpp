@@ -97,7 +97,10 @@ namespace dnpsoup {
   template<typename T, typename E>
   MatrixCxDbl AcquisitionInteraction<T, E>::genMatrix(
       [[maybe_unused]] const Property &p,
-      [[maybe_unused]] const Euler<ActiveRotation> &e) const
+      [[maybe_unused]] const Euler<ActiveRotation> &e,
+      [[maybe_unused]] const Euler<ActiveRotation> &e2,
+      [[maybe_unused]] const Euler<ActiveRotation> &e3
+      ) const
   {
     return m_op;
   }
@@ -105,7 +108,10 @@ namespace dnpsoup {
   template<typename T, typename E>
   MatrixCxDbl AcquisitionInteraction<T, E>::genMatrix(
       [[maybe_unused]] const Property &p,
-      [[maybe_unused]] const Euler<PassiveRotation> &e) const
+      [[maybe_unused]] const Euler<PassiveRotation> &e,
+      [[maybe_unused]] const Euler<PassiveRotation> &e2,
+      [[maybe_unused]] const Euler<PassiveRotation> &e3
+      ) const
   {
     return m_op;
   }

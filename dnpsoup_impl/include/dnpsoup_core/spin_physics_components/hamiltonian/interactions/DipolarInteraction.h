@@ -24,11 +24,15 @@ namespace dnpsoup {
 
     MatrixCxDbl genMatrix(
         const Property &,
-        const Euler<ActiveRotation> &) const override;
+        const Euler<ActiveRotation> &,
+        const Euler<ActiveRotation> &e2=default_euler_a,
+        const Euler<ActiveRotation> &e3=default_euler_a) const override;
 
     MatrixCxDbl genMatrix(
         const Property &,
-        const Euler<PassiveRotation> &) const override;
+        const Euler<PassiveRotation> &,
+        const Euler<PassiveRotation> &e2=default_euler_p,
+        const Euler<PassiveRotation> &e3=default_euler_p) const override;
 
     size_t dimension() const;
   private:

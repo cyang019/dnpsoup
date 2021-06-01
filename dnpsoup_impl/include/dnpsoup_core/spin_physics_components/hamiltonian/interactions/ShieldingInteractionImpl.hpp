@@ -31,7 +31,10 @@ namespace dnpsoup {
   template<typename T>
   MatrixCxDbl ShieldingInteraction<T>::genMatrix(
       const Property &g,
-      const Euler<ActiveRotation> &e) const
+      const Euler<ActiveRotation> &e,
+      [[maybe_unused]] const Euler<ActiveRotation> &e2,
+      [[maybe_unused]] const Euler<ActiveRotation> &e3
+      ) const
   {
     // =======================================
     const double gxx = g.get(ValueName::xx);
@@ -66,7 +69,10 @@ namespace dnpsoup {
   template<typename T>
   MatrixCxDbl ShieldingInteraction<T>::genMatrix(
       const Property &g,
-      const Euler<PassiveRotation> &e) const
+      const Euler<PassiveRotation> &e,
+      [[maybe_unused]] const Euler<PassiveRotation> &e2,
+      [[maybe_unused]] const Euler<PassiveRotation> &e3
+      ) const
   {
     // =======================================
     const double gxx = g.get(ValueName::xx);

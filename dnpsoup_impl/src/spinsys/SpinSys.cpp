@@ -117,12 +117,6 @@ namespace dnpsoup {
 #ifndef NDEBUG
       std::cout << "auto add interactions..." << std::endl;
 #endif
-      for(const auto &s : m_spins){
-        if(s.first != id_name){
-          this->setDipole(s.first, id_name);
-        }
-      }
-
       auto t = s.getSpinType();
       switch(t){
         case SpinType::e:
@@ -134,7 +128,13 @@ namespace dnpsoup {
           this->setCsa(id_name, 0.0, 0.0, 0.0, Euler<>(0.0, 0.0, 0.0));
           break;
       }
+      for(const auto &s : m_spins){
+        if(s.first != id_name){
+          this->setDipole(s.first, id_name);
+        }
+      }
     }
+
     return *this;
   }
 
@@ -271,6 +271,41 @@ namespace dnpsoup {
     Coordinate c2 = m_spins[s2].getLocation();
     double dist = calcDistance(c1, c2);
     p.set(ValueName::distance, dist);
+    auto spin_type1 = m_spins[s1].getSpinType();
+    auto spin_type2 = m_spins[s2].getSpinType();
+    // cout << "set dipole" << endl;
+    if(spin_type1 == SpinType::e) {
+      // assuming shielding observable already exists
+      auto oid1 = ObservableId(InteractionType::Shielding, s1);
+      if(m_observables.find(oid1) == m_observables.end()) {
+        throw InteractionTypeError("Shieldings need to get defined before dipole.");
+      }
+      const double xx = m_observables[oid1].getPropertyValue(ValueName::xx);
+      const double yy = m_observables[oid1].getPropertyValue(ValueName::yy);
+      const double zz = m_observables[oid1].getPropertyValue(ValueName::zz);
+      p.set(ValueName::xx, xx);
+      p.set(ValueName::yy, yy);
+      p.set(ValueName::zz, zz);
+      // cout << "g_xx: " << xx << endl;
+      // cout << "g_yy: " << yy << endl;
+      // cout << "g_zz: " << zz << endl;
+    }
+    if(spin_type2 == SpinType::e) {
+      // assuming shielding observable already exists
+      auto oid2 = ObservableId(InteractionType::Shielding, s2);
+      if(m_observables.find(oid2) == m_observables.end()) {
+        throw InteractionTypeError("Shieldings need to get defined before dipole.");
+      }
+      const double xx = m_observables[oid2].getPropertyValue(ValueName::xx);
+      const double yy = m_observables[oid2].getPropertyValue(ValueName::yy);
+      const double zz = m_observables[oid2].getPropertyValue(ValueName::zz);
+      p.set(ValueName::xx2, xx);
+      p.set(ValueName::yy2, yy);
+      p.set(ValueName::zz2, zz);
+      // cout << "g_xx2: " << xx << endl;
+      // cout << "g_yy2: " << yy << endl;
+      // cout << "g_zz2: " << zz << endl;
+    }
 
     double phi, theta;
     std::tie(phi, theta) = calcAnglesWithZ(c2 - c1);
@@ -683,17 +718,6 @@ namespace dnpsoup {
 #endif
         spin_sys.setScalar(id1, id2, val);
       }
-      else if(interaction_name == "dipole"
-          || interaction_name == "hyperfine"
-          || interaction_name == "throughspace"){
-        auto id1 = interaction["id1"].get<int>();
-        auto id2 = interaction["id2"].get<int>();
-        spin_sys.setDipole(SpinId(id1), SpinId(id2));
-#ifndef NDEBUG
-        std::cout << "[interaction] dipolar " << id1 << "-" << id2 << "."
-                  << std::endl;
-#endif
-      }
       else if(interaction_name == "csa"
           || interaction_name == "shielding"){
         int sid = interaction["id"].get<int>();
@@ -719,6 +743,23 @@ namespace dnpsoup {
                     << std::endl;
 #endif
         }
+      }
+    }
+    // dipole needs to get defined after shielding / csa
+    // because electron gyromagnetic ratio depends on g
+    for(auto &interaction_js : j["interactions"]){
+      auto interaction_name = interaction_js["name"].get<string>();
+      auto interaction = interaction_js["entries"];
+      if(interaction_name == "dipole"
+          || interaction_name == "hyperfine"
+          || interaction_name == "throughspace"){
+        auto id1 = interaction["id1"].get<int>();
+        auto id2 = interaction["id2"].get<int>();
+        spin_sys.setDipole(SpinId(id1), SpinId(id2));
+#ifndef NDEBUG
+        std::cout << "[interaction] dipolar " << id1 << "-" << id2 << "."
+                  << std::endl;
+#endif
       }
     }
     // spin groups

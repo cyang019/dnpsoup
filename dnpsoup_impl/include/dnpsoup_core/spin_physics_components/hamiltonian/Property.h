@@ -17,6 +17,9 @@ namespace dnpsoup {
     xx = 10,  // for anisotropy
     yy = 11,
     zz = 12,
+    xx2 = 13,  // for anisotropy
+    yy2 = 14,
+    zz2 = 15,
     b0 = 100,
 
     freq = 200,

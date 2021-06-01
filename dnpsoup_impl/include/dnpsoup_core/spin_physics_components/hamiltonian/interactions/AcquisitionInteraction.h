@@ -26,12 +26,17 @@ namespace dnpsoup {
                            const std::vector<SpinId> &irradiated);
     ~AcquisitionInteraction() {}
 
-    matrix::Matrix<cxdbl> genMatrix(
-        const Property &,   // freq = 0.5 * gamma * B1 in Hz; phase in rad. phase0 in rad
-        [[maybe_unused]] const Euler<ActiveRotation> &) const override;
-    matrix::Matrix<cxdbl> genMatrix(
-        const Property &,   // freq = 0.5 * gamma * B1 in Hz; phase in rad. phase0 in rad
-        [[maybe_unused]] const Euler<PassiveRotation> &) const override;
+    MatrixCxDbl genMatrix(
+        [[maybe_unused]] const Property &,
+        [[maybe_unused]] const Euler<ActiveRotation> &,
+        [[maybe_unused]] const Euler<ActiveRotation> &e2=default_euler_a,
+        [[maybe_unused]] const Euler<ActiveRotation> &e3=default_euler_a) const override;
+
+    MatrixCxDbl genMatrix(
+        [[maybe_unused]] const Property &,
+        [[maybe_unused]] const Euler<PassiveRotation> &,
+        [[maybe_unused]] const Euler<PassiveRotation> &e2=default_euler_p,
+        [[maybe_unused]] const Euler<PassiveRotation> &e3=default_euler_p) const override;
 
     std::size_t dimension() const;
   private:

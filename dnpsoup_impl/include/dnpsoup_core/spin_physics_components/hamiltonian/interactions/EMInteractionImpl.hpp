@@ -75,7 +75,10 @@ namespace dnpsoup {
   template<typename T>
   MatrixCxDbl EMInteraction<T>::genMatrix(
       const Property &p,
-      [[maybe_unused]] const Euler<ActiveRotation> &e) const
+      [[maybe_unused]] const Euler<ActiveRotation> &e,
+      [[maybe_unused]] const Euler<ActiveRotation> &e2,
+      [[maybe_unused]] const Euler<ActiveRotation> &e3
+      ) const
   {
     return genMatrixInternal(p);
   }
@@ -83,7 +86,10 @@ namespace dnpsoup {
   template<typename T>
   MatrixCxDbl EMInteraction<T>::genMatrix(
       const Property &p,
-      [[maybe_unused]] const Euler<PassiveRotation> &e) const
+      [[maybe_unused]] const Euler<PassiveRotation> &e,
+      [[maybe_unused]] const Euler<PassiveRotation> &e2,
+      [[maybe_unused]] const Euler<PassiveRotation> &e3
+      ) const
   {
     return genMatrixInternal(p);
   }

@@ -32,7 +32,10 @@ namespace dnpsoup {
   template<typename T>
   MatrixCxDbl ChemicalShiftInteraction<T>::genMatrix(
       const Property &csa,
-      const Euler<ActiveRotation> &e) const
+      const Euler<ActiveRotation> &e,
+      [[maybe_unused]] const Euler<ActiveRotation> &e2,
+      [[maybe_unused]] const Euler<ActiveRotation> &e3
+      ) const
   {
     const double szz = csa.get(ValueName::zz);
     const double sxx = csa.get(ValueName::xx);
@@ -64,7 +67,10 @@ namespace dnpsoup {
   template<typename T>
   MatrixCxDbl ChemicalShiftInteraction<T>::genMatrix(
       const Property &csa,
-      const Euler<PassiveRotation> &e) const
+      const Euler<PassiveRotation> &e,
+      [[maybe_unused]] const Euler<PassiveRotation> &e2,
+      [[maybe_unused]] const Euler<PassiveRotation> &e3
+      ) const
   {
     const double szz = csa.get(ValueName::zz);
     const double sxx = csa.get(ValueName::xx);

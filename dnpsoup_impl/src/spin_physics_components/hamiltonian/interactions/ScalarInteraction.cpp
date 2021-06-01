@@ -25,13 +25,21 @@ namespace dnpsoup {
   }
 
   MatrixCxDbl ScalarInteraction::genMatrix(
-      const Property &p, [[maybe_unused]] const Euler<ActiveRotation> &e) const
+      const Property &p,
+      [[maybe_unused]] const Euler<ActiveRotation> &e,
+      [[maybe_unused]] const Euler<ActiveRotation> &e2,
+      [[maybe_unused]] const Euler<ActiveRotation> &e3
+      ) const
   {
     return p.get(ValueName::scalar) * m_zz;
   }
 
   MatrixCxDbl ScalarInteraction::genMatrix(
-      const Property &p, [[maybe_unused]] const Euler<PassiveRotation> &e) const
+      const Property &p,
+      [[maybe_unused]] const Euler<PassiveRotation> &e,
+      [[maybe_unused]] const Euler<PassiveRotation> &e2,
+      [[maybe_unused]] const Euler<PassiveRotation> &e3
+      ) const
   {
     return p.get(ValueName::scalar) * m_zz;
   }

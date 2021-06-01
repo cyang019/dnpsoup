@@ -18,7 +18,10 @@ namespace dnpsoup {
   // internally convert angles to active form for calculation
   MatrixCxDbl OffsetInteraction::genMatrix(
       const Property &p_freq,
-      [[maybe_unused]] const Euler<ActiveRotation> &e) const
+      [[maybe_unused]] const Euler<ActiveRotation> &e,
+      [[maybe_unused]] const Euler<ActiveRotation> &e2,
+      [[maybe_unused]] const Euler<ActiveRotation> &e3
+      ) const
   {
     const double freq0 = p_freq.get(ValueName::offset);
     return freq0 * m_z;
@@ -26,7 +29,10 @@ namespace dnpsoup {
 
   MatrixCxDbl OffsetInteraction::genMatrix(
       const Property &p_freq,
-      [[maybe_unused]] const Euler<PassiveRotation> &e) const
+      [[maybe_unused]] const Euler<PassiveRotation> &e,
+      [[maybe_unused]] const Euler<PassiveRotation> &e2,
+      [[maybe_unused]] const Euler<PassiveRotation> &e3
+      ) const
   {
     const double freq0 = p_freq.get(ValueName::offset);
     return freq0 * m_z;

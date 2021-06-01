@@ -29,6 +29,9 @@ namespace {
           dnpsoup::beta_e, dnpsoup::gamma_H1, 2, 2);
 
       auto p = dnpsoup::genDipoleProperty(2.0);
+      p.set(ValueName::xx, 2.003);
+      p.set(ValueName::yy, 2.003);
+      p.set(ValueName::zz, 2.003);
       auto e = dnpsoup::Euler<>(0,0,0);
       auto mat = dipole.genMatrix(p, e);
       std::cout << "mat_e_H:\n" << mat << std::endl;
@@ -38,6 +41,9 @@ namespace {
       auto hf = DipolarInteraction<dnpsoup::RotatingFrame, dnpsoup::LabFrame>(
           dnpsoup::beta_e, dnpsoup::gamma_H1, 2, 2);
       auto p = genDipoleProperty(3.0);  // 3 anstrom
+      p.set(ValueName::xx, 2.003);
+      p.set(ValueName::yy, 2.003);
+      p.set(ValueName::zz, 2.003);
       auto e = Euler<>(0.0,0.1,0.0);
       auto mat_hf = hf.genMatrix(p, e);
       auto sz = kron(spin<Z>(2), identity<cxdbl>(2));

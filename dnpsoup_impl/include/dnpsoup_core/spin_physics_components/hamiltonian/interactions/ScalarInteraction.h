@@ -20,13 +20,18 @@ namespace dnpsoup {
         size_t nbefore, size_t nbetween, size_t nafter);
     ~ScalarInteraction() {}
 
-    matrix::Matrix<cxdbl> genMatrix(
+    MatrixCxDbl genMatrix(
         const Property &,
-        [[maybe_unused]] const Euler<ActiveRotation> &) const override;
+        [[maybe_unused]] const Euler<ActiveRotation> &,
+        [[maybe_unused]] const Euler<ActiveRotation> &e2=default_euler_a,
+        [[maybe_unused]] const Euler<ActiveRotation> &e3=default_euler_a) const override;
 
-    matrix::Matrix<cxdbl> genMatrix(
+    MatrixCxDbl genMatrix(
         const Property &,
-        [[maybe_unused]] const Euler<PassiveRotation> &) const override;
+        [[maybe_unused]] const Euler<PassiveRotation> &,
+        [[maybe_unused]] const Euler<PassiveRotation> &e2=default_euler_p,
+        [[maybe_unused]] const Euler<PassiveRotation> &e3=default_euler_p) const override;
+
 
     size_t dimension() const;
   private:

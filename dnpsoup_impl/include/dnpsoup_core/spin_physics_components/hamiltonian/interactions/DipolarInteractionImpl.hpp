@@ -122,10 +122,36 @@ namespace dnpsoup {
 
   template<typename T1, typename T2>
   MatrixCxDbl DipolarInteraction<T1, T2>::genMatrix(
-      const Property &p, const Euler<ActiveRotation> &e) const
+      const Property &p, const Euler<ActiveRotation> &e,
+      const Euler<ActiveRotation> &e_g1, const Euler<ActiveRotation> &e_g2
+      ) const
   {
     const double distance = p.get(ValueName::distance);
-    const double d = 1.0e-7 * m_gamma1 * m_gamma2 * dnpsoup::h / (distance * distance * distance) * 1.0e30;
+    double gamma1 = m_gamma1;
+    double gamma2 = m_gamma2;
+    if(approxEqual(m_gamma1, dnpsoup::beta_e, eps)) {
+      const double gxx = p.get(ValueName::xx);
+      const double gyy = p.get(ValueName::yy);
+      const double gzz = p.get(ValueName::zz);
+      const double sb = sin(e_g1.beta());
+      const double cb = cos(e_g1.beta());
+      const double sg = sin(e_g1.gamma());
+      const double cg = cos(e_g1.gamma());
+      const double g = gzz * cb * cb + sb * sb * (gxx * cg * cg + gyy * sg * sg);
+      gamma1 = dnpsoup::beta_e * g;
+    }
+    if(approxEqual(m_gamma2, dnpsoup::beta_e, eps)) {
+      const double gxx = p.get(ValueName::xx2);
+      const double gyy = p.get(ValueName::yy2);
+      const double gzz = p.get(ValueName::zz2);
+      const double sb = sin(e_g2.beta());
+      const double cb = cos(e_g2.beta());
+      const double sg = sin(e_g2.gamma());
+      const double cg = cos(e_g2.gamma());
+      const double g = gzz * cb * cb + sb * sb * (gxx * cg * cg + gyy * sg * sg);
+      gamma2 = dnpsoup::beta_e * g;
+    }
+    const double d = -1.0e-7 * gamma1 * gamma2 * dnpsoup::h / (distance * distance * distance) * 1.0e30;
     if constexpr(std::is_same<T1, LabFrame>::value
         && std::is_same<T2, LabFrame>::value){
       return d * (m_a20 * calcF20(e.beta()) 
@@ -150,10 +176,36 @@ namespace dnpsoup {
 
   template<typename T1, typename T2>
   MatrixCxDbl DipolarInteraction<T1, T2>::genMatrix(
-      const Property &p, const Euler<PassiveRotation> &e) const
+      const Property &p, const Euler<PassiveRotation> &e,
+      const Euler<PassiveRotation> &e2,
+      const Euler<PassiveRotation> &e3) const
   {
     const double distance = p.get(ValueName::distance);
-    const double d = 1.0e-7 * m_gamma1 * m_gamma2 * dnpsoup::h / (distance * distance * distance) * 1.0e30;
+    double gamma1 = m_gamma1;
+    double gamma2 = m_gamma2;
+    if(approxEqual(m_gamma1, dnpsoup::beta_e, eps)) {
+      const double gxx = p.get(ValueName::xx);
+      const double gyy = p.get(ValueName::yy);
+      const double gzz = p.get(ValueName::zz);
+      const double sb = sin(-e2.beta());
+      const double cb = cos(-e2.beta());
+      const double sg = sin(-e2.alpha());
+      const double cg = cos(-e2.alpha());
+      const double g = gzz * cb * cb + sb * sb * (gxx * cg * cg + gyy * sg * sg);
+      gamma1 = dnpsoup::beta_e * g;
+    }
+    if(approxEqual(m_gamma2, dnpsoup::beta_e, eps)) {
+      const double gxx = p.get(ValueName::xx2);
+      const double gyy = p.get(ValueName::yy2);
+      const double gzz = p.get(ValueName::zz2);
+      const double sb = -sin(e3.beta());
+      const double cb = cos(e3.beta());
+      const double sg = -sin(e3.alpha());
+      const double cg = cos(e3.alpha());
+      const double g = gzz * cb * cb + sb * sb * (gxx * cg * cg + gyy * sg * sg);
+      gamma2 = dnpsoup::beta_e * g;
+    }
+    const double d = -1.0e-7 * gamma1 * gamma2 * dnpsoup::h / (distance * distance * distance) * 1.0e30;
     if constexpr(std::is_same<T1, LabFrame>::value
         && std::is_same<T2, LabFrame>::value){
       return d * (m_a20 * calcF20(-e.beta()) 
