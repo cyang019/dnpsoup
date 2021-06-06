@@ -198,7 +198,7 @@ ninja
 Chen Yang, Kong Ooi Tan, and Robert G. Griffin
 
 ## Citing DNPSOUP
-*DNPSOUP: A numerical simulation software for dynamic nuclear polarization*, in preparation
+*DNPSOUP: A numerical simulation software for dynamic nuclear polarization*, submitted to JMR
 
 ## Fundings
 

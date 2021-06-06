@@ -20,7 +20,7 @@ bool fileExists(const string &filename)
 
 int main(int argc, char **argv)
 {
-  const string authors = "Chen Yang, Kong Ooi Tan, and Robert G. Griffin";
+  const string authors = "DNPSOUP authors";
   const string license_short_line = " Copyright (C) " + 
     to_string(LICENSE_START) + "-" + to_string(LICENSE_END) + " " +
     authors;
