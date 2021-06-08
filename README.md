@@ -109,7 +109,7 @@ Download the following software:
 Setup DNPSOUP as shown below:
 1. open **Git Bash**, browse to a desired folder,
 ```bash
-git clone --recursive https://github.com/cyang019/dnpsoup.git
+git clone --recursive https://gitlab.com/chen.yang/dnpsoup.git
 ```
 
 2. open visual studio, use the **CMakeLists.txt** in the root directory of the project to build.
