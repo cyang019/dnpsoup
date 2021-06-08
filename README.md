@@ -21,7 +21,6 @@ DNPSOUP simulates polarization enhancement on nuclei(s) due to the presence of e
 - [Expected Input JSON File Format](#expected-input-json-file-format)
 - [Authors](#authors)
 - [Citing DNPSOUP](#citing-dnpsoup)
-- [Fundings](#fundings)
 - [Acknowledgements](#acknowledgements)
 - [External Links](#links)
 - [License](#license)
@@ -234,6 +233,14 @@ Chen Yang, Kong Ooi Tan, and Robert G. Griffin
 ## Citing DNPSOUP
 *DNPSOUP: A simulation software package for dynamic nuclear polarization*, submitted to Journal of Magnetic Resonance.
 
+
+## Acknowledgements
+
+- The authors would like to thank Dr. Sheetal Kumar Jain for initial discussions and encouragement on creating a separate simulation package.
+- The authors would also like to thank Dr. Kan-Nian Hu for discussions on cross effect, and Dr. John Wright for computational resources of PSFC at MIT. 
+- Chen Yang thanks Professor Leonard Mueller for introducing him to solid-state NMR and product operators. 
+- Chen Yang also thanks his family for support, and Mr. Xiang Gao for his suggestions on debugging frontend javascript code.
+
 ## Fundings
 
 + High Field DNP and EPR in Biological Systems:
@@ -243,12 +250,6 @@ Chen Yang, Kong Ooi Tan, and Robert G. Griffin
   [https://grantome.com/grant/NIH/P41-GM132079-01](https://grantome.com/grant/NIH/P41-GM132079-01)
 
 + Advancing NMR Sensitivity Beyond Continuous-Wave DNP - PulsedDNP: [https://anr.fr/Project-ANR-20-ERC9-0008](https://anr.fr/Project-ANR-20-ERC9-0008)
-
-## Acknowledgements
-- The authors would like to thank Dr. Sheetal Kumar Jain for initial discussions and encouragement on creating a separate simulation package.
-- The authors would also like to thank Dr. Kan-Nian Hu for discussions on cross effect, and Dr. John Wright for computational resources of PSFC at MIT. 
-- Chen Yang thanks Professor Leonard Mueller for introducing him to solid-state NMR and product operators. 
-- Chen Yang also thanks his family for support, and Mr. Xiang Gao for his suggestions on debugging frontend javascript code.
 
 
 ## Links
