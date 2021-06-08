@@ -7,18 +7,30 @@
 
 DNPSOUP simulates polarization enhancement on nuclei(s) due to the presence of electron(s) and EM radiations, with or without Magic Angle Spinning (MAS).
 
-------
 ## Graphical User Interface for Input Preparation
 
 **dnpsoup_gui** is a graphical user interface that helps generating simulation inputs:
 
 [https://github.com/cyang019/dnpsoup_gui](https://github.com/cyang019/dnpsoup_gui)
 
------
+--------
+## Table of Contents
+- [Background Knowledge](#background-knowledge)
+- [Getting Started (Linux / MacOS)](#getting-started-(linux-/-macos))
+- [Getting Started (Windows)](#getting-started-(windows))
+- [Expected Input JSON File Format](#expected-input-json-file-format)
+- [Authors](#authors)
+- [Citing DNPSOUP](#citing-dnpsoup)
+- [Fundings](#fundings)
+- [Acknowledgements](#acknowledgements)
+- [External Links](#links)
+- [License](#license)
 
+
+----
 ## Background Knowledge
 
-#### Nuclear Magnetic Resonance (NMR)
+### Nuclear Magnetic Resonance (NMR)
 
 NMR is an analytical chemistry technique that utilizes a high field magnet to measure molecular or atomic structures.
   - [What is NMR (http://chem.ch.huji.ac.il/nmr/whatisnmr/whatisnmr.html)](http://chem.ch.huji.ac.il/nmr/whatisnmr/whatisnmr.html)
@@ -26,7 +38,7 @@ NMR is an analytical chemistry technique that utilizes a high field magnet to me
   - [Keeler notes (http://www-keeler.ch.cam.ac.uk/lectures/)](http://www-keeler.ch.cam.ac.uk/lectures/)
 
 
-#### Dynamic Nuclear Polarization (DNP)
+### Dynamic Nuclear Polarization (DNP)
 
 DNP relies on the transfer of electron polarization (typically from an organic based exogenous radical) to neighboring nuclei offering significant gains in sensitivity.
 
@@ -45,22 +57,22 @@ git clone --recursive https://gitlab.com/chen.yang/dnpsoup.git
 - nlohmann/json ([https://github.com/nlohmann/json](https://github.com/nlohmann/json))
 - openblas & lapack / accelerate
 
-#### Install Dependencies
+### Install Dependencies
 
-##### Ubuntu
+#### Ubuntu
 
 ``` bash
 sudo apt-get update
 sudo apt-get install -y g++ git cmake ninja-build libopenblas-dev liblapacke-dev libpthread-stubs0-dev gfortran libatlas-base-dev
 ```
 
-##### Manjaro Linux
+#### Manjaro Linux
 
 ```bash
 sudo pacman -Syu clang cmake ninja git openblas lapacke
 ```
 
-##### MacOS
+#### MacOS
 
 Install xcode and homebrew
 
@@ -87,8 +99,7 @@ ninja
 
 ### Usage
 
-#### To execute dnpsoup
-
+To execute dnpsoup:
 ``` bash
 # in the root directory of dnpsoup
 ./build/dnpsoup_cli/dnpsoup_exec [input json file path] [output file path]
@@ -96,11 +107,11 @@ ninja
 
 ## Getting Started (Windows)
 
-Download the following software:
+### Download Dependencies
 
 + git: [https://git-scm.com/download/win](https://git-scm.com/download/win)
 
-+ visual studio: [https://visualstudio.microsoft.com](https://visualstudio.microsoft.com)
++ Visual Studio: [https://visualstudio.microsoft.com](https://visualstudio.microsoft.com)
   
   Install c++ development environment by using *Visual Studio Installer*
   + install c++ desktop development tools
@@ -109,7 +120,8 @@ Download the following software:
 + mkl (BLAS/LAPACK support): [https://software.intel.com/oneapi/onemkl](https://software.intel.com/oneapi/onemkl)
   - make sure *Intel Math Kernel Library* within the Software Installer is selected. Install mkl in the default location within *C:\Program Files (x86)*.
 
-Setup DNPSOUP as shown below:
+### Download and Compile
+
 1. Open `Git Bash`, browse to a desired folder,
 ```bash
 git clone --recursive https://gitlab.com/chen.yang/dnpsoup.git
@@ -119,7 +131,7 @@ git clone --recursive https://gitlab.com/chen.yang/dnpsoup.git
 
 3. Open the `Developer Command Prompt for VS <version number>`, browse to `<dnpsoup_folder>\out\build\x64-Release or x64-Debug\out`, the executable `dnpsoup_exec.exe` should locate here.
 
-#### Examples
+## Examples
 
 + [Solid Effect and Overhauser Effect](./examples/01_solid_effect_and_overhauser_effect/se_oe_visualization.ipynb)
 
@@ -134,7 +146,7 @@ git clone --recursive https://gitlab.com/chen.yang/dnpsoup.git
 + [TOP-DNP](./examples/06_top_dnp/top_dnp_visualization.ipynb)
 
 
-#### Expected Input JSON File Format
+## Expected Input JSON File Format
 
 ```json
 {
