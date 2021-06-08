@@ -115,9 +115,9 @@ Setup DNPSOUP as shown below:
 git clone --recursive https://gitlab.com/chen.yang/dnpsoup.git
 ```
 
-2. Open `Visual Studio`, on the menu bar, `File`->`Open`->`Folder...`, right click on the **CMakeLists.txt** in the root directory of the project to build.
+2. Open `Visual Studio`, on the menu bar, `File`->`Open`->`Folder...` to open the dnpsoup folder. Within the `Solution Explorer - Folder View`, right click on the **CMakeLists.txt** in the root directory of the project to build.
 
-3. Open the `Developer Command Prompt for VS <version number>`, browse to `<dnpsoup_folder>\out\build\x64-Release or x64-Debug\out`, the executable dnpsoup_exec.exe should locate here.
+3. Open the `Developer Command Prompt for VS <version number>`, browse to `<dnpsoup_folder>\out\build\x64-Release or x64-Debug\out`, the executable `dnpsoup_exec.exe` should locate here.
 
 #### Examples
 
