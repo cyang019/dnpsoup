@@ -29,7 +29,7 @@ DNP relies on the transfer of electron polarization (typically from an organic b
 
   - [High-field DNP (https://griffingroup.mit.edu/high-field-dnp)](https://griffingroup.mit.edu/high-field-dnp#overlay-context=research/nmr-methodology)
 
-## Getting Started
+## Getting Started (Linux / MacOS)
 
 ### Download
 
@@ -90,6 +90,29 @@ ninja
 # in the root directory of dnpsoup
 ./build/dnpsoup_cli/dnpsoup_exec [input json file path] [output file path]
 ```
+
+## Getting Started (Windows)
+
+Download the following software:
+
++ git: [https://git-scm.com/download/win](https://git-scm.com/download/win)
+
++ visual studio: [https://visualstudio.microsoft.com](https://visualstudio.microsoft.com)
+  
+  Install c++ development environment by using *Visual Studio Installer*
+  + install c++ desktop development tools
+  + install cmake
+
++ mkl (BLAS/LAPACK support): [https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/onemkl](https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/onemkl.html#gs.38ok43)
+  - make sure *Intel Math Kernel Library* within the Software Installer is selected.
+
+Setup DNPSOUP as shown below:
+1. open **Git Bash**, browse to a desired folder,
+```bash
+git clone --recursive https://github.com/cyang019/dnpsoup.git
+```
+
+2. open visual studio, use the **CMakeLists.txt** in the root directory of the project to build.
 
 #### Examples
 
