@@ -25,8 +25,12 @@ endif()
 #  target_compile_options(dnpsoup_core PUBLIC -Wall -Wextra -Wpedantic -Werror)  
 #endif()
 
-target_compile_options(dnpsoup_core PUBLIC -Wall -Wextra -Wpedantic)
-
+if(MSVC)
+  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+  target_compile_options(dnpsoup_core PUBLIC -Wall)
+else()
+  target_compile_options(dnpsoup_core PUBLIC -Wall -Wextra -Wpedantic)
+endif()
 #find_package(BLAS REQUIRED)
 #find_package(LAPACK REQUIRED)
 
