@@ -7,11 +7,14 @@
 
 DNPSOUP simulates polarization enhancement on nuclei(s) due to the presence of electron(s) and EM radiations, with or without Magic Angle Spinning (MAS).
 
-## Project Migrated
+------
+## Graphical User Interface for Input Preparation
 
-**New Location**: [https://gitlab.com/chen.yang/dnpsoup](https://gitlab.com/chen.yang/dnpsoup)
+**dnpsoup_gui** is a graphical user interface that helps generating simulation inputs:
 
-----------
+[https://github.com/cyang019/dnpsoup_gui](https://github.com/cyang019/dnpsoup_gui)
+
+-----
 
 ## Background Knowledge
 
@@ -103,16 +106,18 @@ Download the following software:
   + install c++ desktop development tools
   + install cmake
 
-+ mkl (BLAS/LAPACK support): [https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/onemkl](https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/onemkl.html#gs.38ok43)
-  - make sure *Intel Math Kernel Library* within the Software Installer is selected.
++ mkl (BLAS/LAPACK support): [https://software.intel.com/oneapi/onemkl](https://software.intel.com/oneapi/onemkl)
+  - make sure *Intel Math Kernel Library* within the Software Installer is selected. Install mkl in the default location within *C:\Program Files (x86)*.
 
 Setup DNPSOUP as shown below:
-1. open **Git Bash**, browse to a desired folder,
+1. Open `Git Bash`, browse to a desired folder,
 ```bash
 git clone --recursive https://gitlab.com/chen.yang/dnpsoup.git
 ```
 
-2. open visual studio, use the **CMakeLists.txt** in the root directory of the project to build.
+2. Open `Visual Studio`, on the menu bar, `File`->`Open`->`Folder...`, right click on the **CMakeLists.txt** in the root directory of the project to build.
+
+3. Open the `Developer Command Prompt for VS <version number>`, browse to `<dnpsoup_folder>\out\build\x64-Release or x64-Debug\out`, the executable dnpsoup_exec.exe should locate here.
 
 #### Examples
 
@@ -127,13 +132,6 @@ git clone --recursive https://gitlab.com/chen.yang/dnpsoup.git
 + [ISE SSE](./examples/05_ise_sse/ISE_SSE_visualization.ipynb)
 
 + [TOP-DNP](./examples/06_top_dnp/top_dnp_visualization.ipynb)
-
-
-### Graphical Interface for Input Preparation
-
-**dnpsoup_gui** is a graphical user interface that helps generating simulation inputs:
-
-[https://gitlab.com/chen.yang/dnpsoup_gui](https://gitlab.com/chen.yang/dnpsoup_gui)
 
 
 #### Expected Input JSON File Format
@@ -221,7 +219,7 @@ git clone --recursive https://gitlab.com/chen.yang/dnpsoup.git
 Chen Yang, Kong Ooi Tan, and Robert G. Griffin
 
 ## Citing DNPSOUP
-*DNPSOUP: A numerical simulation software for dynamic nuclear polarization*, submitted to JMR
+*DNPSOUP: A simulation software package for dynamic nuclear polarization*, submitted to Journal of Magnetic Resonance.
 
 ## Fundings
 
