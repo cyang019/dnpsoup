@@ -9,6 +9,7 @@ fast_exec_dnpsoup
 **/__pycache__/**
 
 .vscode/**
+.vs/**
 
 
 **/.DS_Store

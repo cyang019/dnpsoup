@@ -56,6 +56,8 @@ target_include_directories(
   PUBLIC
     ${PROJECT_BINARY_DIR}/googletest/googletest-src/googletest/include
     ${PROJECT_SOURCE_DIR}/dnpsoup_impl/include
+    ${PROJECT_BINARY_DIR}/dnpsoup_impl
+    ${PROJECT_BINARY_DIR}/matrix
   )
 
 #gtest_add_tests(TARGET      test_matrix

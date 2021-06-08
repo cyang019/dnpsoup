@@ -22,6 +22,8 @@ endif()
 
 if(USE_EMCC)
   target_compile_options(dnpsoup_exec PUBLIC -Wall -Wextra -Wpedantic)
+elseif(MSVC)
+  target_compile_options(dnpsoup_exec PUBLIC -Wall)
 else()
   target_compile_options(dnpsoup_exec PUBLIC -Wall -Wextra -Wpedantic)
 endif()

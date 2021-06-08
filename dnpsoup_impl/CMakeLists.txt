@@ -1,10 +1,5 @@
-if(NOT USE_EMCC)
-  add_library(dnpsoup_core SHARED "")
-  message(STATUS "dnpsoup_core shared library...")
-else()
-  add_library(dnpsoup_core STATIC "")
-  message(STATUS "dnpsoup_core static library...")
-endif()
+add_library(dnpsoup_core SHARED "")
+message(STATUS "dnpsoup_core shared library...")
 
 
 if(NOT DEFINED USE_DEBUG_MODEL)
@@ -13,10 +8,8 @@ endif()
 
 if(NOT DEFINED CMAKE_CXX_FLAGS_DEBUG)                                       
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")                  
-endif()
-
-if(NOT DEFINED CMAKE_CXX_FLAGS_RELEASE)                                     
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG")    
+elseif(NOT DEFINED CMAKE_CXX_FLAGS_RELEASE)
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG")
 endif()
 
 #if(NOT USE_EMCC)
@@ -25,7 +18,11 @@ endif()
 #  target_compile_options(dnpsoup_core PUBLIC -Wall -Wextra -Wpedantic -Werror)  
 #endif()
 
-target_compile_options(dnpsoup_core PUBLIC -Wall -Wextra -Wpedantic)
+if(MSVC)
+  target_compile_options(dnpsoup_core PUBLIC -Wall)
+else()
+  target_compile_options(dnpsoup_core PUBLIC -Wall -Wextra -Wpedantic)
+endif()
 
 #find_package(BLAS REQUIRED)
 #find_package(LAPACK REQUIRED)
