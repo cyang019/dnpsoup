@@ -34,7 +34,7 @@ DNP relies on the transfer of electron polarization (typically from an organic b
 ### Download
 
 ``` bash
-git clone --recursive https://github.com/cyang019/dnpsoup.git
+git clone --recursive https://gitlab.com/chen.yang/dnpsoup.git
 ```
 
 ### Dependencies
