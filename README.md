@@ -16,8 +16,8 @@ DNPSOUP simulates polarization enhancement on nuclei(s) due to the presence of e
 --------
 ## Table of Contents
 - [Background Knowledge](#background-knowledge)
-- [Getting Started (Linux / MacOS)](#getting-started-1)
-- [Getting Started (Windows)](#getting-started-2)
+- [Getting Started (Linux / MacOS)](#getting-started-for-linux-and-macos)
+- [Getting Started (Windows)](#getting-started-for-windows)
 - [Expected Input JSON File Format](#expected-input-json-file-format)
 - [Authors](#authors)
 - [Citing DNPSOUP](#citing-dnpsoup)
@@ -44,9 +44,8 @@ DNP relies on the transfer of electron polarization (typically from an organic b
 
   - [High-field DNP (https://griffingroup.mit.edu/high-field-dnp)](https://griffingroup.mit.edu/high-field-dnp#overlay-context=research/nmr-methodology)
 
-<h2 id="getting-started-1">
-Getting Started (Linux / MacOS)
-</h2>
+
+## Getting Started for Linux and MacOS
 
 ### Download
 
@@ -107,9 +106,7 @@ To execute dnpsoup:
 ./build/dnpsoup_cli/dnpsoup_exec [input json file path] [output file path]
 ```
 
-<h2 id="getting-started-2">
-Getting Started (Windows)
-</h2>
+## Getting Started for Windows
 
 ### Download Dependencies
 
