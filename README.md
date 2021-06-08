@@ -16,8 +16,8 @@ DNPSOUP simulates polarization enhancement on nuclei(s) due to the presence of e
 --------
 ## Table of Contents
 - [Background Knowledge](#background-knowledge)
-- [Getting Started (Linux / MacOS)](#getting-started-(linux-/-macos))
-- [Getting Started (Windows)](#getting-started-(windows))
+- [Getting Started (Linux / MacOS)](#getting-started-\(linux-/-macos\))
+- [Getting Started (Windows)](#getting-started-\(windows\))
 - [Expected Input JSON File Format](#expected-input-json-file-format)
 - [Authors](#authors)
 - [Citing DNPSOUP](#citing-dnpsoup)
