@@ -12,9 +12,12 @@ DNPSOUP simulates polarization enhancement on nuclei(s) due to the presence of e
 **dnpsoup_gui** is a graphical user interface that helps generating simulation inputs:
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 [https://github.com/cyang019/dnpsoup_gui](https://github.com/cyang019/dnpsoup_gui)
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> 9472922 (docs: add table of contents into README.md)
 [https://gitlab.com/chen.yang/dnpsoup_gui](https://gitlab.com/chen.yang/dnpsoup_gui)
 >>>>>>> 3020957 (docs: udpate windows instructions; reorder sections)
 
@@ -30,11 +33,6 @@ DNPSOUP simulates polarization enhancement on nuclei(s) due to the presence of e
 - [External Links](#links)
 - [License](#license)
 
-=======
-[https://github.com/cyang019/dnpsoup_gui](https://github.com/cyang019/dnpsoup_gui)
-
------
->>>>>>> 63fa3be (docs: udpate windows instructions; reorder sections)
 
 ----
 ## Background Knowledge
@@ -129,26 +127,15 @@ To execute dnpsoup:
 
 + mkl (BLAS/LAPACK support): [https://software.intel.com/oneapi/onemkl](https://software.intel.com/oneapi/onemkl)
   - make sure *Intel Math Kernel Library* within the Software Installer is selected. Install mkl in the default location within *C:\Program Files (x86)*.
-<<<<<<< HEAD
 
 ### Download and Compile
 
-=======
-
-Setup DNPSOUP as shown below:
->>>>>>> 63fa3be (docs: udpate windows instructions; reorder sections)
 1. Open `Git Bash`, browse to a desired folder,
 ```bash
 git clone --recursive https://github.com/cyang019/dnpsoup.git
 ```
 
-<<<<<<< HEAD
 2. Open `Visual Studio`, on the menu bar, `File`->`Open`->`Folder...` to open the dnpsoup folder. Within the `Solution Explorer - Folder View`, right click on the **CMakeLists.txt** in the root directory of the project to build.
-=======
-2. Open `Visual Studio`, on the menu bar, `File`->`Open`->`Folder...`, right click on the **CMakeLists.txt** in the root directory of the project to build.
-
-3. Open the `Developer Command Prompt for VS <version number>`, browse to `<dnpsoup_folder>\out\build\x64-Release or x64-Debug\out`, the executable dnpsoup_exec.exe should locate here.
->>>>>>> 63fa3be (docs: udpate windows instructions; reorder sections)
 
 3. Open the `Developer Command Prompt for VS <version number>`, browse to `<dnpsoup_folder>\out\build\x64-Release or x64-Debug\out`, the executable `dnpsoup_exec.exe` should locate here.
 
@@ -167,11 +154,7 @@ git clone --recursive https://github.com/cyang019/dnpsoup.git
 + [TOP-DNP](./examples/06_top_dnp/top_dnp_visualization.ipynb)
 
 
-<<<<<<< HEAD
 ## Expected Input JSON File Format
-=======
-#### Expected Input JSON File Format
->>>>>>> 63fa3be (docs: udpate windows instructions; reorder sections)
 
 ```json
 {
@@ -257,7 +240,6 @@ Chen Yang, Kong Ooi Tan, and Robert G. Griffin
 
 ## Citing DNPSOUP
 *DNPSOUP: A simulation software package for dynamic nuclear polarization*, submitted to Journal of Magnetic Resonance.
-<<<<<<< HEAD
 
 
 ## Acknowledgements
@@ -266,8 +248,6 @@ Chen Yang, Kong Ooi Tan, and Robert G. Griffin
 - The authors would also like to thank Dr. Kan-Nian Hu for discussions on cross effect, and Dr. John Wright for computational resources of PSFC at MIT. 
 - Chen Yang thanks Professor Leonard Mueller for introducing him to solid-state NMR and product operators. 
 - Chen Yang also thanks his family for support, and Mr. Xiang Gao for his suggestions on debugging frontend javascript code.
-=======
->>>>>>> 63fa3be (docs: udpate windows instructions; reorder sections)
 
 ## Fundings
 
