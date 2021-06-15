@@ -57,7 +57,7 @@ DNP relies on the transfer of electron polarization (typically from an organic b
 ### Download
 
 ``` bash
-git clone --recursive https://github.com/cyang019/dnpsoup.git
+git clone --recursive https://gitlab.com/chen.yang/dnpsoup.git
 ```
 
 ### Dependencies
@@ -132,7 +132,7 @@ To execute dnpsoup:
 
 1. Open `Git Bash`, browse to a desired folder,
 ```bash
-git clone --recursive https://github.com/cyang019/dnpsoup.git
+git clone --recursive https://gitlab.com/chen.yang/dnpsoup.git
 ```
 
 2. Open `Visual Studio`, on the menu bar, `File`->`Open`->`Folder...` to open the dnpsoup folder. Within the `Solution Explorer - Folder View`, right click on the **CMakeLists.txt** in the root directory of the project to build.
