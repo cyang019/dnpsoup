@@ -236,7 +236,7 @@ Chen Yang, Kong Ooi Tan, and Robert G. Griffin
 
 ## Acknowledgements
 
-- The authors would like to thank Dr. Sheetal Kumar Jain for initial discussions and encouragement on creating a separate simulation package.
+- The authors would like to thank Prof. Sheetal Kumar Jain for initial discussions and encouragement on creating a separate simulation package.
 - The authors would also like to thank Dr. Kan-Nian Hu for discussions on cross effect, and Dr. John Wright for computational resources of PSFC at MIT. 
 - Chen Yang thanks Professor Leonard Mueller for introducing him to solid-state NMR and product operators. 
 - Chen Yang also thanks his family for support, and Mr. Xiang Gao for his suggestions on debugging frontend javascript code.
