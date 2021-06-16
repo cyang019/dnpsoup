@@ -73,7 +73,7 @@ int main(int argc, char **argv)
       
 #ifndef APPLE
       const auto output_dir = std::filesystem::path(argv[2]).remove_filename();
-      if(!std::filesystem::exists(output_dir)) {
+      if(!output_dir.empty() && !std::filesystem::exists(output_dir)) {
         std::filesystem::create_directory(output_dir);
         cout << "create directory: " << output_dir << endl;
       }
