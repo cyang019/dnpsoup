@@ -6,9 +6,8 @@
 #include <string>
 #include <chrono>
 #include <iomanip>
-#ifndef APPLE
-  #include <filesystem>
-#endif
+#include <filesystem>
+#include <ctime>
 
 using namespace std;
 
@@ -71,15 +70,33 @@ int main(int argc, char **argv)
         return 1;
       }
       
-#ifndef APPLE
-      const auto output_dir = std::filesystem::path(argv[2]).remove_filename();
+      auto output_filepath = std::filesystem::path(argv[2]);
+      auto output_dir = output_filepath.remove_filename();
+      auto output_filename = output_filepath.filename().string();
+      if(std::filesystem::is_directory(output_filepath)) {
+        // generates a default filename if non provided
+        output_dir = output_filepath;
+        char buffer[80];
+        time_t rawtime;
+        struct tm *timeinfo;
+        time (&rawtime);
+        timeinfo = localtime(&rawtime);
+        strftime(buffer, sizeof(buffer), "%d-%m-%Y-%H-%M-%S", timeinfo);
+        std::string time_str(buffer);
+        output_filename = "dnpsoup-" + time_str + ".result";
+        output_filepath = output_dir / std::filesystem::path(output_filename);
+      }
       if(!output_dir.empty() && !std::filesystem::exists(output_dir)) {
+        // creates a directory if non existed
         std::filesystem::create_directory(output_dir);
         cout << "create directory: " << output_dir << endl;
       }
-#endif
       auto start_time = chrono::high_resolution_clock::now();
-	  	dnpsoup_exec0(argv[1], argv[2]);
+      // test to see if can correctly write to a file
+      std::ofstream result_stream;
+	    result_stream.open(output_filepath.string().c_str());
+      result_stream.close();
+	  	dnpsoup_exec0(argv[1], output_filepath.string().c_str());
       auto end_time = chrono::high_resolution_clock::now();
       auto millis = chrono::duration_cast<chrono::milliseconds>(end_time - start_time);
 	    cout << "Total time: " 
@@ -107,13 +124,11 @@ int main(int argc, char **argv)
         return 1;
       }
       
-#ifndef APPLE
       const auto output_dir = std::filesystem::path(argv[4]).remove_filename();
-      if(!std::filesystem::exists(output_dir)) {
+      if(!output_dir.empty() && !std::filesystem::exists(output_dir)) {
         std::filesystem::create_directory(output_dir);
         cout << "create directory: " << output_dir << endl;
       }
-#endif
       auto start_time = chrono::high_resolution_clock::now();
 	  	dnpsoup_exec(argv[1], argv[2], argv[3], argv[4]);
       auto end_time = chrono::high_resolution_clock::now();
