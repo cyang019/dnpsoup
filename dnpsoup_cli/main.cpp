@@ -11,6 +11,20 @@
 
 using namespace std;
 
+std::string timestamp()
+{
+  auto current_time = chrono::system_clock::now();
+  char buffer[80];
+  auto transformed = current_time.time_since_epoch().count() / 1000000;
+  auto millis = transformed % 1000;
+  std::time_t tt;
+  tt = chrono::system_clock::to_time_t(current_time);
+  auto timeinfo = localtime(&tt);
+  strftime(buffer, 80, "%F-%H-%M-%S", timeinfo);
+  sprintf(buffer, "%s-%03d", buffer, (int)millis);
+  return std::string(buffer);
+}
+
 bool fileExists(const string &filename)
 {
   ifstream f(filename.c_str());
@@ -70,20 +84,17 @@ int main(int argc, char **argv)
         return 1;
       }
       
-      auto output_filepath = std::filesystem::path(argv[2]);
+      auto argv_2_str = std::string(argv[2]);
+      auto output_filepath = std::filesystem::path(argv_2_str);
       auto output_dir = output_filepath.remove_filename();
       auto output_filename = output_filepath.filename().string();
-      if(std::filesystem::is_directory(output_filepath)) {
+      if (argv_2_str.size() > 0 && output_filename.size() == 0) {
+        output_filename = argv_2_str;
+      }
+      if(std::filesystem::is_directory(output_filepath) || output_filename.size() == 0) {
         // generates a default filename if non provided
         output_dir = output_filepath;
-        char buffer[80];
-        time_t rawtime;
-        struct tm *timeinfo;
-        time (&rawtime);
-        timeinfo = localtime(&rawtime);
-        strftime(buffer, sizeof(buffer), "%d-%m-%Y-%H-%M-%S", timeinfo);
-        std::string time_str(buffer);
-        output_filename = "dnpsoup-" + time_str + ".result";
+        output_filename = "dnpsoup-" + timestamp() + ".result";
         output_filepath = output_dir / std::filesystem::path(output_filename);
       }
       if(!output_dir.empty() && !std::filesystem::exists(output_dir)) {
@@ -93,9 +104,11 @@ int main(int argc, char **argv)
       }
       auto start_time = chrono::high_resolution_clock::now();
       // test to see if can correctly write to a file
-      std::ofstream result_stream;
-	    result_stream.open(output_filepath.string().c_str());
-      result_stream.close();
+      {
+        std::ofstream result_stream(output_filepath.string().c_str());
+        result_stream.close();
+        cout << "result filename: " << output_filepath << endl;
+      }
 	  	dnpsoup_exec0(argv[1], output_filepath.string().c_str());
       auto end_time = chrono::high_resolution_clock::now();
       auto millis = chrono::duration_cast<chrono::milliseconds>(end_time - start_time);
