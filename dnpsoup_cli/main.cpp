@@ -90,6 +90,7 @@ int main(int argc, char **argv)
       auto output_filename = output_filepath.filename().string();
       if (argv_2_str.size() > 0 && output_filename.size() == 0) {
         output_filename = argv_2_str;
+        output_filepath = std::filesystem::path("./" + output_filename);
       }
       if(std::filesystem::is_directory(output_filepath) || output_filename.size() == 0) {
         // generates a default filename if non provided
