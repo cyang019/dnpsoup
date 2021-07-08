@@ -1,6 +1,6 @@
 # DNPSOUP
 
-[![pipeline status](https://gitlab.com/chen.yang/dnpsoup/badges/main/pipeline.svg)](https://gitlab.com/chen.yang/dnpsoup/-/commits/main)
+[![CircleCI](https://circleci.com/gh/cyang019/dnpsoup.svg?style=svg)](https://circleci.com/gh/cyang019/dnpsoup)
 
 
 > **D**ynamic **N**uclear **P**olarization **S**imulation **O**ptimized with a **U**nified **P**ropagator
@@ -11,15 +11,7 @@ DNPSOUP simulates polarization enhancement on nuclei(s) due to the presence of e
 
 **dnpsoup_gui** is a graphical user interface that helps generating simulation inputs:
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 [https://github.com/cyang019/dnpsoup_gui](https://github.com/cyang019/dnpsoup_gui)
-=======
-<<<<<<< HEAD
-=======
->>>>>>> 9472922 (docs: add table of contents into README.md)
-[https://gitlab.com/chen.yang/dnpsoup_gui](https://gitlab.com/chen.yang/dnpsoup_gui)
->>>>>>> 3020957 (docs: udpate windows instructions; reorder sections)
 
 --------
 ## Table of Contents
@@ -57,7 +49,7 @@ DNP relies on the transfer of electron polarization (typically from an organic b
 ### Download
 
 ``` bash
-git clone --recursive https://gitlab.com/chen.yang/dnpsoup.git
+git clone --recursive https://github.com/cyang019/dnpsoup.git
 ```
 
 ### Dependencies
@@ -132,7 +124,7 @@ To execute dnpsoup:
 
 1. Open `Git Bash`, browse to a desired folder,
 ```bash
-git clone --recursive https://gitlab.com/chen.yang/dnpsoup.git
+git clone --recursive https://github.com/cyang019/dnpsoup.git
 ```
 
 2. Open `Visual Studio`, on the menu bar, `File`->`Open`->`Folder...` to open the dnpsoup folder. Within the `Solution Explorer - Folder View`, right click on the **CMakeLists.txt** in the root directory of the project to build.
@@ -141,8 +133,9 @@ git clone --recursive https://gitlab.com/chen.yang/dnpsoup.git
 
 ## Examples
 
-+ [Solid Effect and Overhauser Effect](./examples/01_solid_effect_and_overhauser_effect/se_oe_visualization.ipynb)
-
++ [Solid Effect and Overhauser Effect](./examples/01_solid_effect_and_overhau[submodule "matrix"]
+	path = matrix
+	url = ../../chen.yang/matrix.git
 + [Cross Effect](./examples/02_cross_effect/ce_visualization.ipynb)
 
 + [NOVEL](./examples/03_novel/NOVEL_visualization.ipynb)
