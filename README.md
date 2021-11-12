@@ -133,9 +133,8 @@ git clone --recursive https://github.com/cyang019/dnpsoup.git
 
 ## Examples
 
-+ [Solid Effect and Overhauser Effect](./examples/01_solid_effect_and_overhau[submodule "matrix"]
-	path = matrix
-	url = ../../chen.yang/matrix.git
++ [Solid Effect and Overhauser Effect](./examples/01_solid_effect_and_overhauser_effect)
+
 + [Cross Effect](./examples/02_cross_effect/ce_visualization.ipynb)
 
 + [NOVEL](./examples/03_novel/NOVEL_visualization.ipynb)
