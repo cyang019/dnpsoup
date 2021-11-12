@@ -7,6 +7,8 @@
 
 DNPSOUP simulates polarization enhancement on nuclei(s) due to the presence of electron(s) and EM radiations, with or without Magic Angle Spinning (MAS).
 
+DOI: [10.1016/j.jmr.2021.107107](https://www.sciencedirect.com/science/article/abs/pii/S1090780721001968?via%3Dihub)
+
 ## Graphical User Interface for Input Preparation
 
 **dnpsoup_gui** is a graphical user interface that helps generating simulation inputs:
