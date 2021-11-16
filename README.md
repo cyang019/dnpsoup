@@ -7,7 +7,7 @@
 
 DNPSOUP simulates polarization enhancement on nuclei(s) due to the presence of electron(s) and EM radiations, with or without Magic Angle Spinning (MAS).
 
-DOI: [10.1016/j.jmr.2021.107107](https://www.sciencedirect.com/science/article/abs/pii/S1090780721001968?via%3Dihub)
+DOI: [10.1016/j.jmr.2021.107107](https://doi.org/10.1016/j.jmr.2021.107107)
 
 ## Graphical User Interface for Input Preparation
 
@@ -234,7 +234,7 @@ Chen Yang, Kong Ooi Tan, and Robert G. Griffin
 
 ## Citing DNPSOUP
 *DNPSOUP: A simulation software package for dynamic nuclear polarization*, accepted by Journal of Magnetic Resonance.
-DOI: [10.1016/j.jmr.2021.107107](https://www.sciencedirect.com/science/article/abs/pii/S1090780721001968?via%3Dihub)
+DOI: [10.1016/j.jmr.2021.107107](https://doi.org/10.1016/j.jmr.2021.107107)
 
 
 ## Acknowledgements
