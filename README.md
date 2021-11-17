@@ -233,7 +233,7 @@ git clone --recursive https://github.com/cyang019/dnpsoup.git
 Chen Yang, Kong Ooi Tan, and Robert G. Griffin
 
 ## Citing DNPSOUP
-*DNPSOUP: A simulation software package for dynamic nuclear polarization*, accepted by Journal of Magnetic Resonance.
+Yang, C., Tan, K. O., & Griffin, R. G. (2021). DNPSOUP: A simulation software package for dynamic nuclear polarization. Journal of Magnetic Resonance, 107107.
 DOI: [10.1016/j.jmr.2021.107107](https://doi.org/10.1016/j.jmr.2021.107107)
 
 
