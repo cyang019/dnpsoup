@@ -54,10 +54,10 @@ DNP relies on the transfer of electron polarization (typically from an organic b
 git clone --recursive https://github.com/cyang019/dnpsoup.git
 ```
 
-### Dependencies
+### Prerequisites
 
-- nlohmann/json ([https://github.com/nlohmann/json](https://github.com/nlohmann/json))
-- openblas & lapack / accelerate
+- c++ compiler that supports c++17 features
+- cmake version 3.14.7 and above
 
 ### Install Dependencies
 
@@ -109,7 +109,7 @@ To execute dnpsoup:
 
 ## Getting Started for Windows
 
-### Download Dependencies
+### Prerequisites
 
 + git: [https://git-scm.com/download/win](https://git-scm.com/download/win)
 
