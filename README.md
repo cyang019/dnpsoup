@@ -9,6 +9,8 @@ DNPSOUP simulates polarization enhancement on nuclei(s) due to the presence of e
 
 DOI: [10.1016/j.jmr.2021.107107](https://doi.org/10.1016/j.jmr.2021.107107)
 
+please email `yangcnju@gmail` for questions or suggestions.
+
 ## Graphical User Interface for Input Preparation
 
 **dnpsoup_gui** is a graphical user interface that helps generating simulation inputs:
