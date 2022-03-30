@@ -5,7 +5,7 @@
 
 > **D**ynamic **N**uclear **P**olarization **S**imulation **O**ptimized with a **U**nified **P**ropagator
 
-DNPSOUP simulates polarization enhancement on nuclei(s) due to the presence of electron(s) and EM radiations, with or without Magic Angle Spinning (MAS).
+DNPSOUP let users simulate field profiles **without preparing a single equation**. It gives insights about polarization enhancement on nuclei(s) due to the presence of electron(s) and EM radiations, with or without Magic Angle Spinning (MAS).
 
 DOI: [10.1016/j.jmr.2021.107107](https://doi.org/10.1016/j.jmr.2021.107107)
 
@@ -150,7 +150,7 @@ git clone --recursive https://github.com/cyang019/dnpsoup.git
 + [TOP-DNP](./examples/06_top_dnp/top_dnp_visualization.ipynb)
 
 
-## Expected Input JSON File Format
+## Input JSON File Example
 
 ```json
 {
