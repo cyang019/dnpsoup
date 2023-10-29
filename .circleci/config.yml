@@ -6,6 +6,9 @@ jobs:
     docker:
       - image: cyang019/cpphpc:latest
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "43:09:70:bc:a2:be:3d:5f:48:d9:bc:7d:5d:c8:ee:21"
       - checkout
       - run: git submodule sync
       - run: git submodule update --init
