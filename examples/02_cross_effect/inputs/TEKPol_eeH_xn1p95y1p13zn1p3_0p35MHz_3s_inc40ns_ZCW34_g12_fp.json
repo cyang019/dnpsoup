@@ -130,7 +130,7 @@
       "beta": 0,
       "gamma": 0
     },
-    "ncores": 6,
+    "ncores": 5,
     "acq": "H1",
     "Magnet": {
       "b0": 9.405
